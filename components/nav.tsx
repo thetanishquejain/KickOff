@@ -17,6 +17,7 @@ import {
 import { Logo } from "./logo"
 import { MobileNav } from "./mobile-nav"
 import { NavLinks } from "./nav-links"
+import { NavSearch } from "./nav-search"
 
 async function signOut() {
   "use server"
@@ -32,12 +33,13 @@ export async function Nav() {
       <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-2 px-4 sm:gap-4 md:px-8">
         <Logo />
         <NavLinks />
-        <div className="ml-auto flex items-center gap-2">
+        <NavSearch className="ml-auto hidden w-56 md:block xl:w-64" />
+        <div className="ml-auto flex items-center gap-2 md:ml-0">
           {profile ? (
             <>
               {profile.role === "founder" && (
                 <Button asChild size="sm" className="hidden sm:inline-flex">
-                  <Link href="/dashboard">My listings</Link>
+                  <Link href="/dashboard">Dashboard</Link>
                 </Button>
               )}
               <DropdownMenu>
@@ -47,16 +49,21 @@ export async function Nav() {
                 >
                   {initials(profile.full_name || profile.email)}
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 border-line bg-surface">
+                <DropdownMenuContent align="end" className="w-56 border-line bg-surface shadow-pop">
                   <DropdownMenuLabel className="font-normal">
                     <div className="text-sm text-ink">{profile.full_name || profile.email}</div>
                     <div className="text-xs capitalize text-ink-muted">{profile.role}</div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator className="bg-line" />
                   {profile.role === "founder" ? (
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard">My listings</Link>
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard">Dashboard</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/new">New listing</Link>
+                      </DropdownMenuItem>
+                    </>
                   ) : (
                     <DropdownMenuItem asChild>
                       <Link href="/marketplace">Browse startups</Link>

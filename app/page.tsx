@@ -1,109 +1,125 @@
 import Link from "next/link"
-import { ArrowRight, BadgeCheck } from "lucide-react"
+import { ArrowRight, BadgeCheck, Search } from "lucide-react"
 
-import { getPublishedListings } from "@/lib/data"
+import { askingMultiple, CATEGORIES, getPublishedListings } from "@/lib/data"
+import { BUYER_STEPS, FAQ, FOUNDER_STEPS } from "@/lib/content"
 import { inrShort } from "@/lib/format"
+import { revenueInRange } from "@/lib/metrics"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/kit"
+import { FaqList } from "@/components/faq-list"
 import { LeaderboardTable } from "@/components/leaderboard"
 import { ListingCard } from "@/components/listing-card"
+import { ListingRows } from "@/components/listing-row"
 
 export const dynamic = "force-dynamic"
-
-const FOUNDER_STEPS = [
-  ["Create a listing", "Name, category, one-line pitch and an asking price in rupees."],
-  ["Upload your Razorpay payments", "Export the payments CSV from Razorpay. AI sorts each payment into recurring, one-time or refund, and you can correct any label."],
-  ["Review your numbers", "Code calculates MRR, growth, refunds and customer concentration, and raises risk flags."],
-  ["Publish", "Edit the AI-drafted description, then publish to the marketplace and leaderboard."],
-]
-
-const BUYER_STEPS = [
-  ["Browse verified startups", "Filter by category and compare MRR, asking price and multiple."],
-  ["Read the buyer summary", "What the payment data proves, what it doesn't, and what to ask next."],
-  ["Question the data", "Ask about revenue, customers or risks. Answers use only that listing's data."],
-  ["Talk to the founder", "Take the suggested questions into your own due diligence."],
-]
-
-const FAQ = [
-  [
-    'What does "verified" mean on Kickoff?',
-    "It means the numbers were calculated by Kickoff's code from the Razorpay payments export the founder uploaded, instead of typed in or shown as a screenshot. It doesn't mean the business has been audited, and Kickoff doesn't yet confirm that the export is complete or that the founder owns the business.",
-  ],
-  [
-    "How is MRR calculated?",
-    "MRR is the recurring revenue in the latest full month of data. Monthly plans count in the month they're paid, and yearly plans are spread across 12 months. One-time payments and refunds are not part of MRR.",
-  ],
-  [
-    "Where does AI come in?",
-    "AI labels messy payment descriptions, explains risk flags in plain English, drafts listing descriptions and answers buyer questions. AI never calculates the numbers, and any AI text whose numbers don't match the calculated metrics is blocked.",
-  ],
-  [
-    "What happens to customer data in the CSV?",
-    "Customer emails, phone numbers and IDs are turned into one-way codes before storage. Raw payment rows are visible only to the founder who uploaded them.",
-  ],
-  [
-    "What are risk flags?",
-    "Automatic checks for patterns buyers care about: one customer bringing in more than 30% of revenue, a month more than twice the 3-month average, and refunds above 10% of revenue.",
-  ],
-  [
-    "Which payment gateways are supported?",
-    "Razorpay CSV exports today. Cashfree, PayU and live connections are planned for a later version.",
-  ],
-]
 
 export default async function Home() {
   const listings = await getPublishedListings()
   const verified = listings.filter((l) => l.metrics)
-  const preview = [...verified].sort((a, b) => (b.metrics?.mrr ?? 0) - (a.metrics?.mrr ?? 0)).slice(0, 6)
+  const forSale = verified.filter((l) => l.asking_price_inr)
   const totalMrr = verified.reduce((s, l) => s + (l.metrics?.mrr ?? 0), 0)
+  const rev30 = verified.reduce((s, l) => s + (l.metrics ? revenueInRange(l.metrics, "30d") : 0), 0)
+  const totalAsk = forSale.reduce((s, l) => s + (l.asking_price_inr ?? 0), 0)
+
+  const recent = [...forSale].sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 5)
+  const bestValue = [...forSale]
+    .filter((l) => askingMultiple(l) !== null)
+    .sort((a, b) => (askingMultiple(a) ?? 99) - (askingMultiple(b) ?? 99))
+    .slice(0, 5)
+  const featured = [...verified].sort((a, b) => (b.metrics?.mrr ?? 0) - (a.metrics?.mrr ?? 0)).slice(0, 3)
+  const categoryCounts = CATEGORIES.map((c) => ({ c, n: listings.filter((l) => l.category === c).length })).filter((x) => x.n > 0)
 
   return (
-    <div className="flex flex-col gap-20 pb-8">
-      <section className="grid gap-10 pt-12 md:grid-cols-[1.25fr_1fr] md:items-center md:pt-20">
+    <div className="flex flex-col gap-14 pb-6">
+      {/* Compact hero: message, search, and live numbers above the fold */}
+      <section className="grid gap-8 pt-10 lg:grid-cols-[1.35fr_1fr] lg:items-end lg:pt-14">
         <div>
-          <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight md:text-[52px]">
-            Buy and sell Indian startups on revenue you can check.
-          </h1>
-          <p className="mt-5 max-w-xl text-base text-ink-muted md:text-lg">
-            Founders prepare their SaaS or AI product for sale with metrics calculated from Razorpay payments. Buyers
-            compare listings and question every number before they talk.
+          <p className="mb-3 inline-flex items-center gap-1.5 text-caption font-medium text-verified">
+            <BadgeCheck className="size-3.5" aria-hidden="true" /> Revenue calculated from Razorpay payment data
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Button asChild size="lg">
-              <Link href="/marketplace">Browse startups</Link>
+          <h1 className="max-w-2xl text-[34px] font-semibold leading-[1.1] tracking-tight md:text-[44px]">
+            The marketplace for Indian startups with revenue you can check.
+          </h1>
+          <p className="mt-4 max-w-xl text-base text-ink-muted">
+            Browse SaaS, AI products and apps for sale. Compare MRR, growth, asking price and risk flags before you talk to a founder.
+          </p>
+          <form action="/marketplace" role="search" className="mt-6 flex max-w-xl gap-2">
+            <label htmlFor="hero-q" className="sr-only">
+              Search startups
+            </label>
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-muted" aria-hidden="true" />
+              <input
+                id="hero-q"
+                name="q"
+                placeholder="Search by name, category or what it does"
+                className="h-11 w-full rounded-md border border-line bg-surface pl-9 pr-3 text-sm shadow-card placeholder:text-ink-muted focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+              />
+            </div>
+            <Button type="submit" className="h-11">
+              Search
             </Button>
-            <Link href="/signup?role=founder" className="inline-flex items-center gap-1 text-sm font-medium text-ink hover:text-brand">
-              List your startup <ArrowRight className="size-4" aria-hidden="true" />
-            </Link>
-          </div>
+          </form>
+          <p className="mt-3 text-sm text-ink-muted">
+            Selling?{" "}
+            <Link href="/signup?role=founder" className="font-medium text-ink underline-offset-2 hover:text-brand hover:underline">
+              List your startup free
+            </Link>{" "}
+            and get a verified profile in minutes.
+          </p>
         </div>
-        <aside className="rounded-lg border border-line bg-surface p-6 shadow-card">
-          <div className="flex items-center gap-2 text-sm font-medium text-verified">
-            <BadgeCheck className="size-4" aria-hidden="true" /> What &quot;verified&quot; means here
-          </div>
-          <ul className="mt-3 flex flex-col gap-2 text-sm text-ink-muted">
-            <li>Metrics are calculated by code from the founder&apos;s Razorpay payment export.</li>
-            <li>AI writes explanations, and a number check blocks figures that don&apos;t match the data.</li>
-            <li>It is not an audit. Identity and ownership checks come in a later version.</li>
-          </ul>
-          <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4">
-            <div>
-              <dt className="text-caption text-ink-muted">Verified listings</dt>
-              <dd className="num text-2xl font-semibold">{verified.length}</dd>
+
+        <dl className="grid grid-cols-2 overflow-hidden rounded-lg border border-line bg-surface shadow-card">
+          {[
+            ["Verified startups", String(verified.length)],
+            ["Combined MRR", inrShort(totalMrr)],
+            ["Revenue, last 30 days", inrShort(rev30)],
+            ["Total asking", forSale.length ? inrShort(totalAsk) : "–"],
+          ].map(([k, v], i) => (
+            <div key={k} className={`p-4 ${i % 2 === 0 ? "border-r border-line" : ""} ${i < 2 ? "border-b border-line" : ""}`}>
+              <dt className="text-caption text-ink-muted">{k}</dt>
+              <dd className="num mt-1 text-2xl font-semibold">{v}</dd>
             </div>
-            <div>
-              <dt className="text-caption text-ink-muted">Combined MRR</dt>
-              <dd className="num text-2xl font-semibold">{inrShort(totalMrr)}</dd>
-            </div>
-          </dl>
-        </aside>
+          ))}
+        </dl>
       </section>
 
-      <section aria-labelledby="preview-heading">
-        <SectionHead id="preview-heading" title="Startups on Kickoff" href="/marketplace" link="View marketplace" />
-        {preview.length ? (
+      {/* Category discovery */}
+      {categoryCounts.length > 0 && (
+        <section aria-labelledby="cat-heading">
+          <h2 id="cat-heading" className="sr-only">
+            Browse by category
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/marketplace" className="rounded-md border border-ink bg-ink px-3 py-1.5 text-sm font-medium text-bg">
+              All startups <span className="num ml-1 opacity-70">{listings.length}</span>
+            </Link>
+            {categoryCounts.map(({ c, n }) => (
+              <Link
+                key={c}
+                href={`/marketplace?category=${encodeURIComponent(c)}`}
+                className="rounded-md border border-line bg-surface px-3 py-1.5 text-sm text-ink transition-colors duration-150 hover:border-ink-muted/40 hover:bg-surface-hover"
+              >
+                {c} <span className="num ml-1 text-ink-muted">{n}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Listings lists */}
+      <div className="grid gap-8 lg:grid-cols-2">
+        <ListingRows title="Recently listed" href="/marketplace?sort=new" linkLabel="All new listings" listings={recent} empty="No startups for sale yet." />
+        <ListingRows title="Best value right now" href="/marketplace?sort=multiple" linkLabel="Sort by multiple" listings={bestValue} empty="No priced listings yet." />
+      </div>
+
+      {/* Featured */}
+      <section aria-labelledby="feat-heading">
+        <SectionHead id="feat-heading" title="Top verified opportunities" href="/marketplace" link="Open marketplace" />
+        {featured.length ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {preview.map((l) => (
+            {featured.map((l) => (
               <ListingCard key={l.id} l={l} />
             ))}
           </div>
@@ -116,43 +132,52 @@ export default async function Home() {
         )}
       </section>
 
+      {/* Leaderboard preview */}
       <section aria-labelledby="lb-heading">
         <SectionHead id="lb-heading" title="Leaderboard by verified MRR" href="/leaderboard" link="Full leaderboard" />
         <LeaderboardTable listings={listings} sort="mrr" range="all" limit={5} compact />
       </section>
 
-      <section id="how-it-works" aria-labelledby="how-heading" className="scroll-mt-24">
-        <h2 id="how-heading" className="mb-6 text-xl font-semibold tracking-tight">
-          How it works
-        </h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Journey title="For founders" steps={FOUNDER_STEPS} />
-          <Journey title="For buyers" steps={BUYER_STEPS} />
+      {/* Verification + workflows */}
+      <section aria-labelledby="how-heading" className="grid gap-6 lg:grid-cols-[1fr_1fr_1fr]">
+        <div className="flex flex-col gap-3">
+          <h2 id="how-heading" className="text-xl font-semibold tracking-tight">
+            How verification works
+          </h2>
+          <p className="text-sm leading-6 text-ink-muted">
+            Founders upload the payments CSV exported from Razorpay. Kickoff&apos;s code works out MRR, growth, refunds and customer concentration. AI only writes
+            explanations, and a number check blocks any figure that doesn&apos;t match the data.
+          </p>
+          <p className="text-sm leading-6 text-ink-muted">It&apos;s not an audit. Identity and ownership checks are planned for a later version.</p>
+          <Link href="/how-it-works" className="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline">
+            Full walkthrough <ArrowRight className="size-3.5" aria-hidden="true" />
+          </Link>
         </div>
+        <Steps title="For founders" steps={FOUNDER_STEPS.slice(0, 4)} />
+        <Steps title="For buyers" steps={BUYER_STEPS.slice(0, 4)} />
       </section>
 
-      <section id="faq" aria-labelledby="faq-heading" className="grid scroll-mt-24 gap-8 md:grid-cols-[1fr_2fr]">
+      {/* FAQ teaser */}
+      <section aria-labelledby="faq-heading" className="grid gap-6 lg:grid-cols-[1fr_2fr]">
         <div>
           <h2 id="faq-heading" className="text-xl font-semibold tracking-tight">
-            Trust and FAQ
+            Questions buyers and founders ask
           </h2>
-          <p className="mt-2 text-sm text-ink-muted">
-            How payment data is processed, what the metrics mean, and what verification does and doesn&apos;t prove.
-          </p>
+          <Link href="/faq" className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline">
+            All FAQs <ArrowRight className="size-3.5" aria-hidden="true" />
+          </Link>
         </div>
-        <div className="divide-y divide-line rounded-lg border border-line bg-surface">
-          {FAQ.map(([q, a]) => (
-            <details key={q} className="group px-5 py-4 [&_summary::-webkit-details-marker]:hidden">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium text-ink">
-                {q}
-                <span className="text-ink-muted transition-transform duration-150 group-open:rotate-45" aria-hidden="true">
-                  +
-                </span>
-              </summary>
-              <p className="mt-2 text-sm leading-6 text-ink-muted">{a}</p>
-            </details>
-          ))}
+        <FaqList items={FAQ.slice(0, 4)} />
+      </section>
+
+      <section className="flex flex-col items-start justify-between gap-4 rounded-lg border border-line bg-surface p-6 shadow-card md:flex-row md:items-center">
+        <div>
+          <h2 className="text-lg font-semibold">Selling a SaaS or AI product in India?</h2>
+          <p className="mt-1 text-sm text-ink-muted">Get a verified revenue profile buyers can check, without sending screenshots back and forth.</p>
         </div>
+        <Button asChild size="lg">
+          <Link href="/signup?role=founder">List your startup</Link>
+        </Button>
       </section>
     </div>
   )
@@ -160,8 +185,8 @@ export default async function Home() {
 
 function SectionHead({ id, title, href, link }: { id: string; title: string; href: string; link: string }) {
   return (
-    <div className="mb-4 flex items-end justify-between gap-4">
-      <h2 id={id} className="text-xl font-semibold tracking-tight">
+    <div className="mb-3 flex items-end justify-between gap-4">
+      <h2 id={id} className="text-lg font-semibold tracking-tight">
         {title}
       </h2>
       <Link href={href} className="inline-flex items-center gap-1 text-sm text-ink-muted hover:text-brand">
@@ -171,17 +196,17 @@ function SectionHead({ id, title, href, link }: { id: string; title: string; hre
   )
 }
 
-function Journey({ title, steps }: { title: string; steps: string[][] }) {
+function Steps({ title, steps }: { title: string; steps: [string, string][] }) {
   return (
-    <div className="rounded-lg border border-line bg-surface p-6">
-      <h3 className="font-medium">{title}</h3>
-      <ol className="mt-4 flex flex-col gap-4">
+    <div className="rounded-lg border border-line bg-surface p-5">
+      <h3 className="text-sm font-semibold">{title}</h3>
+      <ol className="mt-3 flex flex-col gap-3">
         {steps.map(([t, d], i) => (
-          <li key={t} className="grid grid-cols-[28px_1fr] gap-3">
-            <span className="num flex size-7 items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand">{i + 1}</span>
+          <li key={t} className="grid grid-cols-[24px_1fr] gap-2.5">
+            <span className="num flex size-6 items-center justify-center rounded-full bg-brand/10 text-caption font-semibold text-brand">{i + 1}</span>
             <div>
               <div className="text-sm font-medium text-ink">{t}</div>
-              <p className="mt-0.5 text-sm text-ink-muted">{d}</p>
+              <p className="mt-0.5 text-label text-ink-muted">{d}</p>
             </div>
           </li>
         ))}

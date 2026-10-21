@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 import { NAV_LINKS } from "./nav-links"
+import { NavSearch } from "./nav-search"
 
 type Props = { role: "founder" | "buyer" | null }
 
@@ -15,7 +16,7 @@ export function MobileNav({ role }: Props) {
   const [open, setOpen] = useState(false)
   const links = [
     ...NAV_LINKS,
-    ...(role === "founder" ? [{ href: "/dashboard", label: "My listings" }] : []),
+    ...(role === "founder" ? [{ href: "/dashboard", label: "Dashboard" }, { href: "/dashboard/new", label: "New listing" }] : []),
     ...(role ? [] : [
       { href: "/login", label: "Log in" },
       { href: "/signup?role=founder", label: "List your startup" },
@@ -24,13 +25,14 @@ export function MobileNav({ role }: Props) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
+        <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu">
           <Menu className="size-5" />
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-72 border-line bg-surface">
         <SheetTitle className="text-base">Menu</SheetTitle>
-        <nav className="mt-6 flex flex-col gap-1" aria-label="Mobile">
+        <NavSearch className="mt-4 md:hidden" onDone={() => setOpen(false)} />
+        <nav className="mt-4 flex flex-col gap-1" aria-label="Mobile">
           {links.map((l) => (
             <Link
               key={l.href}

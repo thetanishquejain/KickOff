@@ -1,58 +1,66 @@
 import Link from "next/link"
-import { AlertTriangle } from "lucide-react"
+import { AlertTriangle, BadgeCheck } from "lucide-react"
 
 import { askingMultiple, type ListingFull } from "@/lib/data"
 import { inrShort, multiple } from "@/lib/format"
+import { cn } from "@/lib/utils"
 
-import { DemoTag, Growth, InitialAvatar, VerifiedBadge } from "./kit"
+import { DemoTag, Growth, InitialAvatar } from "./kit"
+import { ForSaleTag } from "./listing-row"
 
-export function ListingCard({ l }: { l: ListingFull }) {
+/** Compact marketplace card: identity, pitch, and the four numbers buyers compare first. */
+export function ListingCard({ l, className }: { l: ListingFull; className?: string }) {
   const m = l.metrics
   return (
     <Link
       href={`/listing/${l.id}`}
-      className="group flex flex-col gap-4 rounded-lg border border-line bg-surface p-6 shadow-card transition-colors duration-150 hover:border-ink-muted/30 hover:shadow-pop"
+      className={cn(
+        "group flex flex-col rounded-lg border border-line bg-surface shadow-card transition-[border-color,box-shadow] duration-150 hover:border-ink-muted/30 hover:shadow-pop focus-visible:ring-2 focus-visible:ring-brand",
+        className
+      )}
     >
-      <div className="flex items-center gap-3">
-        <InitialAvatar name={l.name} />
-        <div className="min-w-0">
-          <div className="truncate text-lg font-medium text-ink">{l.name}</div>
-          <div className="text-xs text-ink-muted">{l.category}</div>
+      <div className="flex items-start gap-3 p-4 pb-3">
+        <InitialAvatar name={l.name} size={40} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <span className="truncate font-medium text-ink group-hover:text-brand">{l.name}</span>
+            {m && <BadgeCheck className="size-4 shrink-0 text-verified" aria-label="Revenue checked from payment data" />}
+          </div>
+          <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-caption text-ink-muted">
+            <span>{l.category}</span>
+            {l.asking_price_inr ? <ForSaleTag /> : null}
+            {l.is_demo && <DemoTag />}
+          </div>
         </div>
-        {l.is_demo && (
-          <span className="ml-auto">
-            <DemoTag />
-          </span>
-        )}
       </div>
-      <p className="line-clamp-2 min-h-10 text-sm text-ink-muted">{l.pitch}</p>
-      <div>
-        <div className="flex items-center gap-2">
-          <span className="num text-3xl font-bold">{m ? inrShort(m.mrr) : "–"}</span>
-          <span className="text-xs text-ink-muted">MRR</span>
-        </div>
-        <div className="mt-2">{m ? <VerifiedBadge /> : <span className="text-xs text-ink-muted">Not verified yet</span>}</div>
-      </div>
-      <dl className="grid grid-cols-3 gap-2 border-t border-line pt-4 text-sm">
-        <div>
-          <dt className="text-xs text-ink-muted">Growth</dt>
-          <dd>
-            <Growth value={m?.growth_pct} />
+      <p className="line-clamp-2 min-h-[2.5rem] px-4 text-label text-ink-muted">{l.pitch}</p>
+
+      <dl className="mt-3 grid grid-cols-2 border-t border-line text-label">
+        <div className="border-r border-line px-4 py-2.5">
+          <dt className="text-caption text-ink-muted">MRR</dt>
+          <dd className="num flex items-baseline gap-1.5 text-lg font-semibold text-ink">
+            {m ? inrShort(m.mrr) : <span className="text-sm font-normal text-ink-muted">Not verified</span>}
+            {m && <Growth value={m.growth_pct} className="text-caption" />}
           </dd>
         </div>
-        <div>
-          <dt className="text-xs text-ink-muted">Asking</dt>
-          <dd className="num">{inrShort(l.asking_price_inr)}</dd>
+        <div className="px-4 py-2.5">
+          <dt className="text-caption text-ink-muted">Revenue, 6 mo</dt>
+          <dd className="num text-lg font-semibold text-ink">{m ? inrShort(m.revenue_6m) : "–"}</dd>
         </div>
-        <div>
-          <dt className="text-xs text-ink-muted">Multiple</dt>
-          <dd className="num">{multiple(askingMultiple(l))}</dd>
+        <div className="border-r border-t border-line px-4 py-2.5">
+          <dt className="text-caption text-ink-muted">Asking</dt>
+          <dd className="num font-medium text-ink">{l.asking_price_inr ? inrShort(l.asking_price_inr) : <span className="font-normal text-ink-muted">Not set</span>}</dd>
+        </div>
+        <div className="border-t border-line px-4 py-2.5">
+          <dt className="text-caption text-ink-muted">Multiple</dt>
+          <dd className="num font-medium text-ink">{askingMultiple(l) !== null ? multiple(askingMultiple(l)) : <span className="font-normal text-ink-muted">–</span>}</dd>
         </div>
       </dl>
+
       {l.flags.length > 0 && (
-        <div className="flex items-center gap-1.5 text-xs text-warning">
-          <AlertTriangle className="size-3.5" aria-hidden="true" />
-          {l.flags.length === 1 ? l.flags[0].title : `${l.flags.length} risk flags`}
+        <div className="flex items-center gap-1.5 border-t border-line px-4 py-2 text-caption text-warning">
+          <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
+          <span className="truncate">{l.flags.length === 1 ? l.flags[0].title : `${l.flags.length} risk flags`}</span>
         </div>
       )}
     </Link>
