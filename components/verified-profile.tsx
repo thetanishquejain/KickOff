@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { AiTag, Growth, MetricTile, VerifiedBadge } from "./kit"
 import { RevenueChart } from "./revenue-chart"
 
-export function VerifiedProfile({ m, flags, computedAt, showFlags = true }: { m: Metrics; flags: FlagRow[]; computedAt: string | null; showFlags?: boolean }) {
+export function VerifiedProfile({ m, flags, computedAt, showFlags = true, chart }: { m: Metrics; flags: FlagRow[]; computedAt: string | null; showFlags?: boolean; chart?: React.ReactNode }) {
   const latest = m.latest_month ? monthLabel(m.latest_month) : "latest month"
   return (
     <div className="flex flex-col gap-6">
@@ -34,7 +34,7 @@ export function VerifiedProfile({ m, flags, computedAt, showFlags = true }: { m:
         </div>
       </section>
 
-      <section aria-labelledby="trend-heading" className="rounded-lg border border-line bg-surface p-4">
+      {chart ?? <section aria-labelledby="trend-heading" className="rounded-lg border border-line bg-surface p-4">
         <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
           <h2 id="trend-heading" className="text-sm font-medium">
             Monthly net revenue and MRR
@@ -42,7 +42,7 @@ export function VerifiedProfile({ m, flags, computedAt, showFlags = true }: { m:
           <span className="text-caption text-ink-muted">Source: Razorpay payments export · full months only</span>
         </div>
         <RevenueChart rows={m.monthly} />
-      </section>
+      </section>}
 
       {showFlags && <FlagList flags={flags} />}
     </div>

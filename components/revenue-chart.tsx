@@ -3,11 +3,12 @@
 import { Bar, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 import { inr, inrShort, monthLabel } from "@/lib/format"
-import { THEME } from "@/lib/theme"
+import { useThemeColors } from "@/lib/use-theme-colors"
 
 type Row = { month: string; net: number; mrr: number }
 
 export function RevenueChart({ rows }: { rows: Row[] }) {
+  const THEME = useThemeColors()
   const data = rows.map((r) => ({ ...r, label: monthLabel(r.month) }))
   if (!data.length) return null
   return (
@@ -24,7 +25,7 @@ export function RevenueChart({ rows }: { rows: Row[] }) {
             width={64}
           />
           <Tooltip
-            cursor={{ fill: "rgba(22,28,25,0.04)" }}
+            cursor={{ fill: THEME.border, fillOpacity: 0.3 }}
             contentStyle={{ background: THEME.surface, border: `1px solid ${THEME.border}`, borderRadius: 8, color: THEME.foreground }}
             labelStyle={{ color: THEME.muted }}
             formatter={(v: number, name: string) => [inr(v), name === "net" ? "Net revenue" : "MRR"]}

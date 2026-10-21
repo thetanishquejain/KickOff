@@ -34,6 +34,28 @@
     --radius-lg: 12px; /* cards, dialogs */
   }
 
+  /* Dark theme: deep green-black surfaces, brighter teal so actions keep 4.5:1 contrast. */
+  .dark {
+    color-scheme: dark;
+
+    --background: 13 17 15;
+    --surface: 21 26 23;
+    --surface-muted: 30 37 33;
+    --border: 45 54 49;
+    --foreground: 233 238 235;
+    --muted-foreground: 152 164 157;
+
+    --primary: 56 186 146;
+    --primary-hover: 74 202 162;
+    --primary-foreground: 6 22 17;
+    --accent: 236 138 70;
+
+    --success: 82 204 128;
+    --warning: 233 168 64;
+    --danger: 244 110 110;
+    --focus-ring: 56 186 146;
+  }
+
   * {
     @apply border-line;
   }

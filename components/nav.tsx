@@ -18,6 +18,7 @@ import { Logo } from "./logo"
 import { MobileNav } from "./mobile-nav"
 import { NavLinks } from "./nav-links"
 import { NavSearch } from "./nav-search"
+import { ThemeToggle } from "./theme-toggle"
 
 async function signOut() {
   "use server"
@@ -34,7 +35,8 @@ export async function Nav() {
         <Logo />
         <NavLinks />
         <NavSearch className="ml-auto hidden w-56 md:block xl:w-64" />
-        <div className="ml-auto flex items-center gap-2 md:ml-0">
+        <div className="ml-auto flex items-center gap-1 sm:gap-2 md:ml-0">
+          <ThemeToggle />
           {profile ? (
             <>
               {profile.role === "founder" && (

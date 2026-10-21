@@ -23,14 +23,18 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en-IN" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en-IN" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Apply the saved theme before first paint so there is no flash. Light is the default. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem("kickoff-theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}` }} />
+      </head>
       <body className="min-h-screen bg-bg font-sans text-ink">
         <TooltipProvider delayDuration={150}>
           <Nav />
           <main className="mx-auto w-full max-w-[1200px] px-4 pb-16 md:px-8">{children}</main>
           <Footer />
         </TooltipProvider>
-        <Toaster richColors theme="light" />
+        <Toaster richColors />
       </body>
     </html>
   )

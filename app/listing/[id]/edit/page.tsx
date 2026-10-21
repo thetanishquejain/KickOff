@@ -59,6 +59,8 @@ export default async function EditListingPage({ params }: { params: { id: string
           asking_price_inr: listing.asking_price_inr,
           description: listing.description,
           status: listing.status,
+          insights: listing.insights ?? null,
+          founded_on: listing.founded_on ?? null,
         }}
         categories={CATEGORIES}
         hasMetrics={Boolean(m)}

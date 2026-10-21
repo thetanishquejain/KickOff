@@ -1,7 +1,8 @@
 import Link from "next/link"
 import { ArrowRight, BadgeCheck, Search } from "lucide-react"
 
-import { askingMultiple, CATEGORIES, getPublishedListings } from "@/lib/data"
+import { askingMultiple, CATEGORIES, getPosts, getPublishedListings } from "@/lib/data"
+import { PostGrid } from "@/components/post-card"
 import { BUYER_STEPS, FAQ, FOUNDER_STEPS } from "@/lib/content"
 import { inrShort } from "@/lib/format"
 import { revenueInRange } from "@/lib/metrics"
@@ -10,23 +11,23 @@ import { EmptyState } from "@/components/kit"
 import { FaqList } from "@/components/faq-list"
 import { LeaderboardTable } from "@/components/leaderboard"
 import { ListingCard } from "@/components/listing-card"
-import { ListingRows } from "@/components/listing-row"
+import { ListingRail } from "@/components/listing-rail"
 
 export const dynamic = "force-dynamic"
 
 export default async function Home() {
-  const listings = await getPublishedListings()
+  const [listings, posts] = await Promise.all([getPublishedListings(), getPosts({ limit: 6 })])
   const verified = listings.filter((l) => l.metrics)
   const forSale = verified.filter((l) => l.asking_price_inr)
   const totalMrr = verified.reduce((s, l) => s + (l.metrics?.mrr ?? 0), 0)
   const rev30 = verified.reduce((s, l) => s + (l.metrics ? revenueInRange(l.metrics, "30d") : 0), 0)
   const totalAsk = forSale.reduce((s, l) => s + (l.asking_price_inr ?? 0), 0)
 
-  const recent = [...forSale].sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 5)
+  const recent = [...forSale].sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 10)
   const bestValue = [...forSale]
     .filter((l) => askingMultiple(l) !== null)
     .sort((a, b) => (askingMultiple(a) ?? 99) - (askingMultiple(b) ?? 99))
-    .slice(0, 5)
+    .slice(0, 10)
   const featured = [...verified].sort((a, b) => (b.metrics?.mrr ?? 0) - (a.metrics?.mrr ?? 0)).slice(0, 3)
   const categoryCounts = CATEGORIES.map((c) => ({ c, n: listings.filter((l) => l.category === c).length })).filter((x) => x.n > 0)
 
@@ -109,9 +110,9 @@ export default async function Home() {
       )}
 
       {/* Listings lists */}
-      <div className="grid gap-8 lg:grid-cols-2">
-        <ListingRows title="Recently listed" href="/marketplace?sort=new" linkLabel="All new listings" listings={recent} empty="No startups for sale yet." />
-        <ListingRows title="Lowest asking multiple" href="/marketplace?sort=multiple" linkLabel="All by multiple" listings={bestValue} empty="No priced listings yet." />
+      <div className="flex flex-col gap-8">
+        <ListingRail id="recent-h" title="Recently listed" href="/marketplace?sort=new" linkLabel="View all" listings={recent} empty="No startups for sale yet." />
+        <ListingRail id="mult-h" title="Lowest asking multiple" href="/marketplace?sort=multiple" linkLabel="View all" listings={bestValue} empty="No priced listings yet." />
       </div>
 
       {/* Featured */}
@@ -139,6 +140,13 @@ export default async function Home() {
       </section>
 
       {/* Verification + workflows */}
+      {posts.length > 0 && (
+        <section aria-labelledby="feed-heading">
+          <SectionHead id="feed-heading" title="What's happening" href="/feed" link="View feed" />
+          <PostGrid posts={posts} />
+        </section>
+      )}
+
       <section aria-labelledby="how-heading" className="grid gap-6 lg:grid-cols-[1fr_1fr_1fr]">
         <div className="flex flex-col gap-3">
           <h2 id="how-heading" className="text-xl font-semibold tracking-tight">

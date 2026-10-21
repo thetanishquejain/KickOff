@@ -20,7 +20,7 @@ export function FilterToggle({ active, children }: { active: number; children: R
         <span className="inline-flex items-center gap-2">
           <SlidersHorizontal className="size-4" aria-hidden="true" />
           Filters
-          {active > 0 && <span className="num rounded-full bg-brand px-1.5 text-caption text-white">{active}</span>}
+          {active > 0 && <span className="num rounded-full bg-brand px-1.5 text-caption text-brand-foreground">{active}</span>}
         </span>
         <span className="text-caption text-ink-muted">{open ? "Hide" : "Show"}</span>
       </button>

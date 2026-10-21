@@ -20,6 +20,13 @@ Reviewed the public pages of trustmrr.com on 21 Oct 2026. Kickoff follows its **
 | 14 | All | Responsive nav, mobile menu | Header with active states, sheet menu below `lg`, phone card layout for the leaderboard | Done |
 | 15 | `/founder/*` | Founder profile pages | `/founder/[id]`: published startups and combined MRR | Done |
 | 16 | `/about`, `/faq`, `/why-sell` | Explainer and FAQ pages | `/how-it-works`, `/faq` (keyboard accordion) | Done |
+| 18 | `/startup/*` header | Share and Visit buttons; stat cards (all-time revenue with rank, MRR with subscriptions, founder, founded) | Share (native share or copy link), Visit (founder's website); cards: all-time revenue + "Ranked #N on Kickoff by MRR", MRR + paying customers, founder + startup count, founded or payment history; "Revenue calculated from a Razorpay export · last updated" line | Done |
+| 19 | `/startup/*` chart | Revenue/MRR selector, period dropdown, dashed previous period, "% vs prev period" | `RevenueExplorer`: Revenue (daily) or MRR, last 30/90 days, 6 months, all time, dashed previous window, % change. Built from computed daily and monthly metrics only | Done |
+| 20 | `/startup/*` "Startup insights" | Value proposition, problem, audience, market, pricing, tech stack, additional info | Founder-written insights (value proposition, problem, audience, B2B/B2C, pricing, tech stack, channels, extra, founded), edited on the listing editor and labelled "Written by the founder · not verified" | Done |
+| 21 | `/` "What's happening?" | Founder posts feed with likes and share | `posts` + `post_likes` tables (RLS: only a listing's founder can post), composer on the founder's listing page, feed on home and `/feed`, likes, copy link, delete own | Done |
+| 22 | Theme toggle | Light/dark | Kickoff dark token set, toggle in the header, saved per browser, charts read tokens at runtime | Done |
+| 23 | Side rails | Paid sponsor ads ("Advertise, 1/20 spots left") | Not built: paid placements are v2 (paid plans) and showing ads for real third-party products would be fabricated endorsements | Not built |
+| 24 | `/startup/*` | Domain rating, website screenshot, X follower counts | Not built: needs third-party data sources we have no access to; would otherwise be invented | Not built |
 | 17 | Footer | Feed, founder chats, co-founder search, compare, templates, stats games, newsletter, Telegram alerts | Out of scope for v1. Compare and deal documents are listed as v2 in CLAUDE.md | Not built |
 
 ## API (`/docs/api/list-startups`)

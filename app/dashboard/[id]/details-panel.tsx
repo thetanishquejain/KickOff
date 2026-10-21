@@ -12,6 +12,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label"
 
 import { deleteListing, setPublished, updateListing, writeDescription } from "../actions"
+import { InsightFields } from "@/components/insight-fields"
+import type { Insights } from "@/lib/insights"
+
 import { ListingFields } from "../new/form"
 
 type L = {
@@ -20,6 +23,8 @@ type L = {
   category: string
   pitch: string
   website: string | null
+  insights?: Insights | null
+  founded_on?: string | null
   asking_price_inr: number | null
   description: string | null
   status: "draft" | "published"
@@ -152,6 +157,7 @@ export function DetailsPanel({
           </div>
           {!aiReady && <p className="text-caption text-ink-muted">AI writer needs ANTHROPIC_API_KEY on the server.</p>}
         </div>
+        <InsightFields insights={listing.insights} foundedOn={listing.founded_on} />
         <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
           {listing.status === "published" ? (
             <>

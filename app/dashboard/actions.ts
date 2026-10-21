@@ -7,6 +7,8 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/db/supabase/server"
 import { z } from "zod"
 
+import { readInsights } from "@/lib/insights"
+
 import { draftListing, explainFlags, labelPayments, type LabelInput } from "@/lib/ai"
 import { getProfile } from "@/lib/auth"
 import { claudeConfigured } from "@/lib/claude"
@@ -72,8 +74,15 @@ export async function updateListing(listingId: string, formData: FormData): Prom
     const parsed = listingSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Check the form." }
     const description = String(formData.get("description") ?? "").trim().slice(0, 2000) || null
-    const { error } = await db.from("listings").update({ ...parsed.data, description }).eq("id", listingId)
-    if (error) return { ok: false, error: error.message }
+    const update: Record<string, unknown> = { ...parsed.data, description }
+    // Insights fields are only on the edit form; don't wipe them from forms that don't send them.
+    if (formData.has("insight_value_proposition")) {
+      update.insights = readInsights(formData)
+      const month = String(formData.get("founded_on") ?? "")
+      update.founded_on = /^\d{4}-\d{2}$/.test(month) && month <= new Date().toISOString().slice(0, 7) ? `${month}-01` : null
+    }
+    const { error } = await db.from("listings").update(update).eq("id", listingId)
+    if (error) return { ok: false, error: error.message.includes("insights") || error.message.includes("founded_on") ? "Startup insights need a database update first. Save without them, or ask the admin to run the latest migration." : error.message }
     await clearSummary(listingId)
     revalidatePath(`/dashboard/${listingId}`)
     revalidatePath(`/listing/${listingId}`)
