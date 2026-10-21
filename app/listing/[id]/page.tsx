@@ -1,18 +1,22 @@
 import { Suspense } from "react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ExternalLink, Lock } from "lucide-react"
+import { BadgeCheck, ExternalLink, Lock } from "lucide-react"
 
 import { getProfile } from "@/lib/auth"
 import { askingMultiple, getListing, rangeStats } from "@/lib/data"
-import { inr, inrShort, multiple } from "@/lib/format"
 import { ensureFlagExplanations } from "@/lib/explain"
+import { inr, inrShort, monthLabel, multiple, pct } from "@/lib/format"
+import { revenueInRange } from "@/lib/metrics"
 import { getOrCreateSummary } from "@/lib/summary"
 import { Button } from "@/components/ui/button"
-import { AiTag, DemoTag, InitialAvatar, MetricTile } from "@/components/kit"
-import { VerifiedProfile } from "@/components/verified-profile"
+import { AiTag, DemoTag, Growth, InitialAvatar } from "@/components/kit"
+import { ForSaleTag } from "@/components/listing-row"
+import { FlagList, VerifiedProfile } from "@/components/verified-profile"
 
+import { BackLink } from "./back-link"
 import { AskChat } from "./chat"
+import { SectionTabs } from "./section-tabs"
 
 export const dynamic = "force-dynamic"
 export const maxDuration = 60
@@ -26,99 +30,221 @@ export default async function ListingPage({ params }: { params: { id: string } }
   const [found, profile] = await Promise.all([getListing(params.id), getProfile()])
   if (!found) notFound()
   const l = await ensureFlagExplanations(found)
+  const m = l.metrics
   const isOwner = profile?.id === l.founder_id
-  const traffic = l.metrics ? rangeStats(l, "6m") : null
+  const traffic = m ? rangeStats(l, "6m") : null
   const demoTraffic = l.traffic.some((t) => t.is_demo)
+  const mult = askingMultiple(l)
 
   return (
-    <div className="grid gap-10 pt-10 lg:grid-cols-[1fr_380px]">
-      <div className="flex min-w-0 flex-col gap-8">
-        <header className="flex flex-col gap-4">
-          {l.status !== "published" && (
-            <p className="rounded-md border border-warning/40 bg-warning/10 p-3 text-sm">Draft: only you can see this page.</p>
-          )}
-          <div className="flex items-start gap-4">
-            <InitialAvatar name={l.name} size={56} />
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-semibold">{l.name}</h1>
-                {l.is_demo && <DemoTag />}
-              </div>
-              <p className="text-ink-muted">{l.pitch}</p>
-              <p className="mt-1 text-sm text-ink-muted">
-                {l.category} · by {l.founder_name ?? "Founder"}
-                {l.website && (
-                  <>
-                    {" · "}
-                    <a href={l.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-brand">
-                      Website <ExternalLink className="size-3" aria-hidden="true" />
-                    </a>
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            <MetricTile label="Asking price" value={inrShort(l.asking_price_inr)} sub={l.asking_price_inr ? inr(l.asking_price_inr) : "Not set"} />
-            <MetricTile label="Multiple of ARR" value={multiple(askingMultiple(l))} sub="Asking price ÷ (MRR × 12)" />
-            <MetricTile
-              label="Visitors, last 6 months"
-              value={traffic?.visitors != null ? traffic.visitors.toLocaleString("en-IN") : "–"}
-              sub={
-                traffic?.visitors != null ? (
-                  <span className="inline-flex items-center gap-1.5">
-                    {traffic.perVisitor != null ? `${inr(traffic.perVisitor, { decimals: 2 })} per visitor` : ""}
-                    {demoTraffic ? <DemoTag /> : <span>· Google Analytics</span>}
-                  </span>
-                ) : (
-                  "Traffic not connected"
-                )
-              }
-            />
-          </div>
-        </header>
-
-        {l.metrics ? (
-          <VerifiedProfile m={l.metrics} flags={l.flags} computedAt={l.computed_at} />
-        ) : (
-          <p className="rounded-lg border border-line bg-surface p-6 text-ink-muted">This listing has no verified payment data yet.</p>
-        )}
-
-        {l.description && (
-          <section>
-            <h2 className="mb-2 text-lg font-medium">About {l.name}</h2>
-            <p className="whitespace-pre-line text-sm leading-6 text-ink">{l.description}</p>
-            <p className="mt-2 text-xs text-ink-muted">Written by the founder. Numbers above are verified; this text is not.</p>
-          </section>
-        )}
+    <div className="pb-10">
+      <div className="flex flex-wrap items-center justify-between gap-2 pt-6">
+        <BackLink />
+        <nav aria-label="Breadcrumb" className="text-caption text-ink-muted">
+          <ol className="flex items-center gap-1.5">
+            <li>
+              <Link href="/marketplace" className="hover:text-ink">
+                Marketplace
+              </Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li>
+              <Link href={`/marketplace?category=${encodeURIComponent(l.category)}`} className="hover:text-ink">
+                {l.category}
+              </Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li aria-current="page" className="text-ink">
+              {l.name}
+            </li>
+          </ol>
+        </nav>
       </div>
 
-      <aside className="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
-        {profile ? (
-          <>
-            <Suspense fallback={<SummarySkeleton />}>
-              <BuyerSummaryCard listingId={l.id} />
-            </Suspense>
-            {l.metrics && <AskChat listingId={l.id} name={l.name} />}
-            {isOwner && (
-              <Button asChild variant="secondary">
-                <Link href={`/dashboard/${l.id}`}>Manage listing</Link>
-              </Button>
-            )}
-          </>
-        ) : (
-          <div className="flex flex-col items-start gap-3 rounded-lg border border-line bg-surface p-6">
-            <Lock className="size-5 text-brand" aria-hidden="true" />
-            <h2 className="font-medium">See the AI buyer summary</h2>
-            <p className="text-sm text-ink-muted">
-              Sign up free as a buyer to read what's proven, what's missing and what to ask, and to question this startup's data.
+      {l.status !== "published" && (
+        <p className="mt-4 rounded-md border border-warning/40 bg-warning/10 p-3 text-sm">
+          Preview of a draft: only you can see this page.{" "}
+          {isOwner && (
+            <Link href={`/listing/${l.id}/edit`} className="font-medium text-brand hover:underline">
+              Review and publish
+            </Link>
+          )}
+        </p>
+      )}
+
+      <header className="mt-5 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="flex items-start gap-4">
+          <InitialAvatar name={l.name} size={60} />
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{l.name}</h1>
+              {m && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-verified/10 px-2 py-0.5 text-caption font-medium text-verified">
+                  <BadgeCheck className="size-3.5" aria-hidden="true" /> Revenue checked
+                </span>
+              )}
+              {l.asking_price_inr ? <ForSaleTag /> : null}
+              {l.is_demo && <DemoTag />}
+            </div>
+            <p className="mt-1 max-w-2xl text-ink-muted">{l.pitch}</p>
+            <p className="mt-1.5 flex flex-wrap items-center gap-x-2 text-sm text-ink-muted">
+              <span>{l.category}</span>
+              <span aria-hidden="true">·</span>
+              <span className="inline-flex items-center gap-1.5">
+                <InitialAvatar name={l.founder_name} size={20} className="rounded-full" /> {l.founder_name ?? "Founder"}
+              </span>
+              {l.website && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <a href={l.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-brand">
+                    Website <ExternalLink className="size-3" aria-hidden="true" />
+                  </a>
+                </>
+              )}
             </p>
-            <Button asChild>
-              <Link href={`/signup?role=buyer&next=/listing/${l.id}`}>Sign up as a buyer</Link>
+          </div>
+        </div>
+        {isOwner && (
+          <div className="flex gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/listing/${l.id}/edit`}>Edit</Link>
+            </Button>
+            <Button asChild variant="secondary" size="sm">
+              <Link href={`/dashboard/${l.id}`}>Manage</Link>
             </Button>
           </div>
         )}
-      </aside>
+      </header>
+
+      <div className="mt-6">
+        <SectionTabs riskCount={l.flags.length} />
+      </div>
+
+      <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_360px]">
+        <div className="flex min-w-0 flex-col gap-10">
+          <section id="overview" aria-labelledby="ov-h" className="scroll-mt-32">
+            <h2 id="ov-h" className="mb-3 text-lg font-semibold">
+              Overview
+            </h2>
+            <dl className="grid grid-cols-2 overflow-hidden rounded-lg border border-line bg-surface sm:grid-cols-4">
+              {[
+                ["MRR", m ? inrShort(m.mrr) : "Not verified"],
+                ["Revenue, last 30 days", m ? inrShort(revenueInRange(m, "30d")) : "–"],
+                ["Asking price", l.asking_price_inr ? inrShort(l.asking_price_inr) : "Not set"],
+                ["Multiple of ARR", mult !== null ? multiple(mult) : "–"],
+              ].map(([k, v], i) => (
+                <div key={k} className={`p-4 ${i % 2 === 0 ? "border-r border-line" : ""} sm:border-r ${i >= 2 ? "border-t border-line sm:border-t-0" : ""} last:border-r-0`}>
+                  <dt className="text-caption text-ink-muted">{k}</dt>
+                  <dd className="num mt-1 text-xl font-semibold">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <div className="mt-5">
+              <h3 className="text-sm font-semibold">About {l.name}</h3>
+              {l.description ? (
+                <>
+                  <p className="mt-2 whitespace-pre-line text-sm leading-6 text-ink">{l.description}</p>
+                  <p className="mt-2 text-caption text-ink-muted">Written by the founder. The numbers on this page are calculated from payment data; this text is not checked.</p>
+                </>
+              ) : (
+                <p className="mt-2 text-sm text-ink-muted">The founder hasn&apos;t added a description yet.</p>
+              )}
+            </div>
+            <dl className="mt-5 grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
+              <Fact k="Category" v={l.category} />
+              <Fact k="Founder" v={l.founder_name ?? "Not shared"} />
+              <Fact k="Data source" v={m ? "Razorpay payments export" : "No payment data yet"} />
+              <Fact k="Data covers" v={m?.first_month && m.latest_month ? `${monthLabel(m.first_month)} to ${monthLabel(m.latest_month)}` : "–"} />
+              <Fact k="Paying customers (6 mo)" v={m ? m.customers_6m.toLocaleString("en-IN") : "–"} />
+              <Fact
+                k="Website traffic (6 mo)"
+                v={traffic?.visitors != null ? `${traffic.visitors.toLocaleString("en-IN")} visitors${demoTraffic ? " (demo data)" : " (Google Analytics)"}` : "Not connected"}
+              />
+            </dl>
+          </section>
+
+          <section id="financials" aria-labelledby="fin-h2" className="scroll-mt-32">
+            <h2 id="fin-h2" className="mb-3 text-lg font-semibold">
+              Financials
+            </h2>
+            {m ? (
+              <VerifiedProfile m={m} flags={l.flags} computedAt={l.computed_at} showFlags={false} />
+            ) : (
+              <p className="rounded-lg border border-dashed border-line p-6 text-sm text-ink-muted">No payment data has been uploaded for this listing yet, so there are no verified financials to show.</p>
+            )}
+          </section>
+
+          <section id="risks" className="scroll-mt-32">
+            {m ? <FlagList flags={l.flags} /> : <p className="text-sm text-ink-muted">Risk checks run once payment data is uploaded.</p>}
+          </section>
+        </div>
+
+        <aside id="analysis" aria-label="Deal and buyer analysis" className="flex scroll-mt-32 flex-col gap-4 lg:sticky lg:top-32 lg:self-start">
+          <div className="rounded-lg border border-line bg-surface p-5 shadow-card">
+            <div className="text-caption text-ink-muted">Asking price</div>
+            <div className="num mt-0.5 text-3xl font-semibold">{l.asking_price_inr ? inrShort(l.asking_price_inr) : "Not set"}</div>
+            {l.asking_price_inr ? <div className="num text-caption text-ink-muted">{inr(l.asking_price_inr)}</div> : null}
+            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-line pt-4 text-sm">
+              <div>
+                <dt className="text-caption text-ink-muted">Multiple</dt>
+                <dd className="num font-semibold">{mult !== null ? multiple(mult) : "–"}</dd>
+              </div>
+              <div>
+                <dt className="text-caption text-ink-muted">ARR</dt>
+                <dd className="num font-semibold">{m ? inrShort(m.arr) : "–"}</dd>
+              </div>
+              <div>
+                <dt className="text-caption text-ink-muted">MoM growth</dt>
+                <dd>
+                  <Growth value={m?.growth_pct} className="font-semibold" />
+                </dd>
+              </div>
+              <div>
+                <dt className="text-caption text-ink-muted">Largest customer</dt>
+                <dd className="num font-semibold">{m ? pct(m.top_customer_pct) : "–"}</dd>
+              </div>
+            </dl>
+            {!profile && (
+              <Button asChild className="mt-4 w-full">
+                <Link href={`/signup?role=buyer&next=/listing/${l.id}`}>Sign up free to analyse</Link>
+              </Button>
+            )}
+          </div>
+
+          {profile ? (
+            <>
+              <Suspense fallback={<SummarySkeleton />}>
+                <BuyerSummaryCard listingId={l.id} />
+              </Suspense>
+              {m ? (
+                <AskChat listingId={l.id} name={l.name} />
+              ) : (
+                <p className="rounded-lg border border-dashed border-line p-4 text-sm text-ink-muted">Chat opens once this listing has verified payment data.</p>
+              )}
+            </>
+          ) : (
+            <div className="flex flex-col items-start gap-2 rounded-lg border border-line bg-surface p-5">
+              <Lock className="size-4 text-brand" aria-hidden="true" />
+              <h2 className="text-sm font-semibold">AI buyer summary and chat</h2>
+              <p className="text-sm text-ink-muted">
+                Free buyer accounts can read what the payment data proves, what&apos;s missing and what to ask, and question this startup&apos;s data.
+              </p>
+              <Link href={`/login?next=/listing/${l.id}`} className="text-sm font-medium text-brand hover:underline">
+                Already have an account? Log in
+              </Link>
+            </div>
+          )}
+        </aside>
+      </div>
+    </div>
+  )
+}
+
+function Fact({ k, v }: { k: string; v: string }) {
+  return (
+    <div className="flex justify-between gap-4 border-b border-line py-2">
+      <dt className="text-ink-muted">{k}</dt>
+      <dd className="text-right text-ink">{v}</dd>
     </div>
   )
 }
@@ -130,15 +256,15 @@ async function BuyerSummaryCard({ listingId }: { listingId: string }) {
   return (
     <div className="rounded-lg border border-line bg-surface p-5">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-medium">Buyer summary</h2>
+        <h2 className="text-sm font-semibold">Buyer summary</h2>
         <AiTag>AI summary</AiTag>
       </div>
       {s.status === "ok" ? (
         <div className="flex flex-col gap-4 text-sm">
           <Block title="What is proven" items={s.summary.proven} tone="text-verified" />
           <Block title="What is missing" items={s.summary.missing} tone="text-warning" />
-          <Block title="Ask next" items={s.summary.ask_next} tone="text-brand" />
-          <p className="border-t border-line pt-3 text-xs text-ink-muted">Written by AI. Every number checked against verified data.</p>
+          <Block title="Questions to ask" items={s.summary.ask_next} tone="text-brand" />
+          <p className="border-t border-line pt-3 text-caption text-ink-muted">AI interpretation of the payment-derived metrics. Every number was checked against them. Not an audit.</p>
         </div>
       ) : s.status === "under_review" ? (
         <p className="text-sm text-ink-muted">Summary under review: the AI draft used a number we couldn't match to the data, so we're not showing it.</p>

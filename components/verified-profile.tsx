@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { AiTag, Growth, MetricTile, VerifiedBadge } from "./kit"
 import { RevenueChart } from "./revenue-chart"
 
-export function VerifiedProfile({ m, flags, computedAt }: { m: Metrics; flags: FlagRow[]; computedAt: string | null }) {
+export function VerifiedProfile({ m, flags, computedAt, showFlags = true }: { m: Metrics; flags: FlagRow[]; computedAt: string | null; showFlags?: boolean }) {
   const latest = m.latest_month ? monthLabel(m.latest_month) : "latest month"
   return (
     <div className="flex flex-col gap-6">
@@ -44,7 +44,7 @@ export function VerifiedProfile({ m, flags, computedAt }: { m: Metrics; flags: F
         <RevenueChart rows={m.monthly} />
       </section>
 
-      <FlagList flags={flags} />
+      {showFlags && <FlagList flags={flags} />}
     </div>
   )
 }
