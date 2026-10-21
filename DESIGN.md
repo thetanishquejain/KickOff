@@ -8,27 +8,27 @@ Kickoff is a verified-revenue marketplace for Indian SaaS, AI products and apps.
 - **Numbers are the hero.** Every metric uses the mono font, INR formatting and a clear label.
 - **Fast over fancy.** No heavy animation, no large images above the fold.
 
-## Colors (dark theme)
+## Colors (dark green theme)
 Use the token names in code, never raw hex values.
 
 | Token | Value | Use |
 |---|---|---|
-| `bg` | `#0E1626` | Page background |
-| `surface` | `#16213A` | Cards, tables, inputs |
-| `surface-hover` | `#1C2946` | Hovered cards and rows |
-| `border` | `#26324D` | Card borders, dividers |
+| `bg` | `#1A3A2A` | Page background |
+| `surface` | `#20442F` | Cards, tables, inputs |
+| `surface-hover` | `#275238` | Hovered cards and rows |
+| `border` | `#33604A` | Card borders, dividers |
 | `text` | `#FFFFFF` | Main text |
-| `text-muted` | `#A3AEC6` | Labels, secondary text |
+| `text-muted` | `#B3CBBE` | Labels, secondary text |
 | `accent` | `#FF8A3D` | Primary buttons, active tab, links on hover (saffron) |
 | `accent-hover` | `#FF9F5E` | Primary button hover |
-| `verified` | `#2BB673` | Verified badge, positive growth |
+| `verified` | `#4ADE80` | Verified badge, positive growth |
 | `warning` | `#F5B841` | Risk flags |
 | `danger` | `#E5484D` | Errors and destructive actions only |
 
 Contrast: `text` and `text-muted` on `bg` and `surface` pass WCAG AA. Text on `accent` buttons is `bg` (dark), not white.
 
 ## Typography
-- **Sans (all UI text):** Geist Sans (bundled via the `geist` package, no network fetch), system-ui, sans-serif
+- **All text:** Geist Mono (monospace look for the whole site, bundled via the `geist` package), ui-monospace
 - **Mono (all numbers: MRR, prices, %, tables):** Geist Mono, ui-monospace
 
 | Token | Size / line height | Use |

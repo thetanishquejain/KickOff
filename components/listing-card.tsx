@@ -11,7 +11,7 @@ export function ListingCard({ l }: { l: ListingFull }) {
   return (
     <Link
       href={`/listing/${l.id}`}
-      className="group flex flex-col gap-4 rounded-lg border border-line bg-surface p-6 shadow-card transition-colors duration-150 hover:border-[#33416a] hover:bg-surface-hover"
+      className="group flex flex-col gap-4 rounded-lg border border-line bg-surface p-6 shadow-card transition-colors duration-150 hover:border-[#3f7359] hover:bg-surface-hover"
     >
       <div className="flex items-center gap-3">
         <InitialAvatar name={l.name} />
