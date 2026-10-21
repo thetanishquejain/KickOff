@@ -10,7 +10,7 @@ import { z } from "zod"
 import { draftListing, explainFlags, labelPayments, type LabelInput } from "@/lib/ai"
 import { getProfile } from "@/lib/auth"
 import { claudeConfigured } from "@/lib/claude"
-import { parseRazorpayCsv } from "@/lib/csv"
+import { parseRazorpayCsv, type ParseStats } from "@/lib/csv"
 import { CATEGORIES } from "@/lib/data"
 import { ruleLabel } from "@/lib/labels"
 import { computeFlags, computeMetrics, type Interval, type Label, type PaymentRow } from "@/lib/metrics"
@@ -113,7 +113,7 @@ function hashCustomer(listingId: string, key: string | null) {
   return "c_" + createHash("sha256").update(`${listingId}:${key.toLowerCase()}`).digest("hex").slice(0, 12)
 }
 
-export async function uploadPayments(listingId: string, csvText: string): Promise<Result<{ count: number; skipped: number; warnings: string[] }>> {
+export async function uploadPayments(listingId: string, csvText: string): Promise<Result<{ count: number; skipped: number; warnings: string[]; stats: ParseStats }>> {
   try {
     const { db } = await requireOwnListing(listingId)
     if (csvText.length > 5_000_000) return { ok: false, error: "File is too large (max 5 MB)." }
@@ -136,7 +136,7 @@ export async function uploadPayments(listingId: string, csvText: string): Promis
       if (error) return { ok: false, error: error.message }
     }
     await db.from("listings").update({ data_source: "razorpay_csv" }).eq("id", listingId)
-    return { ok: true, count: rows.length, skipped: parsed.skipped, warnings: parsed.errors }
+    return { ok: true, count: rows.length, skipped: parsed.skipped, warnings: parsed.errors, stats: parsed.stats }
   } catch (e) {
     return { ok: false, error: (e as Error).message }
   }

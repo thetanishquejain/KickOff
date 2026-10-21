@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowDown, ArrowUp, BadgeCheck } from "lucide-react"
+import { AlertTriangle, ArrowDown, ArrowUp, BadgeCheck, Info } from "lucide-react"
 
 import { initials, pct } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -59,7 +59,7 @@ export function FlagIcon({ titles }: { titles: string[] }) {
           <AlertTriangle className="size-4" aria-hidden="true" />
         </button>
       </TooltipTrigger>
-      <TooltipContent className="max-w-64 border-line bg-surface text-ink">
+      <TooltipContent className="max-w-64 border-line bg-surface text-ink shadow-pop">
         {titles.map((t) => (
           <p key={t} className="text-xs">
             {t}
@@ -75,17 +75,31 @@ export function MetricTile({
   value,
   sub,
   big,
+  hint,
 }: {
   label: string
   value: React.ReactNode
   sub?: React.ReactNode
   big?: boolean
+  hint?: string
 }) {
   return (
     <div className="rounded-lg border border-line bg-surface p-4 shadow-card">
-      <div className="text-sm text-ink-muted">{label}</div>
-      <div className={cn("num mt-1 font-bold text-ink", big ? "text-3xl" : "text-2xl")}>{value}</div>
-      {sub ? <div className="mt-1 text-xs text-ink-muted">{sub}</div> : null}
+      <div className="flex items-center gap-1 text-label text-ink-muted">
+        {label}
+        {hint && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" className="inline-flex rounded-full text-ink-muted hover:text-ink" aria-label={`About ${label}: ${hint}`}>
+                <Info className="size-3.5" aria-hidden="true" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-60 border-line bg-surface text-xs text-ink shadow-pop">{hint}</TooltipContent>
+          </Tooltip>
+        )}
+      </div>
+      <div className={cn("num mt-1 font-semibold text-ink", big ? "text-3xl" : "text-2xl")}>{value}</div>
+      {sub ? <div className="mt-1 text-caption text-ink-muted">{sub}</div> : null}
     </div>
   )
 }

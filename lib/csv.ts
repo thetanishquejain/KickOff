@@ -14,10 +14,23 @@ export type ParsedPayment = {
   description: string
 }
 
+export type ParseStats = {
+  rows: number // data rows in the file
+  imported: number
+  duplicates: number // repeated payment id
+  invalid: number // missing id, bad date or bad amount
+  nonInr: number
+  failed: number // imported, but status failed/created: never counted as revenue
+  refunded: number
+  firstDate: string | null
+  lastDate: string | null
+}
+
 export type ParseResult = {
   payments: ParsedPayment[]
   skipped: number
   errors: string[]
+  stats: ParseStats
 }
 
 const REQUIRED = ["id", "created_at", "amount", "status"]
@@ -72,7 +85,8 @@ function toIso(v: string): string | null {
 export function parseRazorpayCsv(text: string, opts?: { maxRows?: number }): ParseResult {
   const rows = parseCsvRows(text)
   const errors: string[] = []
-  if (rows.length < 2) return { payments: [], skipped: 0, errors: ["The file has no payment rows."] }
+  const empty: ParseStats = { rows: Math.max(0, rows.length - 1), imported: 0, duplicates: 0, invalid: 0, nonInr: 0, failed: 0, refunded: 0, firstDate: null, lastDate: null }
+  if (rows.length < 2) return { payments: [], skipped: 0, errors: ["The file has no payment rows."], stats: empty }
   const header = rows[0].map((h) => h.trim().toLowerCase())
   const missing = REQUIRED.filter((r) => !header.includes(r))
   if (missing.length) {
@@ -80,6 +94,7 @@ export function parseRazorpayCsv(text: string, opts?: { maxRows?: number }): Par
       payments: [],
       skipped: 0,
       errors: [`Missing column(s): ${missing.join(", ")}. Upload the Razorpay payments export.`],
+      stats: empty,
     }
   }
   const col = (name: string) => header.indexOf(name)
@@ -99,19 +114,27 @@ export function parseRazorpayCsv(text: string, opts?: { maxRows?: number }): Par
   const payments: ParsedPayment[] = []
   const seen = new Set<string>()
   let skipped = 0
+  const stats = { ...empty }
   for (const r of rows.slice(1, max + 1)) {
     const get = (i: number) => (i >= 0 ? (r[i] ?? "").trim() : "")
     const id = get(idx.id)
     const paidAt = toIso(get(idx.created_at))
     const paise = Number(get(idx.amount).replace(/,/g, ""))
-    if (!id || !paidAt || !Number.isFinite(paise) || seen.has(id)) {
+    if (id && seen.has(id)) {
       skipped++
+      stats.duplicates++
+      continue
+    }
+    if (!id || !paidAt || !Number.isFinite(paise) || paise < 0) {
+      skipped++
+      stats.invalid++
       continue
     }
     seen.add(id)
     const currency = (get(idx.currency) || "INR").toUpperCase()
     if (currency !== "INR") {
       skipped++
+      stats.nonInr++
       continue
     }
     const customer =
@@ -128,5 +151,11 @@ export function parseRazorpayCsv(text: string, opts?: { maxRows?: number }): Par
     })
   }
   if (rows.length - 1 > max) errors.push(`Only the first ${max} rows were read.`)
-  return { payments, skipped, errors }
+  stats.imported = payments.length
+  stats.failed = payments.filter((p) => p.status !== "captured" && p.status !== "refunded").length
+  stats.refunded = payments.filter((p) => p.status === "refunded").length
+  const dates = payments.map((p) => p.paid_at).sort()
+  stats.firstDate = dates[0] ?? null
+  stats.lastDate = dates[dates.length - 1] ?? null
+  return { payments, skipped, errors, stats }
 }

@@ -1,76 +1,146 @@
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { AlertTriangle, Check } from "lucide-react"
 
 import { getProfile } from "@/lib/auth"
-import { getFounderListings } from "@/lib/data"
+import { getFounderListings, type ListingFull } from "@/lib/data"
 import { inrShort } from "@/lib/format"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { EmptyState, Growth, InitialAvatar, VerifiedBadge } from "@/components/kit"
+import { Growth, InitialAvatar } from "@/components/kit"
+import { PageHeader } from "@/components/page-header"
 
 export const dynamic = "force-dynamic"
 export const metadata = { title: "My listings" }
+
+function progress(l: ListingFull) {
+  return [
+    { label: "Listing created", done: true },
+    { label: "Revenue checked", done: Boolean(l.metrics) },
+    { label: "Description written", done: Boolean(l.description && l.description.length >= 40) },
+    { label: "Published", done: l.status === "published" },
+  ]
+}
+
+function nextStep(l: ListingFull) {
+  if (!l.metrics) return { text: "Upload your Razorpay payments", href: `/dashboard/${l.id}` }
+  if (!l.description) return { text: "Write your description", href: `/listing/${l.id}/edit` }
+  if (l.status !== "published") return { text: "Review and publish", href: `/listing/${l.id}/edit` }
+  return { text: "View public page", href: `/listing/${l.id}` }
+}
 
 export default async function DashboardPage() {
   const profile = await getProfile()
   if (!profile) redirect("/login?next=/dashboard")
   if (profile.role !== "founder") redirect("/marketplace")
   const listings = await getFounderListings(profile.id)
+  const published = listings.filter((l) => l.status === "published").length
 
   return (
-    <div className="pt-10">
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold">My listings</h1>
-          <p className="mt-1 text-sm text-ink-muted">Hi {profile.full_name?.split(" ")[0] ?? "there"}. Verify your revenue and publish when you're ready.</p>
-        </div>
-        <Button asChild>
-          <Link href="/dashboard/new">New listing</Link>
-        </Button>
-      </div>
+    <div>
+      <PageHeader
+        title={`Welcome, ${profile.full_name?.split(" ")[0] ?? "founder"}`}
+        actions={
+          <Button asChild>
+            <Link href="/dashboard/new">New listing</Link>
+          </Button>
+        }
+      >
+        {listings.length
+          ? `${listings.length} listing${listings.length > 1 ? "s" : ""} · ${published} published · ${listings.length - published} draft`
+          : "Check your revenue from payment data and publish your startup to buyers."}
+      </PageHeader>
+
       {listings.length ? (
         <div className="grid gap-3">
-          {listings.map((l) => (
-            <Link
-              key={l.id}
-              href={`/dashboard/${l.id}`}
-              className="flex items-center gap-4 rounded-lg border border-line bg-surface p-4 transition-colors duration-150 hover:bg-surface-hover"
-            >
-              <InitialAvatar name={l.name} />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="truncate font-medium">{l.name}</span>
-                  <span
-                    className={
-                      l.status === "published"
-                        ? "rounded-full bg-verified/15 px-2 py-0.5 text-xs text-verified"
-                        : "rounded-full bg-surface-hover px-2 py-0.5 text-xs text-ink-muted"
-                    }
-                  >
-                    {l.status === "published" ? "Published" : "Draft"}
-                  </span>
+          {listings.map((l) => {
+            const steps = progress(l)
+            const doneCount = steps.filter((s) => s.done).length
+            const next = nextStep(l)
+            return (
+              <article key={l.id} className="rounded-lg border border-line bg-surface p-4 shadow-card">
+                <div className="flex flex-wrap items-center gap-4">
+                  <InitialAvatar name={l.name} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link href={`/dashboard/${l.id}`} className="truncate font-medium hover:text-brand">
+                        {l.name}
+                      </Link>
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-caption",
+                          l.status === "published" ? "bg-verified/10 text-verified" : "bg-surface-hover text-ink-muted"
+                        )}
+                      >
+                        {l.status === "published" ? "Published" : "Draft"}
+                      </span>
+                      {l.flags.length > 0 && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-caption text-warning">
+                          <AlertTriangle className="size-3" aria-hidden="true" /> {l.flags.length} risk flag{l.flags.length > 1 ? "s" : ""}
+                        </span>
+                      )}
+                    </div>
+                    <p className="truncate text-caption text-ink-muted">{l.pitch}</p>
+                  </div>
+                  <div className="text-right">
+                    {l.metrics ? (
+                      <>
+                        <div className="num text-lg font-semibold">{inrShort(l.metrics.mrr)}</div>
+                        <div className="text-caption text-ink-muted">
+                          MRR · <Growth value={l.metrics.growth_pct} className="text-caption" />
+                        </div>
+                      </>
+                    ) : (
+                      <span className="text-caption text-ink-muted">No payment data yet</span>
+                    )}
+                  </div>
                 </div>
-                <div className="truncate text-xs text-ink-muted">{l.pitch}</div>
-              </div>
-              <div className="hidden text-right sm:block">
-                {l.metrics ? (
-                  <>
-                    <div className="num text-lg font-bold">{inrShort(l.metrics.mrr)}</div>
-                    <Growth value={l.metrics.growth_pct} className="text-xs" />
-                  </>
-                ) : (
-                  <span className="text-xs text-ink-muted">No payment data yet</span>
-                )}
-              </div>
-              {l.metrics && <VerifiedBadge className="hidden md:inline-flex" />}
-            </Link>
-          ))}
+
+                <div className="mt-4 flex flex-col gap-3 border-t border-line pt-3 md:flex-row md:items-center md:justify-between">
+                  <ol className="flex flex-wrap gap-x-4 gap-y-1" aria-label={`Progress: ${doneCount} of ${steps.length} steps done`}>
+                    {steps.map((s) => (
+                      <li key={s.label} className={cn("flex items-center gap-1.5 text-caption", s.done ? "text-ink" : "text-ink-muted")}>
+                        {s.done ? (
+                          <Check className="size-3.5 text-verified" aria-hidden="true" />
+                        ) : (
+                          <span className="size-3.5 rounded-full border border-line" aria-hidden="true" />
+                        )}
+                        {s.label}
+                      </li>
+                    ))}
+                  </ol>
+                  <div className="flex gap-2">
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/dashboard/${l.id}`}>Manage</Link>
+                    </Button>
+                    <Button asChild size="sm">
+                      <Link href={next.href}>{next.text}</Link>
+                    </Button>
+                  </div>
+                </div>
+              </article>
+            )
+          })}
         </div>
       ) : (
-        <EmptyState title="You haven't listed a startup yet.">
-          <Button asChild>
-            <Link href="/dashboard/new">List your startup</Link>
-          </Button>
-        </EmptyState>
+        <div className="grid gap-4 md:grid-cols-3">
+          {[
+            ["1", "Create a listing", "Add your startup's name, category, pitch and asking price."],
+            ["2", "Upload Razorpay payments", "Export your payments CSV. Kickoff labels each payment and works out your metrics."],
+            ["3", "Review and publish", "Check the numbers, edit the AI-drafted description and go live."],
+          ].map(([n, t, d]) => (
+            <div key={n} className="rounded-lg border border-line bg-surface p-5">
+              <span className="num inline-flex size-7 items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand">{n}</span>
+              <h2 className="mt-3 font-medium">{t}</h2>
+              <p className="mt-1 text-sm text-ink-muted">{d}</p>
+            </div>
+          ))}
+          <div className="md:col-span-3">
+            <Button asChild size="lg">
+              <Link href="/dashboard/new">Create your first listing</Link>
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   )

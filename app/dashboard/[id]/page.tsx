@@ -11,6 +11,7 @@ import { VerifiedProfile } from "@/components/verified-profile"
 import { DetailsPanel } from "./details-panel"
 import { GaPanel } from "./ga-panel"
 import { LabelsPanel, type LabelGroup } from "./labels-panel"
+import { PaymentsTable, type PaymentRowView } from "./payments-table"
 import { UploadPanel } from "./upload-panel"
 
 export const dynamic = "force-dynamic"
@@ -25,7 +26,7 @@ export default async function ManageListingPage({ params }: { params: { id: stri
   const db = createClient()
   const { data: payments } = await db
     .from("payments")
-    .select("id, description, amount_inr, status, label, billing_interval, label_source, label_reason")
+    .select("id, paid_at, description, amount_inr, status, label, billing_interval, label_source, label_reason")
     .eq("listing_id", listing.id)
     .limit(5000)
 
@@ -53,6 +54,17 @@ export default async function ManageListingPage({ params }: { params: { id: stri
     }
   }
   const labelGroups = [...groups.values()].sort((a, b) => b.total - a.total)
+  const paymentRows: PaymentRowView[] = (payments ?? []).map((p) => ({
+    id: p.id,
+    paid_at: p.paid_at,
+    description: p.description,
+    amount_inr: Number(p.amount_inr),
+    status: p.status,
+    label: p.label,
+    interval: p.billing_interval,
+    source: p.label_source,
+    reason: p.label_reason,
+  }))
 
   return (
     <div className="flex flex-col gap-10 pt-10">
@@ -64,11 +76,16 @@ export default async function ManageListingPage({ params }: { params: { id: stri
           <h1 className="mt-1 text-2xl font-semibold">{listing.name}</h1>
           <p className="text-sm text-ink-muted">{listing.pitch}</p>
         </div>
-        {listing.status === "published" && (
-          <Button asChild variant="secondary">
-            <Link href={`/listing/${listing.id}`}>View public page</Link>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link href={`/listing/${listing.id}/edit`}>Edit details</Link>
           </Button>
-        )}
+          {listing.status === "published" && (
+            <Button asChild variant="secondary">
+              <Link href={`/listing/${listing.id}`}>View public page</Link>
+            </Button>
+          )}
+        </div>
       </div>
 
       <section aria-labelledby="upload-heading" className="flex flex-col gap-4">
@@ -86,10 +103,13 @@ export default async function ManageListingPage({ params }: { params: { id: stri
               2. Review payment labels
             </h2>
             <p className="mt-1 text-sm text-ink-muted">
-              AI sorted each payment. Fix anything that's wrong and the numbers recalculate.
+              Each payment was labelled recurring, one-time, refund or unclear. Fix anything that&apos;s wrong and the numbers recalculate.
             </p>
           </div>
+          <h3 className="text-sm font-medium">Quick fix by description</h3>
           <LabelsPanel listingId={listing.id} groups={labelGroups} />
+          <h3 className="mt-2 text-sm font-medium">Every payment</h3>
+          <PaymentsTable listingId={listing.id} rows={paymentRows} />
         </section>
       )}
 
@@ -111,6 +131,7 @@ export default async function ManageListingPage({ params }: { params: { id: stri
           categories={CATEGORIES}
           hasMetrics={Boolean(listing.metrics)}
           aiReady={claudeConfigured()}
+          flagsCount={listing.flags.length}
         />
       </section>
 
