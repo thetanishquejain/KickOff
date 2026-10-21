@@ -127,7 +127,7 @@ export function LeaderboardTable({
           </li>
         ))}
       </ol>
-    <div className="hidden overflow-x-auto rounded-lg border border-line bg-surface sm:block">
+    <div className="hidden w-full min-w-0 overflow-x-auto rounded-lg border border-line bg-surface sm:block">
       <table className="w-full text-sm">
         <thead className="whitespace-nowrap bg-surface text-left text-xs text-ink-muted">
           <tr className="border-b border-line">
