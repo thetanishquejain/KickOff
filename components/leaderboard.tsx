@@ -89,11 +89,11 @@ export function LeaderboardTable({
     return <p className="rounded-lg border border-dashed border-line px-6 py-12 text-center text-ink-muted">No verified startups for this period yet.</p>
   }
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-surface">
+    <div className="overflow-x-auto rounded-lg border border-line bg-surface">
       <table className="w-full text-sm">
-        <thead className="sticky top-16 z-10 bg-surface text-left text-xs text-ink-muted">
+        <thead className="whitespace-nowrap bg-surface text-left text-xs text-ink-muted">
           <tr className="border-b border-line">
-            <th scope="col" className="w-14 px-4 py-3 text-center font-medium">#</th>
+            <th scope="col" className="w-10 px-2 py-3 text-center font-medium sm:w-14 sm:px-4">#</th>
             <th scope="col" className="px-2 py-3 font-medium">Startup</th>
             <th scope="col" className="hidden px-2 py-3 font-medium md:table-cell">Founder</th>
             {sort !== "growth" && <th scope="col" className="px-4 py-3 text-right font-medium">{column}</th>}
@@ -104,32 +104,36 @@ export function LeaderboardTable({
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={r.l.id} className="relative h-[72px] border-b border-line transition-colors duration-150 last:border-0 hover:bg-surface-hover">
-              <td className="px-4 text-center">
+            <tr key={r.l.id} className="h-[72px] border-b border-line transition-colors duration-150 last:border-0 hover:bg-surface-hover">
+              <td className="px-2 text-center sm:px-4">
                 <RankBadge rank={i + 1} />
               </td>
-              <td className="max-w-0 px-2">
-                <Link href={`/listing/${r.l.id}`} className="flex items-center gap-3 after:absolute after:inset-0">
-                  <InitialAvatar name={r.l.name} />
-                  <span className="min-w-0">
+              <td className="w-full px-2">
+                <Link href={`/listing/${r.l.id}`} className="flex min-w-[140px] items-center gap-3 rounded-md">
+                  <InitialAvatar name={r.l.name} size={36} />
+                  <span className="min-w-0 max-w-[8rem] sm:max-w-[22rem]">
                     <span className="flex items-center gap-2">
                       <span className="truncate font-medium text-ink">{r.l.name}</span>
-                      {r.l.is_demo && <DemoTag />}
+                      {r.l.is_demo && (
+                        <span className="hidden sm:inline-flex">
+                          <DemoTag />
+                        </span>
+                      )}
                     </span>
                     <span className="block truncate text-xs text-ink-muted">{r.l.pitch}</span>
                     <span className="block truncate text-xs text-ink-muted md:hidden">{r.l.founder_name}</span>
                   </span>
                 </Link>
               </td>
-              <td className="hidden px-2 md:table-cell">
+              <td className="hidden whitespace-nowrap px-2 md:table-cell">
                 <span className="flex items-center gap-2">
                   <InitialAvatar name={r.l.founder_name} size={28} className="rounded-full" />
                   <span className="truncate text-ink">{r.l.founder_name ?? "Founder"}</span>
                 </span>
               </td>
               {sort !== "growth" && (
-                <td className="px-4 text-right">
-                  <span className="relative z-10 inline-flex items-center justify-end gap-1.5">
+                <td className="px-3 text-right sm:px-4">
+                  <span className="inline-flex items-center justify-end gap-1.5 whitespace-nowrap">
                     <span className={cn("num font-bold", r.value === null ? "text-ink-muted" : "text-ink")}>{r.display}</span>
                     <FlagIcon titles={r.l.flags.map((f) => f.title)} />
                   </span>
@@ -138,7 +142,7 @@ export function LeaderboardTable({
               {!compact && <td className="num hidden px-4 text-right lg:table-cell">{inrShort(r.l.asking_price_inr)}</td>}
               {!compact && <td className="num hidden px-4 text-right lg:table-cell">{multiple(askingMultiple(r.l))}</td>}
               <td className={cn("px-4 text-right", sort !== "growth" && "hidden sm:table-cell")}>
-                <span className="relative z-10 inline-flex items-center gap-1.5">
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                   <Growth value={r.l.metrics?.growth_pct} />
                   {sort === "growth" && <FlagIcon titles={r.l.flags.map((f) => f.title)} />}
                 </span>

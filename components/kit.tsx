@@ -20,7 +20,7 @@ export function VerifiedBadge({ label = "Verified MRR", className }: { label?: s
 
 export function DemoTag() {
   return (
-    <span className="inline-flex items-center rounded-sm border border-line px-1.5 py-0.5 text-[11px] font-medium text-ink-muted">
+    <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-sm border border-line px-1.5 py-0.5 text-[11px] font-medium text-ink-muted">
       Demo data
     </span>
   )

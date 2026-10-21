@@ -28,7 +28,7 @@ export async function Nav() {
   const profile = await getProfile()
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-4 px-4 md:px-8">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-2 px-4 sm:gap-4 md:px-8">
         <Logo />
         <NavLinks />
         <div className="ml-auto flex items-center gap-2">
@@ -75,7 +75,7 @@ export async function Nav() {
               <Button asChild variant="ghost" size="sm">
                 <Link href="/login">Log in</Link>
               </Button>
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="hidden sm:inline-flex">
                 <Link href="/login?mode=signup&role=founder">List your startup</Link>
               </Button>
             </>

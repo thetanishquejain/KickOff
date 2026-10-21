@@ -28,8 +28,8 @@ Use the token names in code, never raw hex values.
 Contrast: `text` and `text-muted` on `bg` and `surface` pass WCAG AA. Text on `accent` buttons is `bg` (dark), not white.
 
 ## Typography
-- **Sans (all UI text):** Inter, system-ui, sans-serif
-- **Mono (all numbers: MRR, prices, %, tables):** JetBrains Mono, ui-monospace
+- **Sans (all UI text):** Geist Sans (bundled via the `geist` package, no network fetch), system-ui, sans-serif
+- **Mono (all numbers: MRR, prices, %, tables):** Geist Mono, ui-monospace
 
 | Token | Size / line height | Use |
 |---|---|---|
@@ -139,7 +139,7 @@ fontFamily: {
 },
 borderRadius: { sm: '4px', md: '8px', lg: '14px', full: '9999px' },
 ```
-Load Inter and JetBrains Mono with `next/font/google`.
+Fonts load from the `geist` package in `app/layout.tsx`. In code, the colour tokens are named `bg`, `surface`, `line`, `ink`, `ink-muted`, `saffron`, `verified`, `warning`, `danger` (see `tailwind.config.ts`).
 
 ## Definition of done (every component)
 - Uses tokens only, with no raw hex or px values in components

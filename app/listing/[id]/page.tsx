@@ -6,6 +6,7 @@ import { ExternalLink, Lock } from "lucide-react"
 import { getProfile } from "@/lib/auth"
 import { askingMultiple, getListing, rangeStats } from "@/lib/data"
 import { inr, inrShort, multiple } from "@/lib/format"
+import { ensureFlagExplanations } from "@/lib/explain"
 import { getOrCreateSummary } from "@/lib/summary"
 import { Button } from "@/components/ui/button"
 import { AiTag, DemoTag, InitialAvatar, MetricTile } from "@/components/kit"
@@ -22,8 +23,9 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 }
 
 export default async function ListingPage({ params }: { params: { id: string } }) {
-  const [l, profile] = await Promise.all([getListing(params.id), getProfile()])
-  if (!l) notFound()
+  const [found, profile] = await Promise.all([getListing(params.id), getProfile()])
+  if (!found) notFound()
+  const l = await ensureFlagExplanations(found)
   const isOwner = profile?.id === l.founder_id
   const traffic = l.metrics ? rangeStats(l, "6m") : null
   const demoTraffic = l.traffic.some((t) => t.is_demo)

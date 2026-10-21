@@ -13,7 +13,7 @@ const LINKS = [
 export function NavLinks() {
   const pathname = usePathname()
   return (
-    <nav className="ml-2 flex items-center gap-1" aria-label="Main">
+    <nav className="flex items-center gap-0.5 sm:ml-2 sm:gap-1" aria-label="Main">
       {LINKS.map((l) => (
         <Link
           key={l.href}

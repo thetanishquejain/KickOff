@@ -14,7 +14,7 @@ export function Logo() {
   return (
     <Link href="/" className="flex items-center gap-2 rounded-md font-semibold tracking-tight text-ink" aria-label="Kickoff home">
       <LogoMark />
-      <span className="text-lg">Kickoff</span>
+      <span className="hidden text-lg min-[420px]:inline">Kickoff</span>
     </Link>
   )
 }
