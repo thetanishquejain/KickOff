@@ -9,6 +9,7 @@ import { ListingCard } from "@/components/listing-card"
 import { ListingRow } from "@/components/listing-row"
 import { PageHeader } from "@/components/page-header"
 
+import { FilterToggle } from "./filter-toggle"
 import { SortSelect } from "./sort-select"
 
 export const dynamic = "force-dynamic"
@@ -128,7 +129,8 @@ export default async function MarketplacePage({ searchParams: sp }: { searchPara
 
       <div className="grid gap-6 lg:grid-cols-[232px_1fr]">
         {/* Filters */}
-        <aside aria-label="Filters" className="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start">
+        <aside aria-label="Filters" className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto lg:pb-4">
+          <FilterToggle active={chips.length}>
           <form action="/marketplace" role="search" className="flex flex-col gap-2">
             {Object.entries({ category, sort: sp.sort, view: sp.view, mrr: sp.mrr, price: sp.price, mult: sp.mult, growth: sp.growth, noflags: sp.noflags, forsale: sp.forsale }).map(([k, v]) =>
               v ? <input key={k} type="hidden" name={k} value={v} /> : null
@@ -156,35 +158,35 @@ export default async function MarketplacePage({ searchParams: sp }: { searchPara
             ))}
           </FilterGroup>
 
-          <FilterGroup title="Verified MRR">
+          <FilterGroup title="Verified MRR" pills>
             {MRR_BANDS.map((b) => (
-              <FilterLink key={b.label} href={hrefWith(sp, { mrr: b.value || undefined, show: undefined })} active={(sp.mrr ?? "") === b.value}>
+              <PillLink key={b.label} href={hrefWith(sp, { mrr: b.value || undefined, show: undefined })} active={(sp.mrr ?? "") === b.value}>
                 {b.label}
-              </FilterLink>
+              </PillLink>
             ))}
           </FilterGroup>
 
-          <FilterGroup title="Asking price">
+          <FilterGroup title="Asking price" pills>
             {PRICE_BANDS.map((b) => (
-              <FilterLink key={b.label} href={hrefWith(sp, { price: b.value || undefined, show: undefined })} active={(sp.price ?? "") === b.value}>
+              <PillLink key={b.label} href={hrefWith(sp, { price: b.value || undefined, show: undefined })} active={(sp.price ?? "") === b.value}>
                 {b.label}
-              </FilterLink>
+              </PillLink>
             ))}
           </FilterGroup>
 
-          <FilterGroup title="Multiple (price ÷ yearly revenue)">
+          <FilterGroup title="Multiple (price ÷ yearly revenue)" pills>
             {MULTIPLE_BANDS.map((b) => (
-              <FilterLink key={b.label} href={hrefWith(sp, { mult: b.value || undefined, show: undefined })} active={(sp.mult ?? "") === b.value}>
+              <PillLink key={b.label} href={hrefWith(sp, { mult: b.value || undefined, show: undefined })} active={(sp.mult ?? "") === b.value}>
                 {b.label}
-              </FilterLink>
+              </PillLink>
             ))}
           </FilterGroup>
 
-          <FilterGroup title="Month-on-month growth">
+          <FilterGroup title="Month-on-month growth" pills>
             {GROWTH_BANDS.map((b) => (
-              <FilterLink key={b.label} href={hrefWith(sp, { growth: b.value === "" ? undefined : b.value, show: undefined })} active={(sp.growth ?? "") === b.value}>
+              <PillLink key={b.label} href={hrefWith(sp, { growth: b.value === "" ? undefined : b.value, show: undefined })} active={(sp.growth ?? "") === b.value}>
                 {b.label}
-              </FilterLink>
+              </PillLink>
             ))}
           </FilterGroup>
 
@@ -196,6 +198,7 @@ export default async function MarketplacePage({ searchParams: sp }: { searchPara
               Only listings with a price
             </ToggleLink>
           </FilterGroup>
+          </FilterToggle>
         </aside>
 
         {/* Results */}
@@ -291,12 +294,28 @@ export default async function MarketplacePage({ searchParams: sp }: { searchPara
   )
 }
 
-function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
+function FilterGroup({ title, children, pills }: { title: string; children: React.ReactNode; pills?: boolean }) {
   return (
     <fieldset className="flex flex-col gap-0.5">
       <legend className="mb-1.5 text-caption font-medium uppercase tracking-wide text-ink-muted">{title}</legend>
-      <div className="flex flex-wrap gap-1.5 lg:flex-col lg:gap-0.5">{children}</div>
+      <div className={cn("flex flex-wrap gap-1.5", !pills && "lg:flex-col lg:gap-0.5")}>{children}</div>
     </fieldset>
+  )
+}
+
+function PillLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "true" : undefined}
+      scroll={false}
+      className={cn(
+        "rounded-md border px-2 py-1 text-label transition-colors duration-150",
+        active ? "border-brand bg-brand/10 font-medium text-brand" : "border-line bg-surface text-ink hover:bg-surface-hover"
+      )}
+    >
+      {children}
+    </Link>
   )
 }
 

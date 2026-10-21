@@ -1,11 +1,11 @@
 import Link from "next/link"
-import { AlertTriangle, BadgeCheck } from "lucide-react"
+import { AlertTriangle, BadgeCheck, ShieldCheck } from "lucide-react"
 
 import { askingMultiple, type ListingFull } from "@/lib/data"
 import { inrShort, multiple } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
-import { DemoTag, Growth, InitialAvatar } from "./kit"
+import { Growth, InitialAvatar } from "./kit"
 import { ForSaleTag } from "./listing-row"
 
 /** Compact marketplace card: identity, pitch, and the four numbers buyers compare first. */
@@ -26,16 +26,25 @@ export function ListingCard({ l, className }: { l: ListingFull; className?: stri
             <span className="truncate font-medium text-ink group-hover:text-brand">{l.name}</span>
             {m && <BadgeCheck className="size-4 shrink-0 text-verified" aria-label="Revenue checked from payment data" />}
           </div>
-          <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-caption text-ink-muted">
-            <span>{l.category}</span>
-            {l.asking_price_inr ? <ForSaleTag /> : null}
-            {l.is_demo && <DemoTag />}
+          <div className="mt-0.5 flex min-w-0 items-center gap-1.5 whitespace-nowrap text-caption text-ink-muted">
+            <span className="truncate">{l.category}</span>
+            {l.is_demo && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span title="Sample listing with generated payment data">Demo data</span>
+              </>
+            )}
+            {l.asking_price_inr ? (
+              <span className="ml-auto pl-2">
+                <ForSaleTag />
+              </span>
+            ) : null}
           </div>
         </div>
       </div>
-      <p className="line-clamp-2 min-h-[2.5rem] px-4 text-label text-ink-muted">{l.pitch}</p>
+      <p className="mb-3 line-clamp-2 min-h-[2.5rem] px-4 text-label text-ink-muted">{l.pitch}</p>
 
-      <dl className="mt-3 grid grid-cols-2 border-t border-line text-label">
+      <dl className="mt-auto grid grid-cols-2 border-t border-line text-label">
         <div className="border-r border-line px-4 py-2.5">
           <dt className="text-caption text-ink-muted">MRR</dt>
           <dd className="num flex items-baseline gap-1.5 text-lg font-semibold text-ink">
@@ -57,10 +66,15 @@ export function ListingCard({ l, className }: { l: ListingFull; className?: stri
         </div>
       </dl>
 
-      {l.flags.length > 0 && (
+      {l.flags.length > 0 ? (
         <div className="flex items-center gap-1.5 border-t border-line px-4 py-2 text-caption text-warning">
           <AlertTriangle className="size-3.5 shrink-0" aria-hidden="true" />
           <span className="truncate">{l.flags.length === 1 ? l.flags[0].title : `${l.flags.length} risk flags`}</span>
+        </div>
+      ) : (
+        <div className="flex items-center gap-1.5 border-t border-line px-4 py-2 text-caption text-ink-muted">
+          <ShieldCheck className="size-3.5 shrink-0 text-verified" aria-hidden="true" />
+          <span className="truncate">{m ? "No risk flags in payment data" : "Revenue not checked yet"}</span>
         </div>
       )}
     </Link>

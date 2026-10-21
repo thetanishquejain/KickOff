@@ -1,5 +1,11 @@
 import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { extendTailwindMerge } from "tailwind-merge"
+
+// Teach tailwind-merge our custom font-size tokens (tailwind.config.ts), otherwise it
+// treats `text-label` as a colour and drops it when a `text-ink` style class is present.
+const twMerge = extendTailwindMerge({
+  extend: { classGroups: { "font-size": [{ text: ["caption", "label", "table"] }] } },
+})
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

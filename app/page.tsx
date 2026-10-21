@@ -38,7 +38,7 @@ export default async function Home() {
           <p className="mb-3 inline-flex items-center gap-1.5 text-caption font-medium text-verified">
             <BadgeCheck className="size-3.5" aria-hidden="true" /> Revenue calculated from Razorpay payment data
           </p>
-          <h1 className="max-w-2xl text-[34px] font-semibold leading-[1.1] tracking-tight md:text-[44px]">
+          <h1 className="max-w-3xl text-[30px] font-semibold leading-[1.12] tracking-tight md:text-[38px]">
             The marketplace for Indian startups with revenue you can check.
           </h1>
           <p className="mt-4 max-w-xl text-base text-ink-muted">
@@ -111,7 +111,7 @@ export default async function Home() {
       {/* Listings lists */}
       <div className="grid gap-8 lg:grid-cols-2">
         <ListingRows title="Recently listed" href="/marketplace?sort=new" linkLabel="All new listings" listings={recent} empty="No startups for sale yet." />
-        <ListingRows title="Best value right now" href="/marketplace?sort=multiple" linkLabel="Sort by multiple" listings={bestValue} empty="No priced listings yet." />
+        <ListingRows title="Lowest asking multiple" href="/marketplace?sort=multiple" linkLabel="All by multiple" listings={bestValue} empty="No priced listings yet." />
       </div>
 
       {/* Featured */}

@@ -1,6 +1,7 @@
 import { AlertTriangle, ArrowDown, ArrowUp, BadgeCheck, Info } from "lucide-react"
 
 import { initials, pct } from "@/lib/format"
+import { avatarTone } from "@/lib/theme"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -39,10 +40,11 @@ export function Growth({ value, className }: { value: number | null | undefined;
 }
 
 export function InitialAvatar({ name, size = 40, className }: { name: string | null | undefined; size?: number; className?: string }) {
+  const tone = avatarTone(name)
   return (
     <span
-      className={cn("inline-flex shrink-0 items-center justify-center rounded-md bg-surface-hover font-semibold text-ink", className)}
-      style={{ width: size, height: size, fontSize: size * 0.38 }}
+      className={cn("inline-flex shrink-0 items-center justify-center rounded-md font-semibold", className)}
+      style={{ width: size, height: size, fontSize: size * 0.38, background: tone.bg, color: tone.fg }}
       aria-hidden="true"
     >
       {initials(name)}

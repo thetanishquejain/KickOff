@@ -4,10 +4,10 @@ Reviewed the public pages of trustmrr.com on 21 Oct 2026. Kickoff follows its **
 
 | # | Page reviewed | Pattern observed | Kickoff translation | Status |
 |---|---|---|---|---|
-| 1 | `/` | Marketplace-first home: short hero, two buttons, listings straight away | Compact hero with search, stats strip from real listings, "Recently listed" and "Best value" rows (ranked by lowest multiple) | Done |
+| 1 | `/` | Marketplace-first home: short hero, two buttons, listings straight away | Compact hero with search, stats strip from real listings, "Recently listed" and "Lowest asking multiple" rows | Done |
 | 2 | `/` | Search-led discovery | Search in the hero, the header (desktop) and the mobile menu, plus the marketplace sidebar, all going to `/marketplace?q=` | Done |
 | 3 | `/` | "Recently listed" strip | `ListingRows` sorted by `created_at` | Done |
-| 4 | `/` | Curated "best deals" | "Best value right now", ranked by lowest asking multiple. Only listings with a price and revenue qualify | Done |
+| 4 | `/` | Curated "best deals" | "Lowest asking multiple" (named for what it ranks, not "best deal"). Only listings with a price and revenue qualify | Done |
 | 5 | `/`, `/acquire` | Revenue-focused cards: MRR, growth, price, multiple, FOR SALE tag | `ListingCard` (2×2 metric grid, flag strip) and `ListingRow` | Done |
 | 6 | `/` | Leaderboard table: #, startup, founder, MRR, MoM growth, "Show more" | `/leaderboard`: rank badges, sort (MRR, revenue, growth, traffic, ₹/visitor), range (30 days, 6 months, all time), category tabs, risk icon, Show more (25 per page) | Done |
 | 7 | `/` (footer) | Category directory | Category chips with counts on home, sidebar on marketplace, tabs on leaderboard, footer links | Done |

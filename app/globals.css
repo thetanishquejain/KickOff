@@ -52,8 +52,10 @@
     outline: 2px solid rgb(var(--focus-ring));
     outline-offset: 2px;
   }
+  /* Financial figures: the UI sans with tabular (equal-width) digits so columns line up. */
   .num {
-    @apply font-mono tabular-nums;
+    @apply font-sans tabular-nums tracking-tight;
+    font-feature-settings: "tnum" 1, "ss01" 1;
   }
 }
 

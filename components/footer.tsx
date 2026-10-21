@@ -24,7 +24,16 @@ const COLUMNS = [
     links: [
       { href: "/privacy", label: "Privacy" },
       { href: "/terms", label: "Terms" },
-      { href: "mailto:hello@kickoff.example", label: "Contact (placeholder)" },
+    ],
+  },
+  {
+    title: "Categories",
+    links: [
+      { href: "/marketplace?category=SaaS", label: "SaaS" },
+      { href: "/marketplace?category=AI+tool", label: "AI tools" },
+      { href: "/marketplace?category=Fintech", label: "Fintech" },
+      { href: "/marketplace?category=E-commerce+tools", label: "E-commerce tools" },
+      { href: "/marketplace?category=Developer+tools", label: "Developer tools" },
     ],
   },
 ]
@@ -32,8 +41,8 @@ const COLUMNS = [
 export function Footer() {
   return (
     <footer className="border-t border-line bg-surface">
-      <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 md:grid-cols-[1.5fr_repeat(3,1fr)] md:px-8">
-        <div className="flex flex-col gap-3">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-2 gap-8 px-4 py-10 md:grid-cols-[1.5fr_repeat(4,1fr)] md:px-8">
+        <div className="col-span-2 flex flex-col gap-3 md:col-span-1">
           <div className="flex items-center gap-2 font-semibold">
             <LogoMark size={22} />
             Kickoff

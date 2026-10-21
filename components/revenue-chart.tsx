@@ -29,8 +29,8 @@ export function RevenueChart({ rows }: { rows: Row[] }) {
             labelStyle={{ color: THEME.muted }}
             formatter={(v: number, name: string) => [inr(v), name === "net" ? "Net revenue" : "MRR"]}
           />
-          <Bar dataKey="net" fill={THEME.success} fillOpacity={0.22} radius={[4, 4, 0, 0]} maxBarSize={40} />
-          <Line dataKey="mrr" stroke={THEME.primary} strokeWidth={2} dot={{ r: 3, fill: THEME.primary }} type="monotone" />
+          <Bar isAnimationActive={false} dataKey="net" fill={THEME.success} fillOpacity={0.22} radius={[4, 4, 0, 0]} maxBarSize={40} />
+          <Line isAnimationActive={false} dataKey="mrr" stroke={THEME.primary} strokeWidth={2} dot={{ r: 3, fill: THEME.primary }} type="monotone" />
         </ComposedChart>
       </ResponsiveContainer>
       <div className="mt-2 flex gap-4 text-xs text-ink-muted">

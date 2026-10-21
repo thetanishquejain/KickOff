@@ -7,7 +7,7 @@ import { getFounderListings, type ListingFull } from "@/lib/data"
 import { inrShort } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Growth, InitialAvatar } from "@/components/kit"
+import { Growth, InitialAvatar, MetricTile } from "@/components/kit"
 import { PageHeader } from "@/components/page-header"
 
 export const dynamic = "force-dynamic"
@@ -54,6 +54,19 @@ export default async function DashboardPage() {
           ? `${listings.length} listing${listings.length > 1 ? "s" : ""} · ${published} published · ${listings.length - published} draft`
           : "Check your revenue from payment data and publish your startup to buyers."}
       </PageHeader>
+
+      {listings.length > 0 && (
+        <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <MetricTile label="Combined MRR" value={inrShort(listings.reduce((t, l) => t + (l.metrics?.mrr ?? 0), 0))} sub="Across listings with checked revenue" />
+          <MetricTile label="Published" value={published} sub={`${listings.length - published} in draft`} />
+          <MetricTile label="Revenue checked" value={`${listings.filter((l) => l.metrics).length}/${listings.length}`} sub="Listings with payment data" />
+          <MetricTile
+            label="Risk flags"
+            value={listings.reduce((t, l) => t + l.flags.length, 0)}
+            sub="Buyers see these on your page"
+          />
+        </div>
+      )}
 
       {listings.length ? (
         <div className="grid gap-3">
@@ -117,9 +130,11 @@ export default async function DashboardPage() {
                     ))}
                   </ol>
                   <div className="flex flex-wrap gap-2">
-                    <Button asChild size="sm" variant="ghost">
-                      <Link href={`/listing/${l.id}`}>{l.status === "published" ? "View" : "Preview"}</Link>
-                    </Button>
+                    {l.status !== "published" && (
+                      <Button asChild size="sm" variant="ghost">
+                        <Link href={`/listing/${l.id}`}>Preview</Link>
+                      </Button>
+                    )}
                     <Button asChild size="sm" variant="outline">
                       <Link href={`/dashboard/${l.id}`}>Manage</Link>
                     </Button>

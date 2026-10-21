@@ -37,7 +37,7 @@ export default async function ListingPage({ params }: { params: { id: string } }
   const mult = askingMultiple(l)
 
   return (
-    <div className="pb-10">
+    <div className="pb-24 lg:pb-10">
       <div className="flex flex-wrap items-center justify-between gap-2 pt-6">
         <BackLink />
         <nav aria-label="Breadcrumb" className="text-caption text-ink-muted">
@@ -241,6 +241,19 @@ export default async function ListingPage({ params }: { params: { id: string } }
             </div>
           )}
         </aside>
+      </div>
+
+      {/* Phones: keep the price and the next action in reach while scrolling */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 px-4 py-3 backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-caption text-ink-muted">Asking price{mult !== null ? ` · ${multiple(mult)} ARR` : ""}</div>
+            <div className="num truncate text-lg font-semibold">{l.asking_price_inr ? inrShort(l.asking_price_inr) : "Not set"}</div>
+          </div>
+          <Button asChild size="sm">
+            <a href="#analysis">{profile ? "AI analysis and chat" : "Analyse this startup"}</a>
+          </Button>
+        </div>
       </div>
     </div>
   )

@@ -6,7 +6,7 @@ import { inr, inrShort, multiple } from "@/lib/format"
 import type { Range } from "@/lib/metrics"
 import { cn } from "@/lib/utils"
 
-import { DemoTag, FlagIcon, Growth, InitialAvatar } from "./kit"
+import { FlagIcon, Growth, InitialAvatar } from "./kit"
 import { ForSaleTag } from "./listing-row"
 
 export type SortKey = "mrr" | "revenue" | "growth" | "traffic" | "rpv"
@@ -158,8 +158,8 @@ export function LeaderboardTable({
                         </span>
                       ) : null}
                       {r.l.is_demo && (
-                        <span className="hidden sm:inline-flex">
-                          <DemoTag />
+                        <span className="hidden text-[11px] text-ink-muted sm:inline" title="Sample listing with generated payment data">
+                          Demo
                         </span>
                       )}
                     </span>

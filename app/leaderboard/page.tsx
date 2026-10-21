@@ -62,7 +62,7 @@ export default async function LeaderboardPage({ searchParams: sp }: { searchPara
       </nav>
 
       <p className="mb-3 text-caption text-ink-muted" aria-live="polite">
-        {listings.length} {listings.length === 1 ? "startup" : "startups"} · sorted by {sortLabel.toLowerCase()} · {rangeLabel.toLowerCase()}
+        {listings.length} {listings.length === 1 ? "startup" : "startups"} · sorted by {sortLabel === "MRR" ? "MRR" : sortLabel.toLowerCase()} · {rangeLabel.toLowerCase()}
         {(sort === "traffic" || sort === "rpv") && " · startups without traffic data are listed last"}
       </p>
 
