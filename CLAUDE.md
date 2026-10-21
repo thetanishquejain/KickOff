@@ -2,6 +2,15 @@
 
 Kickoff is a verified-revenue marketplace for buying and selling Indian SaaS, AI products and apps. Founders prove revenue from their Razorpay payment data; buyers browse verified listings and analyse them with AI. Built for an AI hackathon. **Deadline: Thursday 12:30 PM IST.** Keep scope to Version 1 below. Do not build Version 2 items.
 
+## CURRENT STATUS (read first)
+**v1 is already built and pushed.** Don't rebuild it or redo step 0. Work on top of the existing code.
+- Done: login with founder/buyer roles, founder dashboard (CSV upload with sample buttons, AI labels with review, metrics, flags with AI explanations, AI listing writer, publish), marketplace, leaderboard (sort + range in URL, rank badges, flag icon), listing page (verified profile, chart, AI buyer summary, "Ask about this startup" chat), Google Analytics connection, number check, 3 demo listings seeded in Supabase.
+- Database: already migrated (`supabase/migrations/20261021120000_kickoff_init.sql`). Don't run `supabase db push` again.
+- Key files: `lib/metrics.ts` (maths), `lib/numbercheck.ts`, `lib/ai.ts` (all Claude prompts), `lib/claude.ts`, `lib/data.ts`, `app/dashboard/actions.ts`, `components/*`, `DESIGN.md` tokens in `tailwind.config.ts`.
+- Leaderboard ranges are "Last month / Last 6 months / All time" (revenue is counted by full month).
+- Tests: `pnpm test:metrics` must keep passing.
+- Next jobs: run `pnpm dev`, test the founder upload and buyer chat with a real ANTHROPIC_API_KEY, fix bugs, then UI polish the owner asks for. After each change: `pnpm build`, then commit and push.
+
 ## Starting point: forked template
 This project is a fork of **nolly-studio/cult-directory-template** (free version, GPL-2.0).
 - **Keep the `LICENSE.md` file.** This repo stays GPL-2.0 and public.
