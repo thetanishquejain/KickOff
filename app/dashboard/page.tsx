@@ -22,6 +22,10 @@ function progress(l: ListingFull) {
   ]
 }
 
+function dateLabel(iso: string) {
+  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+}
+
 function nextStep(l: ListingFull) {
   if (!l.metrics) return { text: "Upload your Razorpay payments", href: `/dashboard/${l.id}?tab=payments` }
   if (!l.description) return { text: "Write your description", href: `/dashboard/${l.id}?tab=listing` }
@@ -81,6 +85,9 @@ export default async function DashboardPage() {
                       )}
                     </div>
                     <p className="truncate text-caption text-ink-muted">{l.pitch}</p>
+                    <p className="text-caption text-ink-muted">
+                      {l.category} · {l.computed_at ? `Revenue checked ${dateLabel(l.computed_at)}` : `Created ${dateLabel(l.created_at)}`}
+                    </p>
                   </div>
                   <div className="text-right">
                     {l.metrics ? (
@@ -109,7 +116,10 @@ export default async function DashboardPage() {
                       </li>
                     ))}
                   </ol>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    <Button asChild size="sm" variant="ghost">
+                      <Link href={`/listing/${l.id}`}>{l.status === "published" ? "View" : "Preview"}</Link>
+                    </Button>
                     <Button asChild size="sm" variant="outline">
                       <Link href={`/dashboard/${l.id}`}>Manage</Link>
                     </Button>

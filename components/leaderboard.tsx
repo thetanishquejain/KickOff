@@ -169,10 +169,10 @@ export function LeaderboardTable({
                 </Link>
               </td>
               <td className="hidden whitespace-nowrap px-2 md:table-cell">
-                <span className="flex items-center gap-2">
+                <Link href={`/founder/${r.l.founder_id}`} className="flex items-center gap-2 rounded-md hover:text-brand">
                   <InitialAvatar name={r.l.founder_name} size={28} className="rounded-full" />
-                  <span className="truncate text-ink">{r.l.founder_name ?? "Founder"}</span>
-                </span>
+                  <span className="truncate">{r.l.founder_name ?? "Founder"}</span>
+                </Link>
               </td>
               {sort !== "growth" && (
                 <td className="px-3 text-right sm:px-4">

@@ -23,6 +23,7 @@ export function LeaderboardControls({
   const set = (key: string, value: string) => {
     const next = new URLSearchParams(params?.toString())
     next.set(key, value)
+    next.delete("show")
     router.replace(`${pathname}?${next.toString()}`, { scroll: false })
   }
   return (

@@ -90,9 +90,15 @@ export default async function ListingPage({ params }: { params: { id: string } }
             <p className="mt-1.5 flex flex-wrap items-center gap-x-2 text-sm text-ink-muted">
               <span>{l.category}</span>
               <span aria-hidden="true">·</span>
-              <span className="inline-flex items-center gap-1.5">
-                <InitialAvatar name={l.founder_name} size={20} className="rounded-full" /> {l.founder_name ?? "Founder"}
-              </span>
+              {l.status === "published" ? (
+                <Link href={`/founder/${l.founder_id}`} className="inline-flex items-center gap-1.5 hover:text-brand">
+                  <InitialAvatar name={l.founder_name} size={20} className="rounded-full" /> {l.founder_name ?? "Founder"}
+                </Link>
+              ) : (
+                <span className="inline-flex items-center gap-1.5">
+                  <InitialAvatar name={l.founder_name} size={20} className="rounded-full" /> {l.founder_name ?? "Founder"}
+                </span>
+              )}
               {l.website && (
                 <>
                   <span aria-hidden="true">·</span>

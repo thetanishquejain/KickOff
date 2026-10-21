@@ -20,3 +20,27 @@
 | `package.json` seed/enrich scripts | Crawl and AI-enrich sample directory data | **Delete** (scripts folder isn't in the repo) |
 | `@ai-sdk/openai` | OpenAI provider | **Unused** (Kickoff uses Claude only) |
 | `LICENSE.md` | GPL-2.0 | **Keep** |
+
+## Current state (21 Oct 2026)
+
+**Routes:** `/`, `/marketplace`, `/leaderboard`, `/listing/[id]`, `/listing/[id]/edit`, `/founder/[id]`, `/login`, `/signup`, `/dashboard`, `/dashboard/new`, `/dashboard/[id]?tab=overview|payments|metrics|listing|preview|publish`, `/how-it-works`, `/faq`, `/privacy`, `/terms`, a 404 page, `/api/chat`, `/api/ga/connect`, `/api/ga/sync`, `/auth/callback`.
+
+**Auth:** Supabase email and password. Role (founder or buyer) is chosen at signup and stored in `profiles` by the `handle_new_user` trigger. Only "founder" or "buyer" is accepted. Every server action re-reads the role and ownership from the database.
+
+**Tables:** profiles, listings, payments, metrics, flags, summaries, ga_connections, traffic_daily. RLS is on all of them.
+- Anonymous visitors see published listings, metrics and flags only.
+- Payments are visible to their owner only.
+
+**Integrations:**
+- Claude: labels, flag explanations, listing writer, buyer summary, chat.
+- Google Analytics Data API, through a service account.
+- Vercel project `kick-off` (team joyboy24), production at kick-off-beta.vercel.app, from GitHub `thetanishquejain/KickOff` main.
+
+**Deployment note:** white-room-delta.vercel.app isn't in this Vercel account. It's an unrelated project. Only `kick-off` and `habit-tracker` exist here.
+
+**Known setup the owner must do:**
+- In Supabase, turn off "Confirm email".
+- Set the Site URL to the Vercel link.
+- Check that the Vercel env vars are set, including `ANTHROPIC_API_KEY`.
+
+**Not built (v2):** live Razorpay sync, KYC, offers, escrow, data room, compare, API and MCP, saved listings, account settings.

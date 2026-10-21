@@ -17,10 +17,10 @@ export function AskChat({ listingId, name }: { listingId: string; name: string }
   const [error, setError] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
 
-  async function send(text: string) {
+  async function send(text: string, history: Msg[] = messages) {
     const q = text.trim()
     if (!q || busy) return
-    const next: Msg[] = [...messages, { role: "user", content: q }]
+    const next: Msg[] = [...history, { role: "user", content: q }]
     setMessages(next)
     setInput("")
     setBusy(true)
@@ -80,9 +80,19 @@ export function AskChat({ listingId, name }: { listingId: string; name: string }
           </div>
         )}
         {error && (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
+          <div role="alert" className="flex flex-wrap items-center gap-2 text-sm text-danger">
+            <span>{error}</span>
+            <button
+              type="button"
+              className="font-medium underline underline-offset-2"
+              onClick={() => {
+                const last = messages[messages.length - 1]
+                if (last?.role === "user") send(last.content, messages.slice(0, -1))
+              }}
+            >
+              Try again
+            </button>
+          </div>
         )}
       </div>
       <form

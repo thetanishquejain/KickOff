@@ -22,7 +22,8 @@ const MARKET_SORTS = [
   { value: "revenue", label: "Most revenue (6 mo)" },
   { value: "multiple", label: "Lowest multiple" },
   { value: "price", label: "Lowest asking price" },
-  { value: "new", label: "Newest" },
+  { value: "price_desc", label: "Highest asking price" },
+  { value: "new", label: "Recently listed" },
 ] as const
 type Sort = (typeof MARKET_SORTS)[number]["value"]
 
@@ -41,7 +42,20 @@ const PRICE_BANDS = [
   { value: "10000000", label: "Up to ₹1Cr" },
 ]
 
-type SP = { category?: string; q?: string; sort?: string; show?: string; view?: string; mrr?: string; price?: string; noflags?: string; forsale?: string }
+const MULTIPLE_BANDS = [
+  { value: "", label: "Any multiple" },
+  { value: "2", label: "Up to 2x" },
+  { value: "3", label: "Up to 3x" },
+  { value: "5", label: "Up to 5x" },
+]
+const GROWTH_BANDS = [
+  { value: "", label: "Any growth" },
+  { value: "0", label: "Growing (0%+)" },
+  { value: "10", label: "10%+ a month" },
+  { value: "25", label: "25%+ a month" },
+]
+
+type SP = { category?: string; q?: string; sort?: string; show?: string; view?: string; mrr?: string; price?: string; mult?: string; growth?: string; noflags?: string; forsale?: string }
 
 function sortListings(ls: ListingFull[], sort: Sort) {
   const INF = Number.POSITIVE_INFINITY
@@ -51,6 +65,7 @@ function sortListings(ls: ListingFull[], sort: Sort) {
     revenue: (a, b) => (b.metrics?.revenue_6m ?? -1) - (a.metrics?.revenue_6m ?? -1),
     multiple: (a, b) => (askingMultiple(a) ?? INF) - (askingMultiple(b) ?? INF),
     price: (a, b) => (a.asking_price_inr ?? INF) - (b.asking_price_inr ?? INF),
+    price_desc: (a, b) => (b.asking_price_inr ?? -1) - (a.asking_price_inr ?? -1),
     new: (a, b) => b.created_at.localeCompare(a.created_at),
   }
   return [...ls].sort(by[sort])
@@ -70,6 +85,8 @@ export default async function MarketplacePage({ searchParams: sp }: { searchPara
   const category = CATEGORIES.includes(sp.category ?? "") ? sp.category : undefined
   const minMrr = Number(sp.mrr) || 0
   const maxPrice = Number(sp.price) || 0
+  const maxMult = Number(sp.mult) || 0
+  const minGrowth = sp.growth !== undefined && sp.growth !== "" && Number.isFinite(Number(sp.growth)) ? Number(sp.growth) : null
   const view = sp.view === "list" ? "list" : "grid"
 
   const filtered = sortListings(
@@ -79,6 +96,9 @@ export default async function MarketplacePage({ searchParams: sp }: { searchPara
         (!q || `${l.name} ${l.pitch} ${l.category}`.toLowerCase().includes(q.toLowerCase())) &&
         (!minMrr || (l.metrics?.mrr ?? 0) >= minMrr) &&
         (!maxPrice || (l.asking_price_inr !== null && l.asking_price_inr <= maxPrice)) &&
+        // Listings without a multiple or growth figure are excluded when those filters are on, never treated as zero.
+        (!maxMult || ((askingMultiple(l) ?? Number.POSITIVE_INFINITY) <= maxMult)) &&
+        (minGrowth === null || (l.metrics?.growth_pct !== null && l.metrics?.growth_pct !== undefined && l.metrics.growth_pct >= minGrowth)) &&
         (!sp.noflags || l.flags.length === 0) &&
         (!sp.forsale || Boolean(l.asking_price_inr))
     ),
@@ -92,6 +112,8 @@ export default async function MarketplacePage({ searchParams: sp }: { searchPara
   if (q) chips.push({ label: `"${q}"`, href: hrefWith(sp, { q: undefined, show: undefined }) })
   if (minMrr) chips.push({ label: `MRR ${MRR_BANDS.find((b) => b.value === sp.mrr)?.label ?? inrShort(minMrr) + "+"}`, href: hrefWith(sp, { mrr: undefined, show: undefined }) })
   if (maxPrice) chips.push({ label: PRICE_BANDS.find((b) => b.value === sp.price)?.label ?? `Up to ${inrShort(maxPrice)}`, href: hrefWith(sp, { price: undefined, show: undefined }) })
+  if (maxMult) chips.push({ label: MULTIPLE_BANDS.find((b) => b.value === sp.mult)?.label ?? `Up to ${maxMult}x`, href: hrefWith(sp, { mult: undefined, show: undefined }) })
+  if (minGrowth !== null) chips.push({ label: GROWTH_BANDS.find((b) => b.value === sp.growth)?.label ?? `Growth ${minGrowth}%+`, href: hrefWith(sp, { growth: undefined, show: undefined }) })
   if (sp.noflags) chips.push({ label: "No risk flags", href: hrefWith(sp, { noflags: undefined, show: undefined }) })
   if (sp.forsale) chips.push({ label: "Priced only", href: hrefWith(sp, { forsale: undefined, show: undefined }) })
   const clearHref = hrefWith({ sort: sp.sort, view: sp.view }, {})
@@ -108,7 +130,7 @@ export default async function MarketplacePage({ searchParams: sp }: { searchPara
         {/* Filters */}
         <aside aria-label="Filters" className="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start">
           <form action="/marketplace" role="search" className="flex flex-col gap-2">
-            {Object.entries({ category, sort: sp.sort, view: sp.view, mrr: sp.mrr, price: sp.price, noflags: sp.noflags, forsale: sp.forsale }).map(([k, v]) =>
+            {Object.entries({ category, sort: sp.sort, view: sp.view, mrr: sp.mrr, price: sp.price, mult: sp.mult, growth: sp.growth, noflags: sp.noflags, forsale: sp.forsale }).map(([k, v]) =>
               v ? <input key={k} type="hidden" name={k} value={v} /> : null
             )}
             <label htmlFor="mq" className="text-caption font-medium uppercase tracking-wide text-ink-muted">
@@ -145,6 +167,22 @@ export default async function MarketplacePage({ searchParams: sp }: { searchPara
           <FilterGroup title="Asking price">
             {PRICE_BANDS.map((b) => (
               <FilterLink key={b.label} href={hrefWith(sp, { price: b.value || undefined, show: undefined })} active={(sp.price ?? "") === b.value}>
+                {b.label}
+              </FilterLink>
+            ))}
+          </FilterGroup>
+
+          <FilterGroup title="Multiple (price ÷ yearly revenue)">
+            {MULTIPLE_BANDS.map((b) => (
+              <FilterLink key={b.label} href={hrefWith(sp, { mult: b.value || undefined, show: undefined })} active={(sp.mult ?? "") === b.value}>
+                {b.label}
+              </FilterLink>
+            ))}
+          </FilterGroup>
+
+          <FilterGroup title="Month-on-month growth">
+            {GROWTH_BANDS.map((b) => (
+              <FilterLink key={b.label} href={hrefWith(sp, { growth: b.value === "" ? undefined : b.value, show: undefined })} active={(sp.growth ?? "") === b.value}>
                 {b.label}
               </FilterLink>
             ))}

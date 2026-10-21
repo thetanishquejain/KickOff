@@ -28,7 +28,7 @@ export function VerifiedProfile({ m, flags, computedAt, showFlags = true }: { m:
           <MetricTile big label={`MRR (${latest})`} value={inrShort(m.mrr)} sub={`ARR ${inrShort(m.arr)}`} hint="Recurring revenue in the latest full month. Yearly plans are spread over 12 months." />
           <MetricTile label="MoM growth" value={<Growth value={m.growth_pct} />} sub={m.growth_pct === null ? "Needs two months of data" : `vs ${inrShort(m.prev_mrr)} the month before`} hint="Change in MRR from the previous month." />
           <MetricTile label="Revenue, last 30 days" value={inrShort(revenueInRange(m, "30d"))} sub="Net of refunds" hint="Net revenue in the 30 days ending with the latest full month." />
-          <MetricTile label="Revenue, last 6 months" value={inrShort(m.revenue_6m)} sub={`${pct(m.recurring_share_pct)} recurring`} hint="Net revenue across the last six full months." />
+          <MetricTile label="Revenue, last 6 months" value={inrShort(m.revenue_6m)} sub={`All time ${inrShort(revenueInRange(m, "all"))} · ${pct(m.recurring_share_pct)} recurring`} hint="Net revenue across the last six full months. All time covers every month in the uploaded payments." />
           <MetricTile label="Refund rate" value={pct(m.refund_pct)} sub="Last 6 months" hint="Refunded amount as a share of revenue collected." />
           <MetricTile label="Largest customer" value={pct(m.top_customer_pct)} sub={`${m.customers_6m.toLocaleString("en-IN")} paying customers`} hint="Share of 6-month revenue from the single biggest customer." />
         </div>
