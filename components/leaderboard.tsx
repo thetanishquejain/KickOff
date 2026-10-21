@@ -116,7 +116,11 @@ export function LeaderboardTable({
                   <span className="min-w-0 max-w-[8rem] sm:max-w-[22rem]">
                     <span className="flex items-center gap-2">
                       <span className="truncate font-medium text-ink">{r.l.name}</span>
-                      {r.l.asking_price_inr ? <ForSaleTag /> : null}
+                      {r.l.asking_price_inr ? (
+                        <span className="hidden sm:inline-flex">
+                          <ForSaleTag />
+                        </span>
+                      ) : null}
                       {r.l.is_demo && (
                         <span className="hidden sm:inline-flex">
                           <DemoTag />
