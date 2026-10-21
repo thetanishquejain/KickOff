@@ -1,112 +1,49 @@
 import type { Config } from "tailwindcss"
 
-const { fontFamily } = require("tailwindcss/defaultTheme")
-
+// Tokens from DESIGN.md. shadcn/ui names are mapped onto the Kickoff palette.
 const config = {
   darkMode: ["class"],
-  content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
-  ],
+  content: ["./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
+    container: { center: true, padding: "1rem", screens: { "2xl": "1200px" } },
     extend: {
       fontFamily: {
-        sans: ["Haskoy", ...fontFamily.sans],
+        sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "ui-monospace", "monospace"],
       },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
+        // Kickoff tokens
+        bg: "#0E1626",
+        surface: { DEFAULT: "#16213A", hover: "#1C2946" },
+        line: "#26324D",
+        ink: { DEFAULT: "#FFFFFF", muted: "#A3AEC6" },
+        saffron: { DEFAULT: "#FF8A3D", hover: "#FF9F5E" },
+        verified: "#2BB673",
+        warning: "#F5B841",
+        danger: "#E5484D",
+        rank: { gold: "#F5B841", silver: "#C9D1E0", bronze: "#D08A5B" },
 
-        base: {
-          black: "#0A0A0A",
-          975: "#121212",
-          950: "#1B1B1B",
-          900: "#242424",
-          850: "#2D2D2D",
-          800: "#363636",
-          700: "#4A4A4A",
-          600: "#5E5E5E",
-          500: "#727272",
-          300: "#9C9C9C",
-          200: "#B6B6B6",
-          150: "#D0D0D0",
-          100: "#EAEAEA",
-          50: "#F5F5F5",
-          25: "#FAFAFA",
-          paper: "#FFFFFF",
-        },
-
-        gray: {
-          "25": "#fbfbfb",
-          "50": "#f6f6f6",
-          "100": "#e7e7e7",
-          "200": "#d1d1d1",
-          "300": "#b0b0b0",
-          "400": "#999999",
-          "500": "#6d6d6d",
-          "600": "#5d5d5d",
-          "700": "#4f4f4f",
-          "800": "#454545",
-          "900": "#3d3d3d",
-          "950": "#262626",
-          "975": "#1e1e1e",
-        },
+        // shadcn/ui names
+        border: "#26324D",
+        input: "#26324D",
+        ring: "#FF8A3D",
+        background: "#0E1626",
+        foreground: "#FFFFFF",
+        primary: { DEFAULT: "#FF8A3D", foreground: "#0E1626" },
+        secondary: { DEFAULT: "#1C2946", foreground: "#FFFFFF" },
+        destructive: { DEFAULT: "#E5484D", foreground: "#FFFFFF" },
+        muted: { DEFAULT: "#1C2946", foreground: "#A3AEC6" },
+        accent: { DEFAULT: "#1C2946", foreground: "#FFFFFF" },
+        popover: { DEFAULT: "#16213A", foreground: "#FFFFFF" },
+        card: { DEFAULT: "#16213A", foreground: "#FFFFFF" },
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
+      borderRadius: { sm: "4px", md: "8px", lg: "14px", xl: "14px" },
+      boxShadow: { card: "0 1px 2px rgba(0,0,0,0.25)" },
+      transitionTimingFunction: { kick: "cubic-bezier(0.4, 0, 0.2, 1)" },
       keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
+        "accordion-down": { from: { height: "0" }, to: { height: "var(--radix-accordion-content-height)" } },
+        "accordion-up": { from: { height: "var(--radix-accordion-content-height)" }, to: { height: "0" } },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",

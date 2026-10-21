@@ -1,0 +1,254 @@
+id,created_at,amount,currency,status,method,email,contact,description,customer_id
+pay_C00020,2026-04-01 17:33:00,249900,INR,captured,card,C0020@example.in,+919810158380,renewal - pro,cust_C0020
+pay_C00012,2026-04-02 14:57:00,249900,INR,refunded,upi,C0012@example.in,+919810095028,inv-2707,cust_C0012
+pay_C00025,2026-04-02 19:24:00,99900,INR,captured,upi,C0025@example.in,+919810197975,renewal - starter,cust_C0025
+pay_C00021,2026-04-03 13:08:00,99900,INR,captured,upi,C0021@example.in,+919810166299,Monthly subscription Starter,cust_C0021
+pay_C00007,2026-04-03 15:10:00,99900,INR,captured,upi,C0007@example.in,+919810055433,Starter plan,cust_C0007
+pay_C00003,2026-04-04 10:46:00,99900,INR,captured,card,C0003@example.in,+919810023757,Starter monthly,cust_C0003
+pay_C00001,2026-04-04 11:54:00,99900,INR,captured,upi,C0001@example.in,+919810007919,Starter plan,cust_C0001
+pay_C00022,2026-04-04 12:29:00,99900,INR,captured,netbanking,C0022@example.in,+919810174218,Monthly subscription Starter,cust_C0022
+pay_C00016,2026-04-04 12:52:00,249900,INR,captured,upi,C0016@example.in,+919810126704,Pro plan renewal,cust_C0016
+pay_C00030,2026-04-04 15:42:00,99900,INR,captured,upi,C0030@example.in,+919810237570,renewal - starter,cust_C0030
+pay_C00029,2026-04-06 17:34:00,99900,INR,captured,upi,C0029@example.in,+919810229651,starter plan ka renewal,cust_C0029
+pay_C00013,2026-04-06 17:45:00,99900,INR,captured,upi,C0013@example.in,+919810102947,inv-2341,cust_C0013
+pay_C00005,2026-04-08 09:52:00,99900,INR,captured,upi,C0005@example.in,+919810039595,Monthly subscription Starter,cust_C0005
+pay_C00018,2026-04-12 19:17:00,249900,INR,captured,netbanking,C0018@example.in,+919810142542,Subscription: Pro,cust_C0018
+pay_C00027,2026-04-13 11:50:00,249900,INR,captured,upi,C0027@example.in,+919810213813,Subscription: Pro,cust_C0027
+pay_C00002,2026-04-15 15:14:00,99900,INR,captured,upi,C0002@example.in,+919810015838,renewal - starter,cust_C0002
+pay_C00019,2026-04-16 09:26:00,99900,INR,captured,netbanking,C0019@example.in,+919810150461,inv-2639,cust_C0019
+pay_C00004,2026-04-17 10:59:00,249900,INR,captured,upi,C0004@example.in,+919810031676,Pro plan,cust_C0004
+pay_C00006,2026-04-17 12:30:00,249900,INR,captured,upi,C0006@example.in,+919810047514,Pro plan renewal,cust_C0006
+pay_C00028,2026-04-17 13:09:00,99900,INR,captured,netbanking,C0028@example.in,+919810221732,Starter plan,cust_C0028
+pay_C00010,2026-04-18 18:50:00,249900,INR,captured,upi,C0010@example.in,+919810079190,PRO monthly,cust_C0010
+pay_C00024,2026-04-19 09:42:00,99900,INR,captured,netbanking,C0024@example.in,+919810190056,Starter plan,cust_C0024
+pay_C00017,2026-04-19 18:25:00,249900,INR,captured,upi,C0017@example.in,+919810134623,Pro plan renewal,cust_C0017
+pay_C00014,2026-04-20 09:19:00,249900,INR,captured,upi,C0014@example.in,+919810110866,Subscription: Pro,cust_C0014
+pay_C00011,2026-04-22 15:03:00,249900,INR,captured,upi,C0011@example.in,+919810087109,renewal - pro,cust_C0011
+pay_C00023,2026-04-22 17:45:00,99900,INR,captured,upi,C0023@example.in,+919810182137,Starter monthly,cust_C0023
+pay_C00009,2026-04-25 09:18:00,249900,INR,captured,upi,C0009@example.in,+919810071271,pro plan ka renewal,cust_C0009
+pay_C00206,2026-04-25 09:18:00,499900,INR,captured,upi,C0051@example.in,+919810403869,onboarding fee one time,cust_C0051
+pay_C00015,2026-04-25 12:51:00,99900,INR,captured,upi,C0015@example.in,+919810118785,Starter plan,cust_C0015
+pay_C00008,2026-04-26 11:54:00,99900,INR,captured,upi,C0008@example.in,+919810063352,Starter monthly,cust_C0008
+pay_C00026,2026-04-27 13:49:00,249900,INR,captured,upi,C0026@example.in,+919810205894,Pro plan,cust_C0026
+pay_C00207,2026-04-28 17:47:00,299900,INR,captured,card,C0052@example.in,+919810411788,consulting call 1hr,cust_C0052
+pay_C00034,2026-05-01 09:00:00,99900,INR,captured,netbanking,C0005@example.in,+919810039595,starter plan ka renewal,cust_C0005
+pay_C00035,2026-05-02 14:05:00,249900,INR,captured,card,C0006@example.in,+919810047514,Pro plan,cust_C0006
+pay_C00252,2026-05-02 16:27:00,249900,INR,failed,upi,C9004@example.in,+919881302676,Pro plan,cust_C9004
+pay_C00031,2026-05-02 16:35:00,99900,INR,captured,upi,C0001@example.in,+919810007919,Starter monthly,cust_C0001
+pay_C00057,2026-05-03 11:49:00,99900,INR,captured,upi,C0030@example.in,+919810237570,Monthly subscription Starter,cust_C0030
+pay_C00209,2026-05-03 15:37:00,499900,INR,captured,card,C0054@example.in,+919810427626,onboarding fee one time,cust_C0054
+pay_C00043,2026-05-04 10:33:00,99900,INR,captured,upi,C0015@example.in,+919810118785,renewal - starter,cust_C0015
+pay_C00055,2026-05-04 15:10:00,249900,INR,captured,upi,C0027@example.in,+919810213813,inv-2697,cust_C0027
+pay_C00048,2026-05-05 18:30:00,249900,INR,captured,upi,C0020@example.in,+919810158380,renewal - pro,cust_C0020
+pay_C00036,2026-05-06 18:29:00,99900,INR,captured,upi,C0007@example.in,+919810055433,Monthly subscription Starter,cust_C0007
+pay_C00051,2026-05-10 18:55:00,99900,INR,captured,card,C0023@example.in,+919810182137,Starter monthly,cust_C0023
+pay_C00253,2026-05-11 17:41:00,249900,INR,failed,netbanking,C9005@example.in,+919881310595,Pro plan,cust_C9005
+pay_C00041,2026-05-11 17:59:00,99900,INR,captured,upi,C0013@example.in,+919810102947,renewal - starter,cust_C0013
+pay_C00033,2026-05-12 11:28:00,249900,INR,captured,netbanking,C0004@example.in,+919810031676,renewal - pro,cust_C0004
+pay_C00045,2026-05-13 10:46:00,249900,INR,captured,card,C0017@example.in,+919810134623,renewal - pro,cust_C0017
+pay_C00046,2026-05-15 13:06:00,249900,INR,captured,card,C0018@example.in,+919810142542,pro plan ka renewal,cust_C0018
+pay_C00059,2026-05-15 14:00:00,249900,INR,captured,card,C0032@example.in,+919810253408,Pro plan renewal,cust_C0032
+pay_C00037,2026-05-16 12:52:00,99900,INR,captured,upi,C0008@example.in,+919810063352,Monthly subscription Starter,cust_C0008
+pay_C00038,2026-05-16 12:56:00,249900,INR,captured,upi,C0010@example.in,+919810079190,Pro plan,cust_C0010
+pay_C00208,2026-05-18 14:00:00,499900,INR,captured,upi,C0053@example.in,+919810419707,onboarding fee one time,cust_C0053
+pay_C00039,2026-05-18 15:10:00,249900,INR,refunded,upi,C0011@example.in,+919810087109,Pro plan renewal,cust_C0011
+pay_C00058,2026-05-18 16:42:00,799900,INR,captured,netbanking,C0031@example.in,+919810245489,Team monthly subscription,cust_C0031
+pay_C00050,2026-05-20 12:07:00,99900,INR,captured,card,C0022@example.in,+919810174218,Starter monthly,cust_C0022
+pay_C00053,2026-05-20 17:08:00,99900,INR,captured,card,C0025@example.in,+919810197975,renewal - starter,cust_C0025
+pay_C00044,2026-05-21 12:15:00,249900,INR,captured,card,C0016@example.in,+919810126704,Subscription: Pro,cust_C0016
+pay_C00056,2026-05-21 15:44:00,99900,INR,captured,netbanking,C0028@example.in,+919810221732,renewal - starter,cust_C0028
+pay_C00054,2026-05-21 18:44:00,249900,INR,captured,upi,C0026@example.in,+919810205894,Subscription: Pro,cust_C0026
+pay_C00047,2026-05-22 11:53:00,99900,INR,captured,upi,C0019@example.in,+919810150461,Monthly subscription Starter,cust_C0019
+pay_C00052,2026-05-22 15:07:00,99900,INR,captured,upi,C0024@example.in,+919810190056,renewal - starter,cust_C0024
+pay_C00042,2026-05-23 10:09:00,249900,INR,captured,netbanking,C0014@example.in,+919810110866,PRO monthly,cust_C0014
+pay_C00060,2026-05-23 19:47:00,99900,INR,captured,netbanking,C0033@example.in,+919810261327,Starter monthly,cust_C0033
+pay_C00061,2026-05-25 19:27:00,249900,INR,captured,upi,C0034@example.in,+919810269246,pro plan ka renewal,cust_C0034
+pay_C00032,2026-05-27 10:21:00,99900,INR,captured,upi,C0002@example.in,+919810015838,Starter plan,cust_C0002
+pay_C00049,2026-05-27 19:17:00,99900,INR,captured,card,C0021@example.in,+919810166299,renewal - starter,cust_C0021
+pay_C00040,2026-05-28 15:59:00,249900,INR,captured,card,C0012@example.in,+919810095028,renewal - pro,cust_C0012
+pay_C00089,2026-06-04 14:23:00,799900,INR,captured,netbanking,C0031@example.in,+919810245489,Team plan renewal,cust_C0031
+pay_C00063,2026-06-05 17:06:00,99900,INR,captured,card,C0002@example.in,+919810015838,starter plan ka renewal,cust_C0002
+pay_C00080,2026-06-06 09:12:00,99900,INR,captured,upi,C0021@example.in,+919810166299,Starter monthly,cust_C0021
+pay_C00071,2026-06-06 13:35:00,249900,INR,captured,upi,C0012@example.in,+919810095028,renewal - pro,cust_C0012
+pay_C00062,2026-06-06 17:51:00,99900,INR,captured,upi,C0001@example.in,+919810007919,renewal - starter,cust_C0001
+pay_C00092,2026-06-07 09:56:00,249900,INR,captured,upi,C0034@example.in,+919810269246,inv-2214,cust_C0034
+pay_C00083,2026-06-07 18:24:00,99900,INR,captured,card,C0024@example.in,+919810190056,Starter monthly,cust_C0024
+pay_C00093,2026-06-08 09:47:00,99900,INR,captured,upi,C0037@example.in,+919810293003,renewal - starter,cust_C0037
+pay_C00078,2026-06-08 15:25:00,99900,INR,captured,upi,C0019@example.in,+919810150461,renewal - starter,cust_C0019
+pay_C00066,2026-06-08 16:11:00,249900,INR,captured,upi,C0006@example.in,+919810047514,PRO monthly,cust_C0006
+pay_C00094,2026-06-08 16:24:00,249900,INR,captured,card,C0038@example.in,+919810300922,PRO monthly,cust_C0038
+pay_C00081,2026-06-09 13:18:00,99900,INR,captured,netbanking,C0022@example.in,+919810174218,starter plan ka renewal,cust_C0022
+pay_C00079,2026-06-09 15:09:00,249900,INR,captured,card,C0020@example.in,+919810158380,renewal - pro,cust_C0020
+pay_C00084,2026-06-10 14:20:00,99900,INR,captured,upi,C0025@example.in,+919810197975,Monthly subscription Starter,cust_C0025
+pay_C00086,2026-06-10 18:41:00,249900,INR,captured,netbanking,C0027@example.in,+919810213813,Subscription: Pro,cust_C0027
+pay_C00088,2026-06-12 11:20:00,99900,INR,captured,card,C0030@example.in,+919810237570,starter plan ka renewal,cust_C0030
+pay_C00064,2026-06-14 18:04:00,249900,INR,captured,card,C0004@example.in,+919810031676,PRO monthly,cust_C0004
+pay_C00248,2026-06-15 15:56:00,249900,INR,failed,netbanking,C9000@example.in,+919881271000,Pro plan,cust_C9000
+pay_C00065,2026-06-15 17:52:00,99900,INR,captured,upi,C0005@example.in,+919810039595,Monthly subscription Starter,cust_C0005
+pay_C00070,2026-06-16 17:06:00,249900,INR,captured,netbanking,C0011@example.in,+919810087109,inv-2547,cust_C0011
+pay_C00082,2026-06-17 09:13:00,99900,INR,captured,card,C0023@example.in,+919810182137,starter plan ka renewal,cust_C0023
+pay_C00090,2026-06-17 09:13:00,249900,INR,captured,card,C0032@example.in,+919810253408,Pro plan,cust_C0032
+pay_C00069,2026-06-18 11:01:00,249900,INR,captured,upi,C0010@example.in,+919810079190,Pro plan,cust_C0010
+pay_C00068,2026-06-18 13:28:00,99900,INR,captured,upi,C0008@example.in,+919810063352,starter plan ka renewal,cust_C0008
+pay_C00091,2026-06-18 17:32:00,99900,INR,captured,netbanking,C0033@example.in,+919810261327,Starter monthly,cust_C0033
+pay_C00076,2026-06-19 17:28:00,249900,INR,captured,card,C0017@example.in,+919810134623,pro plan ka renewal,cust_C0017
+pay_C00087,2026-06-20 14:16:00,99900,INR,captured,card,C0028@example.in,+919810221732,starter plan ka renewal,cust_C0028
+pay_C00085,2026-06-22 12:07:00,249900,INR,captured,upi,C0026@example.in,+919810205894,PRO monthly,cust_C0026
+pay_C00072,2026-06-22 15:35:00,99900,INR,captured,upi,C0013@example.in,+919810102947,inv-2293,cust_C0013
+pay_C00211,2026-06-24 13:44:00,499900,INR,captured,upi,C0056@example.in,+919810443464,setup charges,cust_C0056
+pay_C00210,2026-06-25 11:56:00,499900,INR,captured,upi,C0055@example.in,+919810435545,setup charges,cust_C0055
+pay_C00074,2026-06-27 17:10:00,99900,INR,captured,upi,C0015@example.in,+919810118785,Monthly subscription Starter,cust_C0015
+pay_C00077,2026-06-28 10:45:00,249900,INR,captured,upi,C0018@example.in,+919810142542,Pro plan renewal,cust_C0018
+pay_C00075,2026-06-28 12:31:00,249900,INR,captured,upi,C0016@example.in,+919810126704,renewal - pro,cust_C0016
+pay_C00067,2026-06-28 12:53:00,99900,INR,captured,upi,C0007@example.in,+919810055433,Starter plan,cust_C0007
+pay_C00073,2026-06-28 13:17:00,249900,INR,captured,card,C0014@example.in,+919810110866,inv-2515,cust_C0014
+pay_C00122,2026-07-01 13:29:00,249900,INR,captured,netbanking,C0032@example.in,+919810253408,renewal - pro,cust_C0032
+pay_C00112,2026-07-01 14:50:00,99900,INR,captured,netbanking,C0021@example.in,+919810166299,Starter monthly,cust_C0021
+pay_C00130,2026-07-02 14:13:00,99900,INR,captured,upi,C0042@example.in,+919810332598,Starter monthly,cust_C0042
+pay_C00102,2026-07-02 16:59:00,249900,INR,captured,upi,C0011@example.in,+919810087109,Subscription: Pro,cust_C0011
+pay_C00121,2026-07-03 14:27:00,799900,INR,captured,netbanking,C0031@example.in,+919810245489,Team plan,cust_C0031
+pay_C00213,2026-07-03 17:39:00,299900,INR,captured,upi,C0058@example.in,+919810459302,consulting call 1hr,cust_C0058
+pay_C00109,2026-07-03 18:49:00,249900,INR,captured,upi,C0018@example.in,+919810142542,Pro plan renewal,cust_C0018
+pay_C00126,2026-07-03 19:07:00,249900,INR,captured,upi,C0038@example.in,+919810300922,Pro plan,cust_C0038
+pay_C00110,2026-07-04 19:25:00,99900,INR,captured,upi,C0019@example.in,+919810150461,starter plan ka renewal,cust_C0019
+pay_C00117,2026-07-05 15:11:00,249900,INR,captured,card,C0026@example.in,+919810205894,inv-2876,cust_C0026
+pay_C00125,2026-07-06 09:28:00,99900,INR,captured,card,C0037@example.in,+919810293003,Starter monthly,cust_C0037
+pay_C00249,2026-07-06 11:54:00,249900,INR,failed,upi,C9001@example.in,+919881278919,Pro plan,cust_C9001
+pay_C00099,2026-07-06 14:55:00,249900,INR,captured,netbanking,C0006@example.in,+919810047514,renewal - pro,cust_C0006
+pay_C00095,2026-07-08 19:41:00,99900,INR,captured,card,C0001@example.in,+919810007919,Starter monthly,cust_C0001
+pay_C00212,2026-07-10 12:56:00,299900,INR,captured,upi,C0057@example.in,+919810451383,consulting call 1hr,cust_C0057
+pay_C00113,2026-07-11 13:12:00,99900,INR,captured,upi,C0022@example.in,+919810174218,renewal - starter,cust_C0022
+pay_C00104,2026-07-11 15:25:00,99900,INR,captured,upi,C0013@example.in,+919810102947,renewal - starter,cust_C0013
+pay_C00108,2026-07-11 15:49:00,249900,INR,captured,netbanking,C0017@example.in,+919810134623,PRO monthly,cust_C0017
+pay_C00103,2026-07-12 12:13:00,249900,INR,captured,upi,C0012@example.in,+919810095028,Pro plan,cust_C0012
+pay_C00101,2026-07-12 16:32:00,99900,INR,captured,upi,C0008@example.in,+919810063352,renewal - starter,cust_C0008
+pay_C00119,2026-07-13 18:50:00,99900,INR,captured,upi,C0028@example.in,+919810221732,Starter plan,cust_C0028
+pay_C00105,2026-07-13 19:27:00,249900,INR,captured,upi,C0014@example.in,+919810110866,pro plan ka renewal,cust_C0014
+pay_C00123,2026-07-14 18:07:00,99900,INR,captured,upi,C0033@example.in,+919810261327,inv-2482,cust_C0033
+pay_C00128,2026-07-15 13:43:00,99900,INR,captured,upi,C0040@example.in,+919810316760,starter plan ka renewal,cust_C0040
+pay_C00107,2026-07-17 09:30:00,249900,INR,captured,upi,C0016@example.in,+919810126704,renewal - pro,cust_C0016
+pay_C00097,2026-07-17 12:51:00,249900,INR,captured,upi,C0004@example.in,+919810031676,renewal - pro,cust_C0004
+pay_C00124,2026-07-17 16:44:00,249900,INR,captured,upi,C0034@example.in,+919810269246,Subscription: Pro,cust_C0034
+pay_C00118,2026-07-17 18:13:00,249900,INR,captured,upi,C0027@example.in,+919810213813,renewal - pro,cust_C0027
+pay_C00129,2026-07-19 09:12:00,799900,INR,captured,upi,C0041@example.in,+919810324679,Team plan,cust_C0041
+pay_C00115,2026-07-19 09:45:00,99900,INR,captured,netbanking,C0024@example.in,+919810190056,Monthly subscription Starter,cust_C0024
+pay_C00120,2026-07-19 17:55:00,99900,INR,captured,card,C0030@example.in,+919810237570,Monthly subscription Starter,cust_C0030
+pay_C00111,2026-07-20 14:55:00,249900,INR,captured,upi,C0020@example.in,+919810158380,Pro plan,cust_C0020
+pay_C00127,2026-07-20 18:56:00,99900,INR,captured,card,C0039@example.in,+919810308841,starter plan ka renewal,cust_C0039
+pay_C00098,2026-07-22 09:20:00,99900,INR,captured,upi,C0005@example.in,+919810039595,Starter monthly,cust_C0005
+pay_C00096,2026-07-24 16:28:00,99900,INR,captured,upi,C0002@example.in,+919810015838,Starter plan,cust_C0002
+pay_C00106,2026-07-25 12:22:00,99900,INR,captured,upi,C0015@example.in,+919810118785,renewal - starter,cust_C0015
+pay_C00250,2026-07-26 09:46:00,249900,INR,failed,netbanking,C9002@example.in,+919881286838,Pro plan,cust_C9002
+pay_C00100,2026-07-27 12:11:00,99900,INR,captured,card,C0007@example.in,+919810055433,renewal - starter,cust_C0007
+pay_C00114,2026-07-28 10:12:00,99900,INR,captured,upi,C0023@example.in,+919810182137,Starter plan,cust_C0023
+pay_C00116,2026-07-28 14:47:00,99900,INR,captured,netbanking,C0025@example.in,+919810197975,renewal - starter,cust_C0025
+pay_C00215,2026-08-01 11:32:00,499900,INR,refunded,upi,C0060@example.in,+919810475140,setup charges,cust_C0060
+pay_C00165,2026-08-01 13:15:00,249900,INR,refunded,card,C0045@example.in,+919810356355,Pro plan renewal,cust_C0045
+pay_C00146,2026-08-01 18:05:00,99900,INR,captured,upi,C0019@example.in,+919810150461,inv-2001,cust_C0019
+pay_C00141,2026-08-02 10:07:00,249900,INR,captured,card,C0014@example.in,+919810110866,Pro plan,cust_C0014
+pay_C00148,2026-08-02 10:33:00,99900,INR,captured,card,C0022@example.in,+919810174218,renewal - starter,cust_C0022
+pay_C00132,2026-08-02 15:48:00,99900,INR,captured,upi,C0002@example.in,+919810015838,renewal - starter,cust_C0002
+pay_C00140,2026-08-02 16:44:00,99900,INR,captured,upi,C0013@example.in,+919810102947,starter plan ka renewal,cust_C0013
+pay_C00164,2026-08-02 16:44:00,249900,INR,captured,card,C0044@example.in,+919810348436,Pro plan renewal,cust_C0044
+pay_C00139,2026-08-02 19:03:00,249900,INR,captured,netbanking,C0012@example.in,+919810095028,pro plan ka renewal,cust_C0012
+pay_C00155,2026-08-04 12:28:00,799900,INR,captured,card,C0031@example.in,+919810245489,Team plan renewal,cust_C0031
+pay_C00163,2026-08-04 13:11:00,99900,INR,captured,upi,C0043@example.in,+919810340517,Starter plan,cust_C0043
+pay_C00153,2026-08-05 10:32:00,99900,INR,captured,netbanking,C0028@example.in,+919810221732,renewal - starter,cust_C0028
+pay_C00142,2026-08-05 14:14:00,99900,INR,captured,upi,C0015@example.in,+919810118785,renewal - starter,cust_C0015
+pay_C00154,2026-08-06 19:15:00,99900,INR,captured,upi,C0030@example.in,+919810237570,inv-2684,cust_C0030
+pay_C00137,2026-08-07 16:28:00,99900,INR,captured,upi,C0008@example.in,+919810063352,Starter monthly,cust_C0008
+pay_C00143,2026-08-08 12:35:00,249900,INR,captured,upi,C0016@example.in,+919810126704,Subscription: Pro,cust_C0016
+pay_C00144,2026-08-08 19:35:00,249900,INR,captured,netbanking,C0017@example.in,+919810134623,renewal - pro,cust_C0017
+pay_C00157,2026-08-09 12:49:00,99900,INR,captured,upi,C0033@example.in,+919810261327,starter plan ka renewal,cust_C0033
+pay_C00147,2026-08-10 10:50:00,99900,INR,captured,upi,C0021@example.in,+919810166299,Starter monthly,cust_C0021
+pay_C00152,2026-08-10 15:33:00,249900,INR,captured,upi,C0027@example.in,+919810213813,Pro plan renewal,cust_C0027
+pay_C00160,2026-08-11 16:16:00,99900,INR,captured,upi,C0039@example.in,+919810308841,Starter plan,cust_C0039
+pay_C00150,2026-08-12 12:45:00,99900,INR,captured,upi,C0024@example.in,+919810190056,inv-2198,cust_C0024
+pay_C00145,2026-08-12 19:00:00,249900,INR,captured,netbanking,C0018@example.in,+919810142542,inv-2360,cust_C0018
+pay_C00161,2026-08-13 14:19:00,99900,INR,captured,card,C0040@example.in,+919810316760,starter plan ka renewal,cust_C0040
+pay_C00214,2026-08-16 17:56:00,499900,INR,captured,netbanking,C0059@example.in,+919810467221,onboarding fee one time,cust_C0059
+pay_C00151,2026-08-17 10:02:00,249900,INR,captured,upi,C0026@example.in,+919810205894,inv-2021,cust_C0026
+pay_C00135,2026-08-19 19:19:00,249900,INR,captured,upi,C0006@example.in,+919810047514,Pro plan renewal,cust_C0006
+pay_C00166,2026-08-20 09:15:00,249900,INR,captured,netbanking,C0046@example.in,+919810364274,PRO monthly,cust_C0046
+pay_C00149,2026-08-20 13:46:00,99900,INR,captured,card,C0023@example.in,+919810182137,renewal - starter,cust_C0023
+pay_C00133,2026-08-20 18:50:00,249900,INR,captured,netbanking,C0004@example.in,+919810031676,PRO monthly,cust_C0004
+pay_C00251,2026-08-22 17:45:00,249900,INR,failed,upi,C9003@example.in,+919881294757,Pro plan,cust_C9003
+pay_C00156,2026-08-23 09:00:00,249900,INR,captured,card,C0032@example.in,+919810253408,Pro plan renewal,cust_C0032
+pay_C00158,2026-08-23 15:51:00,249900,INR,captured,upi,C0034@example.in,+919810269246,Subscription: Pro,cust_C0034
+pay_C00138,2026-08-23 16:55:00,249900,INR,captured,upi,C0011@example.in,+919810087109,inv-2822,cust_C0011
+pay_C00162,2026-08-25 15:12:00,799900,INR,captured,upi,C0041@example.in,+919810324679,Team plan renewal,cust_C0041
+pay_C00136,2026-08-25 18:34:00,99900,INR,captured,upi,C0007@example.in,+919810055433,starter plan ka renewal,cust_C0007
+pay_C00134,2026-08-26 13:08:00,99900,INR,captured,upi,C0005@example.in,+919810039595,starter plan ka renewal,cust_C0005
+pay_C00131,2026-08-26 18:01:00,99900,INR,captured,upi,C0001@example.in,+919810007919,Starter monthly,cust_C0001
+pay_C00159,2026-08-27 18:23:00,99900,INR,captured,upi,C0037@example.in,+919810293003,Starter monthly,cust_C0037
+pay_C00224,2026-09-01 09:43:00,499900,INR,captured,netbanking,C0069@example.in,+919810546411,one time lifetime plan,cust_C0069
+pay_C00171,2026-09-02 18:29:00,249900,INR,captured,upi,C0006@example.in,+919810047514,PRO monthly,cust_C0006
+pay_C00229,2026-09-03 11:25:00,499900,INR,captured,upi,C0074@example.in,+919810586006,Lifetime deal,cust_C0074
+pay_C00237,2026-09-04 09:01:00,499900,INR,captured,upi,C0082@example.in,+919810649358,LTD - launch week,cust_C0082
+pay_C00240,2026-09-04 15:01:00,499900,INR,captured,upi,C0085@example.in,+919810673115,Lifetime deal,cust_C0085
+pay_C00190,2026-09-04 17:56:00,99900,INR,captured,netbanking,C0030@example.in,+919810237570,starter plan ka renewal,cust_C0030
+pay_C00204,2026-09-04 18:19:00,99900,INR,captured,upi,C0049@example.in,+919810388031,Monthly subscription Starter,cust_C0049
+pay_C00178,2026-09-05 16:45:00,99900,INR,captured,card,C0015@example.in,+919810118785,Monthly subscription Starter,cust_C0015
+pay_C00176,2026-09-05 18:07:00,99900,INR,captured,upi,C0013@example.in,+919810102947,inv-2876,cust_C0013
+pay_C00230,2026-09-06 11:56:00,499900,INR,captured,upi,C0075@example.in,+919810593925,lifetime access offer,cust_C0075
+pay_C00220,2026-09-06 12:48:00,499900,INR,captured,upi,C0065@example.in,+919810514735,Lifetime deal,cust_C0065
+pay_C00194,2026-09-06 13:46:00,249900,INR,captured,upi,C0034@example.in,+919810269246,pro plan ka renewal,cust_C0034
+pay_C00236,2026-09-06 15:03:00,499900,INR,captured,upi,C0081@example.in,+919810641439,lifetime access offer,cust_C0081
+pay_C00228,2026-09-06 15:52:00,499900,INR,captured,upi,C0073@example.in,+919810578087,lifetime access offer,cust_C0073
+pay_C00199,2026-09-07 18:19:00,249900,INR,captured,card,C0044@example.in,+919810348436,Subscription: Pro,cust_C0044
+pay_C00216,2026-09-07 18:47:00,499900,INR,captured,netbanking,C0061@example.in,+919810483059,onboarding fee one time,cust_C0061
+pay_C00242,2026-09-08 15:33:00,499900,INR,captured,upi,C0087@example.in,+919810688953,LTD - launch week,cust_C0087
+pay_C00218,2026-09-08 15:39:00,499900,INR,captured,upi,C0063@example.in,+919810498897,LTD - launch week,cust_C0063
+pay_C00187,2026-09-09 11:14:00,249900,INR,captured,upi,C0026@example.in,+919810205894,pro plan ka renewal,cust_C0026
+pay_C00247,2026-09-09 11:16:00,499900,INR,captured,upi,C0092@example.in,+919810728548,LTD - launch week,cust_C0092
+pay_C00192,2026-09-09 11:26:00,249900,INR,captured,netbanking,C0032@example.in,+919810253408,Pro plan,cust_C0032
+pay_C00191,2026-09-09 13:52:00,799900,INR,captured,upi,C0031@example.in,+919810245489,team seats renewal,cust_C0031
+pay_C00243,2026-09-10 10:32:00,499900,INR,captured,upi,C0088@example.in,+919810696872,one time lifetime plan,cust_C0088
+pay_C00169,2026-09-10 16:14:00,249900,INR,captured,upi,C0004@example.in,+919810031676,pro plan ka renewal,cust_C0004
+pay_C00174,2026-09-10 17:11:00,249900,INR,captured,netbanking,C0011@example.in,+919810087109,inv-2677,cust_C0011
+pay_C00170,2026-09-11 10:03:00,99900,INR,captured,upi,C0005@example.in,+919810039595,Starter plan,cust_C0005
+pay_C00221,2026-09-11 10:05:00,499900,INR,captured,card,C0066@example.in,+919810522654,LTD - launch week,cust_C0066
+pay_C00245,2026-09-11 10:13:00,499900,INR,captured,upi,C0090@example.in,+919810712710,LTD - launch week,cust_C0090
+pay_C00232,2026-09-11 16:13:00,499900,INR,captured,netbanking,C0077@example.in,+919810609763,one time lifetime plan,cust_C0077
+pay_C00181,2026-09-11 19:33:00,249900,INR,captured,upi,C0018@example.in,+919810142542,Pro plan,cust_C0018
+pay_C00180,2026-09-12 10:12:00,249900,INR,captured,upi,C0017@example.in,+919810134623,Pro plan,cust_C0017
+pay_C00239,2026-09-12 12:22:00,499900,INR,captured,upi,C0084@example.in,+919810665196,lifetime access offer,cust_C0084
+pay_C00182,2026-09-12 16:08:00,99900,INR,captured,upi,C0019@example.in,+919810150461,Starter plan,cust_C0019
+pay_C00244,2026-09-13 13:52:00,499900,INR,captured,upi,C0089@example.in,+919810704791,one time lifetime plan,cust_C0089
+pay_C00195,2026-09-14 12:39:00,99900,INR,captured,card,C0037@example.in,+919810293003,Starter monthly,cust_C0037
+pay_C00235,2026-09-14 12:49:00,499900,INR,captured,netbanking,C0080@example.in,+919810633520,LTD - launch week,cust_C0080
+pay_C00200,2026-09-14 14:38:00,249900,INR,captured,netbanking,C0045@example.in,+919810356355,Pro plan,cust_C0045
+pay_C00177,2026-09-14 14:52:00,249900,INR,captured,upi,C0014@example.in,+919810110866,PRO monthly,cust_C0014
+pay_C00189,2026-09-14 17:55:00,99900,INR,captured,card,C0028@example.in,+919810221732,Starter monthly,cust_C0028
+pay_C00234,2026-09-15 10:46:00,499900,INR,captured,upi,C0079@example.in,+919810625601,lifetime access offer,cust_C0079
+pay_C00179,2026-09-15 14:32:00,249900,INR,captured,upi,C0016@example.in,+919810126704,Pro plan,cust_C0016
+pay_C00184,2026-09-16 15:26:00,99900,INR,captured,upi,C0022@example.in,+919810174218,Starter monthly,cust_C0022
+pay_C00197,2026-09-17 13:13:00,99900,INR,captured,upi,C0040@example.in,+919810316760,Monthly subscription Starter,cust_C0040
+pay_C00183,2026-09-17 14:04:00,99900,INR,captured,upi,C0021@example.in,+919810166299,starter plan ka renewal,cust_C0021
+pay_C00226,2026-09-19 10:11:00,499900,INR,captured,upi,C0071@example.in,+919810562249,Lifetime deal,cust_C0071
+pay_C00217,2026-09-19 11:03:00,299900,INR,captured,upi,C0062@example.in,+919810490978,consulting call 1hr,cust_C0062
+pay_C00196,2026-09-19 17:01:00,99900,INR,captured,netbanking,C0039@example.in,+919810308841,starter plan ka renewal,cust_C0039
+pay_C00193,2026-09-20 11:12:00,99900,INR,captured,netbanking,C0033@example.in,+919810261327,Starter plan,cust_C0033
+pay_C00205,2026-09-20 11:57:00,99900,INR,captured,card,C0050@example.in,+919810395950,Starter monthly,cust_C0050
+pay_C00185,2026-09-20 13:01:00,99900,INR,captured,netbanking,C0023@example.in,+919810182137,Starter plan,cust_C0023
+pay_C00246,2026-09-20 13:40:00,499900,INR,captured,card,C0091@example.in,+919810720629,LTD - launch week,cust_C0091
+pay_C00198,2026-09-20 19:27:00,99900,INR,captured,upi,C0043@example.in,+919810340517,Monthly subscription Starter,cust_C0043
+pay_C00227,2026-09-21 15:29:00,499900,INR,captured,upi,C0072@example.in,+919810570168,Lifetime deal,cust_C0072
+pay_C00222,2026-09-21 17:36:00,499900,INR,captured,netbanking,C0067@example.in,+919810530573,LTD - launch week,cust_C0067
+pay_C00173,2026-09-22 09:11:00,99900,INR,captured,upi,C0008@example.in,+919810063352,Monthly subscription Starter,cust_C0008
+pay_C00219,2026-09-23 09:01:00,499900,INR,captured,card,C0064@example.in,+919810506816,one time lifetime plan,cust_C0064
+pay_C00202,2026-09-23 11:45:00,249900,INR,captured,upi,C0047@example.in,+919810372193,Pro plan renewal,cust_C0047
+pay_C00201,2026-09-24 09:52:00,249900,INR,captured,upi,C0046@example.in,+919810364274,pro plan ka renewal,cust_C0046
+pay_C00168,2026-09-24 10:22:00,99900,INR,captured,upi,C0002@example.in,+919810015838,renewal - starter,cust_C0002
+pay_C00223,2026-09-24 11:27:00,499900,INR,captured,netbanking,C0068@example.in,+919810538492,lifetime access offer,cust_C0068
+pay_C00231,2026-09-25 09:23:00,499900,INR,captured,card,C0076@example.in,+919810601844,lifetime access offer,cust_C0076
+pay_C00241,2026-09-25 11:03:00,499900,INR,captured,upi,C0086@example.in,+919810681034,one time lifetime plan,cust_C0086
+pay_C00238,2026-09-25 11:06:00,499900,INR,refunded,upi,C0083@example.in,+919810657277,Lifetime deal,cust_C0083
+pay_C00188,2026-09-25 15:37:00,249900,INR,captured,card,C0027@example.in,+919810213813,renewal - pro,cust_C0027
+pay_C00186,2026-09-25 16:36:00,99900,INR,captured,netbanking,C0024@example.in,+919810190056,renewal - starter,cust_C0024
+pay_C00203,2026-09-26 15:04:00,99900,INR,captured,upi,C0048@example.in,+919810380112,renewal - starter,cust_C0048
+pay_C00172,2026-09-26 17:02:00,99900,INR,captured,upi,C0007@example.in,+919810055433,Starter monthly,cust_C0007
+pay_C00167,2026-09-27 11:27:00,99900,INR,captured,upi,C0001@example.in,+919810007919,Starter monthly,cust_C0001
+pay_C00233,2026-09-27 11:35:00,499900,INR,captured,card,C0078@example.in,+919810617682,LTD - launch week,cust_C0078
+pay_C00175,2026-09-28 12:43:00,249900,INR,captured,upi,C0012@example.in,+919810095028,inv-2055,cust_C0012
+pay_C00225,2026-09-28 17:50:00,499900,INR,captured,upi,C0070@example.in,+919810554330,lifetime access offer,cust_C0070

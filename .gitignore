@@ -39,3 +39,5 @@ next-env.d.ts
 
 __data__
 **/stage-1-crawl/storage
+# local test build
+.tmp-test

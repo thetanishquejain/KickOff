@@ -1,61 +1,36 @@
 import "./globals.css"
 import { ReactNode } from "react"
-import localFont from "next/font/local"
+import { GeistMono } from "geist/font/mono"
+import { GeistSans } from "geist/font/sans"
 
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { Footer } from "@/components/footer"
+import { Nav } from "@/components/nav"
 
-import { ThemeProvider } from "./providers"
-
-export const fontSans = localFont({
-  src: "../fonts/haskoy.ttf",
-  variable: "--font-sans",
-})
-
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://www.nextjs.design`
-  : "http://localhost:3000"
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ? process.env.NEXT_PUBLIC_SITE_URL
+  : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000"
 
 export const metadata = {
-  metadataBase: new URL(defaultUrl),
-  title: "Design x Engineering Directory - Discover Top Web Dev Tools",
+  metadataBase: new URL(siteUrl),
+  title: { default: "Kickoff: buy and sell Indian SaaS with verified revenue", template: "%s · Kickoff" },
   description:
-    "Explore a curated directory of free web development tools for designers and engineers. Find resources for JavaScript, Tailwind CSS, and more!",
-  keywords:
-    "Design, Engineering, Web Development, JavaScript, Tailwind CSS, Supabase, Free Tools, Design Engineering",
-  structuredData: {
-    "@context": "http://schema.org",
-    "@type": "WebSite",
-    name: "Design x Engineering Directory",
-    url: "https://www.nextjs.design/",
-    description:
-      "A free directory of awesome web development tools for design and engineering professionals.",
-  },
-  socialMediaTags: {
-    "og:title": "Design x Engineering Directory - Discover Top Web Dev Tools",
-    "og:description":
-      "Explore a curated directory of free web development tools for designers and engineers. Find resources for JavaScript, Tailwind CSS, and more!",
-    "twitter:card": "summary_large_image",
-  },
+    "Kickoff is India's verified-revenue marketplace for buying and selling SaaS, AI products and apps. Revenue is checked from Razorpay payment data, and buyers use AI to analyse every listing.",
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${fontSans.variable} font-sans  `}>
-      <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TooltipProvider>
-            <main className="bg-[#FAFAFA] dark:bg-background  text-foreground flex flex-col justify-center items-center w-full pt-13">
-              <div className=" w-full ">{children}</div>
-            </main>
-          </TooltipProvider>
-          <Toaster richColors />
-        </ThemeProvider>
+    <html lang="en-IN" className={`${GeistSans.variable} ${GeistMono.variable} dark`}>
+      <body className="min-h-screen bg-bg font-sans text-ink">
+        <TooltipProvider delayDuration={150}>
+          <Nav />
+          <main className="mx-auto w-full max-w-[1200px] px-4 pb-16 md:px-8">{children}</main>
+          <Footer />
+        </TooltipProvider>
+        <Toaster richColors theme="dark" />
       </body>
     </html>
   )

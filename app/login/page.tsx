@@ -1,26 +1,31 @@
-import { LogoAnimationLink } from "@/components/nav"
+import { redirect } from "next/navigation"
+
+import { getProfile } from "@/lib/auth"
 
 import { LoginForm } from "./form"
+
+export const metadata = { title: "Log in" }
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { message: string }
+  searchParams: { message?: string; mode?: string; role?: string; next?: string }
 }) {
-  return (
-    <div>
-      <div className="absolute top-2 left-2 ">
-        <LogoAnimationLink />
-      </div>
-      <div className="w-full flex flex-col items-center justify-center gap-2  pt-24">
-        <LoginForm />
+  const profile = await getProfile()
+  if (profile) redirect(searchParams.next || (profile.role === "founder" ? "/dashboard" : "/marketplace"))
 
-        {searchParams?.message && (
-          <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-            {searchParams.message}
-          </p>
-        )}
-      </div>
+  return (
+    <div className="mx-auto flex max-w-md flex-col items-center pt-12 md:pt-16">
+      <LoginForm
+        mode={searchParams.mode === "signup" ? "signup" : "login"}
+        role={searchParams.role === "buyer" ? "buyer" : searchParams.role === "founder" ? "founder" : undefined}
+        next={searchParams.next}
+      />
+      {searchParams.message && (
+        <p role="alert" className="mt-4 w-full rounded-md border border-danger/40 bg-danger/10 p-3 text-center text-sm text-ink">
+          {searchParams.message}
+        </p>
+      )}
     </div>
   )
 }

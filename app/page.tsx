@@ -1,74 +1,104 @@
-import { Suspense } from "react"
+import Link from "next/link"
+import { BadgeCheck, FileSpreadsheet, MessageSquareText } from "lucide-react"
 
-import { Separator } from "@/components/ui/separator"
-import { FadeIn } from "@/components/cult/fade-in"
-import { DirectorySearch } from "@/components/directory-search"
-import { Hero } from "@/components/hero"
+import { getPublishedListings } from "@/lib/data"
+import { inrShort } from "@/lib/format"
+import { Button } from "@/components/ui/button"
+import { LeaderboardTable } from "@/components/leaderboard"
 
-import {
-  EmptyFeaturedGrid,
-  FeaturedGrid,
-  ResourceCardGrid,
-} from "../components/directory-card-grid"
-import { NavSidebar } from "../components/nav"
-import { getCachedFilters } from "./actions/cached_actions"
-import { getProducts } from "./actions/product"
+export const dynamic = "force-dynamic"
 
-// Select the resources you want to feature.. AD SPACE?
-const FEATURED_IDS = [
-  // "3b741434-1bdb-4903-91e9-a7fa154a8fdf",
-  // "f8a5db00-c80e-4fe4-80a7-af9d79a03690",
-  // "ad4b9d2e-6461-4eed-afbf-86aa284000cc",
-  "",
-] // Replace 'id1', 'id2', 'id3' with actual IDs you want to feature
-
-async function Page({ searchParams }: { searchParams: { search?: string } }) {
-  let data = await getProducts(searchParams.search)
-  let filters = await getCachedFilters()
-  const filteredFeaturedData = data.filter((d: any) =>
-    FEATURED_IDS.includes(d.id)
-  )
+export default async function Home() {
+  const listings = await getPublishedListings()
+  const totalMrr = listings.reduce((s, l) => s + (l.metrics?.mrr ?? 0), 0)
 
   return (
-    <>
-      <NavSidebar
-        categories={filters.categories}
-        labels={filters.labels}
-        tags={filters.tags}
-      />
-
-      <div className="max-w-full px-2 md:pl-4 md:pr-0 pt-2">
-        <FadeIn>
-          <ResourceCardGrid
-            sortedData={data}
-            filteredFeaturedData={filteredFeaturedData}
-          >
-            <div className="grid grid-cols-1  xl:grid-cols-6 lg:gap-16 pb-8 pt-8 relative">
-              <div className="col-span-1 md:col-span-2 z-10">
-                <Hero>
-                  <DirectorySearch />
-                </Hero>
-              </div>
-
-              <div className="col-span-1 md:col-span-4 mt-6 md:mt-0">
-                {filteredFeaturedData.length >= 1 ? (
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <div className=" relative">
-                      <FeaturedGrid featuredData={filteredFeaturedData} />
-                    </div>
-                  </Suspense>
-                ) : (
-                  <div className="relative">
-                    <EmptyFeaturedGrid />
-                  </div>
-                )}
-              </div>
+    <div className="flex flex-col gap-16 pt-12 md:gap-24 md:pt-20">
+      <section className="grid items-center gap-10 md:grid-cols-[1.1fr_0.9fr]">
+        <div>
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-line px-3 py-1 text-xs text-ink-muted">
+            <span className="size-1.5 rounded-full bg-verified" /> Built for Indian payment gateways, starting with Razorpay
+          </p>
+          <h1 className="text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl">
+            Buy and sell Indian startups with <span className="text-saffron">revenue you can trust</span>.
+          </h1>
+          <p className="mt-5 max-w-xl text-base text-ink-muted md:text-lg">
+            Founders upload their Razorpay payments and get a verified revenue profile in seconds. Buyers see real
+            MRR, growth and risk flags, and can question every listing with AI.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button asChild size="lg">
+              <Link href="/login?mode=signup&role=founder">List your startup</Link>
+            </Button>
+            <Button asChild size="lg" variant="secondary">
+              <Link href="/marketplace">Browse verified startups</Link>
+            </Button>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Stat label="Verified listings" value={String(listings.length)} />
+          <Stat label="Combined verified MRR" value={inrShort(totalMrr)} />
+          <div className="col-span-2 rounded-lg border border-line bg-surface p-5">
+            <div className="flex items-center gap-2 text-sm text-verified">
+              <BadgeCheck className="size-4" aria-hidden="true" /> Numbers come from payment data, not screenshots
             </div>
-          </ResourceCardGrid>
-        </FadeIn>
-      </div>
-    </>
+            <p className="mt-2 text-sm text-ink-muted">
+              Code calculates every metric. AI explains them, and a number check blocks any figure that doesn't
+              match the data.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="top-heading">
+        <div className="mb-4 flex items-end justify-between gap-4">
+          <h2 id="top-heading" className="text-2xl font-semibold">
+            Top startups by verified MRR
+          </h2>
+          <Link href="/leaderboard" className="text-sm text-ink-muted hover:text-saffron">
+            Full leaderboard →
+          </Link>
+        </div>
+        <LeaderboardTable listings={listings} sort="mrr" range="all" limit={5} compact />
+      </section>
+
+      <section aria-labelledby="how-heading">
+        <h2 id="how-heading" className="mb-6 text-2xl font-semibold">
+          How Kickoff works
+        </h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Step icon={<FileSpreadsheet className="size-5" />} title="1. Founder uploads payments">
+            Export payments from Razorpay and upload the CSV. AI labels each payment as recurring, one-time or refund.
+          </Step>
+          <Step icon={<BadgeCheck className="size-5" />} title="2. Kickoff verifies the numbers">
+            Code works out MRR, growth, refunds and customer concentration, and raises risk flags with plain-English
+            explanations.
+          </Step>
+          <Step icon={<MessageSquareText className="size-5" />} title="3. Buyers check with AI">
+            Buyers read an AI summary of what is proven and what is missing, and ask questions that are answered only
+            from verified data.
+          </Step>
+        </div>
+      </section>
+    </div>
   )
 }
 
-export default Page
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-line bg-surface p-5">
+      <div className="text-sm text-ink-muted">{label}</div>
+      <div className="num mt-1 text-3xl font-bold">{value}</div>
+    </div>
+  )
+}
+
+function Step({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-lg border border-line bg-surface p-6">
+      <div className="mb-3 inline-flex size-9 items-center justify-center rounded-md bg-saffron/10 text-saffron">{icon}</div>
+      <h3 className="text-lg font-medium">{title}</h3>
+      <p className="mt-2 text-sm text-ink-muted">{children}</p>
+    </div>
+  )
+}

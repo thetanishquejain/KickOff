@@ -2,154 +2,119 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { createClient } from "@/db/supabase/server"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-import { ResetPassword } from "./reset-password"
 import { SubmitButton } from "./submit-button"
 
-export function LoginForm() {
+function safeNext(next: FormDataEntryValue | null): string | null {
+  const v = typeof next === "string" ? next : ""
+  return v.startsWith("/") && !v.startsWith("//") ? v : null
+}
+
+export function LoginForm({ mode, role, next }: { mode: "login" | "signup"; role?: "founder" | "buyer"; next?: string }) {
   const signIn = async (formData: FormData) => {
     "use server"
-
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    if (error) return redirect("/login?message=Could not authenticate user")
-    return redirect("/submit")
+    const email = String(formData.get("email") ?? "").trim()
+    const password = String(formData.get("password") ?? "")
+    const db = createClient()
+    const { data, error } = await db.auth.signInWithPassword({ email, password })
+    if (error || !data.user) return redirect("/login?message=Wrong email or password.")
+    const { data: p } = await db.from("profiles").select("role").eq("id", data.user.id).maybeSingle()
+    return redirect(safeNext(formData.get("next")) ?? (p?.role === "founder" ? "/dashboard" : "/marketplace"))
   }
 
   const signUp = async (formData: FormData) => {
     "use server"
-
     const origin = headers().get("origin")
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
-    const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const email = String(formData.get("email") ?? "").trim()
+    const password = String(formData.get("password") ?? "")
+    const fullName = String(formData.get("full_name") ?? "").trim()
+    const chosen = formData.get("role") === "founder" ? "founder" : "buyer"
+    if (password.length < 6) return redirect(`/login?mode=signup&role=${chosen}&message=Use at least 6 characters for the password.`)
+    const db = createClient()
+    const { error } = await db.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: `${origin}/auth/callback`,
-      },
+      options: { emailRedirectTo: `${origin}/auth/callback`, data: { role: chosen, full_name: fullName } },
     })
-    if (error) return redirect("/login?message=Error signing up")
-    const { error: err } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    if (err) return redirect("/login?message=Could not authenticate user")
-    return redirect("/submit")
-  }
-
-  const handleResetPassword = async (formData: FormData) => {
-    "use server"
-
-    const origin = headers().get("origin")
-    const email = formData.get("email") as string
-    const supabase = createClient()
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${origin}/auth/callback?next=/login/password`,
-    })
-    if (error) return redirect(`/login?message=${error.message}`)
-    return redirect("/login?message=Check email to reset password")
+    if (error) return redirect(`/login?mode=signup&role=${chosen}&message=${encodeURIComponent(error.message)}`)
+    const { error: err } = await db.auth.signInWithPassword({ email, password })
+    if (err) return redirect("/login?message=Account created. Check your email to confirm, then log in.")
+    return redirect(safeNext(formData.get("next")) ?? (chosen === "founder" ? "/dashboard/new" : "/marketplace"))
   }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-2  ">
-      <Tabs defaultValue="login">
-        <TabsList>
-          <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="signup">Sign Up</TabsTrigger>
-        </TabsList>
-        <TabsContent value="login">
-          <Card className="mx-auto w-[20rem] md:w-[24rem]">
-            <CardHeader>
-              <CardTitle className="text-2xl">Login</CardTitle>
-              <CardDescription>
-                Enter your information below to login to your account
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input name="email" placeholder="you@example.com" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    type="password"
-                    required
-                    name="password"
-                    placeholder="••••••••"
-                  />
-                </div>
+    <Tabs defaultValue={mode} className="w-full">
+      <TabsList className="grid w-full grid-cols-2 bg-surface">
+        <TabsTrigger value="login">Log in</TabsTrigger>
+        <TabsTrigger value="signup">Sign up</TabsTrigger>
+      </TabsList>
 
-                <SubmitButton
-                  formAction={signIn}
-                  className="button-secondary rounded-md px-4 py-2 text-foreground mb-2"
-                  pendingText="Signing In..."
-                >
-                  Login
-                </SubmitButton>
-              </form>
-            </CardContent>
-            <CardFooter>
-              <ResetPassword handleResetPassword={handleResetPassword} />
-            </CardFooter>
-          </Card>
-        </TabsContent>
-        <TabsContent value="signup">
-          <Card className="mx-auto w-[20rem] md:w-[24rem]">
-            <CardHeader>
-              <CardTitle className="text-2xl">Sign Up</CardTitle>
-              <CardDescription>
-                Enter your information below to create an account
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* <form className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"> */}
-              <form className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input name="email" placeholder="you@example.com" required />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    type="password"
-                    required
-                    name="password"
-                    placeholder="••••••••"
-                  />
-                </div>
+      <TabsContent value="login">
+        <div className="rounded-lg border border-line bg-surface p-6">
+          <h1 className="text-2xl font-semibold">Welcome back</h1>
+          <p className="mt-1 text-sm text-ink-muted">Log in to your Kickoff account.</p>
+          <form className="mt-6 grid gap-4">
+            <input type="hidden" name="next" value={next ?? ""} />
+            <div className="grid gap-2">
+              <Label htmlFor="login-email">Email</Label>
+              <Input id="login-email" name="email" type="email" autoComplete="email" placeholder="you@company.in" required />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="login-password">Password</Label>
+              <Input id="login-password" name="password" type="password" autoComplete="current-password" required />
+            </div>
+            <SubmitButton formAction={signIn} pendingText="Logging in…">
+              Log in
+            </SubmitButton>
+          </form>
+        </div>
+      </TabsContent>
 
-                <SubmitButton
-                  formAction={signUp}
-                  className="button-secondary rounded-md px-4 py-2 text-foreground mb-2"
-                  pendingText="Signing Up..."
+      <TabsContent value="signup">
+        <div className="rounded-lg border border-line bg-surface p-6">
+          <h1 className="text-2xl font-semibold">Create your account</h1>
+          <p className="mt-1 text-sm text-ink-muted">Pick how you'll use Kickoff. You can't change this later in v1.</p>
+          <form className="mt-6 grid gap-4">
+            <input type="hidden" name="next" value={next ?? ""} />
+            <fieldset className="grid grid-cols-2 gap-3">
+              <legend className="sr-only">I am a</legend>
+              {(
+                [
+                  ["founder", "Founder", "List and sell my startup"],
+                  ["buyer", "Buyer", "Find and check startups"],
+                ] as const
+              ).map(([value, title, sub]) => (
+                <label
+                  key={value}
+                  className="cursor-pointer rounded-md border border-line p-3 transition-colors duration-150 hover:bg-surface-hover has-[:checked]:border-saffron has-[:checked]:bg-saffron/10"
                 >
-                  Sign Up
-                </SubmitButton>
-              </form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+                  <input type="radio" name="role" value={value} defaultChecked={(role ?? "founder") === value} className="sr-only" />
+                  <span className="block text-sm font-medium">{title}</span>
+                  <span className="block text-xs text-ink-muted">{sub}</span>
+                </label>
+              ))}
+            </fieldset>
+            <div className="grid gap-2">
+              <Label htmlFor="full_name">Full name</Label>
+              <Input id="full_name" name="full_name" autoComplete="name" placeholder="Aditi Sharma" required />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="signup-email">Email</Label>
+              <Input id="signup-email" name="email" type="email" autoComplete="email" placeholder="you@company.in" required />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="signup-password">Password</Label>
+              <Input id="signup-password" name="password" type="password" autoComplete="new-password" minLength={6} required />
+            </div>
+            <SubmitButton formAction={signUp} pendingText="Creating account…">
+              Create account
+            </SubmitButton>
+          </form>
+        </div>
+      </TabsContent>
+    </Tabs>
   )
 }
