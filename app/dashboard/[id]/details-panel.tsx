@@ -68,7 +68,7 @@ export function DetailsPanel({ listing, categories, hasMetrics, aiReady }: { lis
         <div className="flex items-center justify-between gap-2">
           <Label htmlFor="description">Description</Label>
           <Button type="button" size="sm" variant="secondary" onClick={aiWrite} disabled={!hasMetrics || !aiReady || writing}>
-            <Sparkles className="size-4 text-saffron" aria-hidden="true" />
+            <Sparkles className="size-4 text-brand" aria-hidden="true" />
             {writing ? "Writing…" : "Draft with AI"}
           </Button>
         </div>
@@ -79,7 +79,7 @@ export function DetailsPanel({ listing, categories, hasMetrics, aiReady }: { lis
           rows={7}
           maxLength={2000}
           placeholder={hasMetrics ? "Describe your product, customers and why you're selling. Or let AI draft it from your verified numbers." : "Upload payments first to use the AI writer."}
-          className="rounded-md border border-line bg-bg p-3 text-sm text-ink placeholder:text-ink-muted focus:border-saffron focus:outline-none focus:ring-1 focus:ring-saffron"
+          className="rounded-md border border-line bg-surface p-3 text-sm text-ink placeholder:text-ink-muted focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         />
         {note && <p className="text-xs text-ink-muted">{note}</p>}
       </div>

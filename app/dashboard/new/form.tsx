@@ -28,7 +28,7 @@ export function ListingFields({
           name="category"
           required
           defaultValue={values?.category ?? ""}
-          className="h-10 rounded-md border border-line bg-surface px-3 text-sm text-ink focus:border-saffron focus:outline-none focus:ring-1 focus:ring-saffron"
+          className="h-10 rounded-md border border-line bg-surface px-3 text-sm text-ink focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         >
           <option value="" disabled>
             Pick a category

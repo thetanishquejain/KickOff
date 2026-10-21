@@ -23,14 +23,14 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en-IN" className={`${GeistSans.variable} ${GeistMono.variable} dark`}>
+    <html lang="en-IN" className={`${GeistSans.variable} ${GeistMono.variable}`}>
       <body className="min-h-screen bg-bg font-sans text-ink">
         <TooltipProvider delayDuration={150}>
           <Nav />
           <main className="mx-auto w-full max-w-[1200px] px-4 pb-16 md:px-8">{children}</main>
           <Footer />
         </TooltipProvider>
-        <Toaster richColors theme="dark" />
+        <Toaster richColors theme="light" />
       </body>
     </html>
   )

@@ -77,12 +77,12 @@ export function UploadPanel({ listingId, hasData, aiReady }: { listingId: string
         {...getRootProps()}
         className={cn(
           "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border border-dashed border-line px-6 py-10 text-center transition-colors duration-150 hover:bg-surface-hover",
-          isDragActive && "border-saffron bg-saffron/5",
+          isDragActive && "border-brand bg-brand/5",
           busy && "pointer-events-none opacity-60"
         )}
       >
         <input {...getInputProps()} aria-label="Upload Razorpay payments CSV" />
-        <FileUp className="size-6 text-saffron" aria-hidden="true" />
+        <FileUp className="size-6 text-brand" aria-hidden="true" />
         <p className="text-sm text-ink">{hasData ? "Upload a new Razorpay payments CSV to re-verify" : "Drop your Razorpay payments CSV here, or click to choose"}</p>
         <p className="text-xs text-ink-muted">Razorpay Dashboard → Transactions → Payments → Export (CSV). Customer emails and phones are hashed, never stored.</p>
       </div>
@@ -111,7 +111,7 @@ export function UploadPanel({ listingId, hasData, aiReady }: { listingId: string
                 {state === "done" ? (
                   <Check className="size-4 text-verified" aria-hidden="true" />
                 ) : state === "active" ? (
-                  <Loader2 className="size-4 animate-spin text-saffron" aria-hidden="true" />
+                  <Loader2 className="size-4 animate-spin text-brand" aria-hidden="true" />
                 ) : (
                   <span className="size-4 rounded-full border border-line" aria-hidden="true" />
                 )}

@@ -87,7 +87,7 @@ export function LabelsPanel({ listingId, groups }: { listingId: string; groups: 
                   value={`${g.label}:${g.label === "recurring" ? g.interval ?? "monthly" : ""}`}
                   onChange={(e) => change(g, e.target.value)}
                   className={cn(
-                    "h-9 w-full max-w-[12rem] rounded-md border border-line bg-bg px-2 text-sm focus:border-saffron focus:outline-none focus:ring-1 focus:ring-saffron",
+                    "h-9 w-full max-w-[12rem] rounded-md border border-line bg-surface px-2 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand",
                     TONE[g.label ?? "unclear"]
                   )}
                 >

@@ -101,7 +101,7 @@ export function AskChat({ listingId, name }: { listingId: string; name: string }
           onChange={(e) => setInput(e.target.value)}
           maxLength={500}
           placeholder="Ask about revenue, customers or risks…"
-          className="h-10 flex-1 rounded-md border border-line bg-bg px-3 text-sm text-ink placeholder:text-ink-muted focus:border-saffron focus:outline-none focus:ring-1 focus:ring-saffron"
+          className="h-10 flex-1 rounded-md border border-line bg-surface px-3 text-sm text-ink placeholder:text-ink-muted focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         />
         <Button type="submit" size="icon" disabled={busy || !input.trim()} aria-label="Send question">
           <Send className="size-4" />

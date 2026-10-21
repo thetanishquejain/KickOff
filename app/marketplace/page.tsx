@@ -34,7 +34,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
             name="q"
             defaultValue={searchParams.q}
             placeholder="Search startups…"
-            className="h-10 w-full rounded-md border border-line bg-surface px-3 text-sm text-ink placeholder:text-ink-muted focus:border-saffron focus:outline-none focus:ring-1 focus:ring-saffron"
+            className="h-10 w-full rounded-md border border-line bg-surface px-3 text-sm text-ink placeholder:text-ink-muted focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
           />
         </form>
       </div>
@@ -58,7 +58,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         </div>
       ) : (
         <EmptyState title="No verified startups here yet.">
-          <Link href="/login?mode=signup&role=founder" className="text-sm text-saffron hover:underline">
+          <Link href="/signup?role=founder" className="text-sm text-brand hover:underline">
             List your startup
           </Link>
         </EmptyState>
@@ -74,7 +74,7 @@ function Chip({ href, active, children }: { href: string; active: boolean; child
       aria-current={active ? "page" : undefined}
       className={cn(
         "rounded-full border px-3 py-1 text-sm transition-colors duration-150",
-        active ? "border-saffron bg-saffron/10 text-saffron" : "border-line text-ink-muted hover:bg-surface-hover hover:text-ink"
+        active ? "border-brand bg-brand/10 text-brand" : "border-line text-ink-muted hover:bg-surface-hover hover:text-ink"
       )}
     >
       {children}

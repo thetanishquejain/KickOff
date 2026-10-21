@@ -92,7 +92,7 @@ export function MetricTile({
 
 export function AiTag({ children = "AI explanation" }: { children?: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-sm bg-saffron/10 px-1.5 py-0.5 text-[11px] font-medium text-saffron">
+    <span className="inline-flex items-center rounded-sm bg-brand/10 px-1.5 py-0.5 text-[11px] font-medium text-brand">
       {children}
     </span>
   )

@@ -32,14 +32,14 @@ export function LoginForm({ mode, role, next }: { mode: "login" | "signup"; role
     const password = String(formData.get("password") ?? "")
     const fullName = String(formData.get("full_name") ?? "").trim()
     const chosen = formData.get("role") === "founder" ? "founder" : "buyer"
-    if (password.length < 6) return redirect(`/login?mode=signup&role=${chosen}&message=Use at least 6 characters for the password.`)
+    if (password.length < 6) return redirect(`/signup?role=${chosen}&message=Use at least 6 characters for the password.`)
     const db = createClient()
     const { error } = await db.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: `${origin}/auth/callback`, data: { role: chosen, full_name: fullName } },
     })
-    if (error) return redirect(`/login?mode=signup&role=${chosen}&message=${encodeURIComponent(error.message)}`)
+    if (error) return redirect(`/signup?role=${chosen}&message=${encodeURIComponent(error.message)}`)
     const { error: err } = await db.auth.signInWithPassword({ email, password })
     if (err) return redirect("/login?message=Account created. Check your email to confirm, then log in.")
     return redirect(safeNext(formData.get("next")) ?? (chosen === "founder" ? "/dashboard/new" : "/marketplace"))
@@ -89,7 +89,7 @@ export function LoginForm({ mode, role, next }: { mode: "login" | "signup"; role
               ).map(([value, title, sub]) => (
                 <label
                   key={value}
-                  className="cursor-pointer rounded-md border border-line p-3 transition-colors duration-150 hover:bg-surface-hover has-[:checked]:border-saffron has-[:checked]:bg-saffron/10"
+                  className="cursor-pointer rounded-md border border-line p-3 transition-colors duration-150 hover:bg-surface-hover has-[:checked]:border-brand has-[:checked]:bg-brand/10"
                 >
                   <input type="radio" name="role" value={value} defaultChecked={(role ?? "founder") === value} className="sr-only" />
                   <span className="block text-sm font-medium">{title}</span>

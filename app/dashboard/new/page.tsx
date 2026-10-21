@@ -9,7 +9,7 @@ export const metadata = { title: "List your startup" }
 
 export default async function NewListingPage() {
   const profile = await getProfile()
-  if (!profile) redirect("/login?mode=signup&role=founder&next=/dashboard/new")
+  if (!profile) redirect("/signup?role=founder&next=/dashboard/new")
   if (profile.role !== "founder") redirect("/marketplace")
   return (
     <div className="mx-auto max-w-xl pt-10">

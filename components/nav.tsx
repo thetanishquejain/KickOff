@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { Logo } from "./logo"
+import { MobileNav } from "./mobile-nav"
 import { NavLinks } from "./nav-links"
 
 async function signOut() {
@@ -27,7 +28,7 @@ async function signOut() {
 export async function Nav() {
   const profile = await getProfile()
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-2 px-4 sm:gap-4 md:px-8">
         <Logo />
         <NavLinks />
@@ -72,14 +73,15 @@ export async function Nav() {
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm">
+              <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
                 <Link href="/login">Log in</Link>
               </Button>
               <Button asChild size="sm" className="hidden sm:inline-flex">
-                <Link href="/login?mode=signup&role=founder">List your startup</Link>
+                <Link href="/signup?role=founder">List your startup</Link>
               </Button>
             </>
           )}
+          <MobileNav role={profile?.role ?? null} />
         </div>
       </div>
     </header>

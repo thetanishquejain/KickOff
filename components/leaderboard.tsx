@@ -65,7 +65,7 @@ function RankBadge({ rank }: { rank: number }) {
   if (rank > 3) return <span className="num text-ink-muted">{rank}</span>
   const color = rank === 1 ? "bg-rank-gold" : rank === 2 ? "bg-rank-silver" : "bg-rank-bronze"
   return (
-    <span className={cn("num inline-flex size-7 items-center justify-center rounded-full text-sm font-bold text-bg", color)} aria-label={`Rank ${rank}`}>
+    <span className={cn("num inline-flex size-7 items-center justify-center rounded-full text-sm font-bold text-ink", color)} aria-label={`Rank ${rank}`}>
       {rank}
     </span>
   )

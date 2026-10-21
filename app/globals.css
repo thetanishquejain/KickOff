@@ -2,10 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Kickoff design tokens. All colours live here; Tailwind reads them in tailwind.config.ts.
+   Values are "R G B" channels so opacity modifiers (bg-brand/10) work. */
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
+
+    --background: 247 245 240; /* warm neutral page */
+    --surface: 255 255 255; /* cards, tables, inputs */
+    --surface-muted: 242 239 232; /* hover rows, subtle fills */
+    --border: 226 221 211;
+    --foreground: 22 28 25; /* main text */
+    --muted-foreground: 88 98 92; /* secondary text, AA on white and background */
+
+    --primary: 15 107 84; /* Kickoff green-teal: primary actions */
+    --primary-hover: 11 88 69;
+    --primary-foreground: 255 255 255;
+    --accent: 214 105 32; /* marigold: small brand highlights only */
+
+    --success: 21 128 61; /* verified, positive growth */
+    --warning: 166 95 0; /* risk flags */
+    --danger: 200 40 40; /* errors, destructive, negative growth */
+    --focus-ring: 15 107 84;
+
+    --rank-gold: 214 168 46;
+    --rank-silver: 170 178 189;
+    --rank-bronze: 188 122 74;
+
+    --radius-sm: 4px; /* badges */
+    --radius-md: 8px; /* buttons, inputs */
+    --radius-lg: 12px; /* cards, dialogs */
   }
+
   * {
     @apply border-line;
   }
@@ -18,10 +46,10 @@
     text-rendering: optimizeLegibility;
   }
   ::selection {
-    background: rgba(255, 138, 61, 0.35);
+    background: rgb(var(--primary) / 0.18);
   }
   :focus-visible {
-    outline: 2px solid #ff8a3d;
+    outline: 2px solid rgb(var(--focus-ring));
     outline-offset: 2px;
   }
   .num {
@@ -35,5 +63,6 @@
   *::after {
     transition: none !important;
     animation: none !important;
+    scroll-behavior: auto !important;
   }
 }

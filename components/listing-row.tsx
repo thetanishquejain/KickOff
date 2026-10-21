@@ -7,7 +7,7 @@ import { FlagIcon, Growth, InitialAvatar } from "./kit"
 
 export function ForSaleTag() {
   return (
-    <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-sm bg-saffron/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-saffron">
+    <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-sm bg-brand/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand">
       For sale
     </span>
   )
@@ -60,7 +60,7 @@ export function ListingRows({ title, href, linkLabel, listings, empty }: { title
     <section aria-label={title}>
       <div className="mb-2 flex items-end justify-between gap-4">
         <h2 className="text-base font-semibold">{title}</h2>
-        <Link href={href} className="text-xs text-ink-muted hover:text-saffron">
+        <Link href={href} className="text-xs text-ink-muted hover:text-brand">
           {linkLabel} →
         </Link>
       </div>

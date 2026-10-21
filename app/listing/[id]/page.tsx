@@ -50,7 +50,7 @@ export default async function ListingPage({ params }: { params: { id: string } }
                 {l.website && (
                   <>
                     {" · "}
-                    <a href={l.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-saffron">
+                    <a href={l.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-brand">
                       Website <ExternalLink className="size-3" aria-hidden="true" />
                     </a>
                   </>
@@ -108,13 +108,13 @@ export default async function ListingPage({ params }: { params: { id: string } }
           </>
         ) : (
           <div className="flex flex-col items-start gap-3 rounded-lg border border-line bg-surface p-6">
-            <Lock className="size-5 text-saffron" aria-hidden="true" />
+            <Lock className="size-5 text-brand" aria-hidden="true" />
             <h2 className="font-medium">See the AI buyer summary</h2>
             <p className="text-sm text-ink-muted">
               Sign up free as a buyer to read what's proven, what's missing and what to ask, and to question this startup's data.
             </p>
             <Button asChild>
-              <Link href={`/login?mode=signup&role=buyer&next=/listing/${l.id}`}>Sign up as a buyer</Link>
+              <Link href={`/signup?role=buyer&next=/listing/${l.id}`}>Sign up as a buyer</Link>
             </Button>
           </div>
         )}
@@ -137,7 +137,7 @@ async function BuyerSummaryCard({ listingId }: { listingId: string }) {
         <div className="flex flex-col gap-4 text-sm">
           <Block title="What is proven" items={s.summary.proven} tone="text-verified" />
           <Block title="What is missing" items={s.summary.missing} tone="text-warning" />
-          <Block title="Ask next" items={s.summary.ask_next} tone="text-saffron" />
+          <Block title="Ask next" items={s.summary.ask_next} tone="text-brand" />
           <p className="border-t border-line pt-3 text-xs text-ink-muted">Written by AI. Every number checked against verified data.</p>
         </div>
       ) : s.status === "under_review" ? (
