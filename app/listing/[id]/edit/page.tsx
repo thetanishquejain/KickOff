@@ -43,7 +43,7 @@ export default async function EditListingPage({ params }: { params: { id: string
         )}
         <span className="flex items-center gap-3">
           <span className={listing.status === "published" ? "text-verified" : "text-ink-muted"}>{listing.status === "published" ? "Published" : "Draft"}</span>
-          <Link href={`/dashboard/${listing.id}`} className="text-brand hover:underline">
+          <Link href={`/dashboard/${listing.id}?tab=payments`} className="text-brand hover:underline">
             {m ? "Re-upload payments" : "Upload payments"}
           </Link>
         </span>

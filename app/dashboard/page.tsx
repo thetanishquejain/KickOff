@@ -23,9 +23,9 @@ function progress(l: ListingFull) {
 }
 
 function nextStep(l: ListingFull) {
-  if (!l.metrics) return { text: "Upload your Razorpay payments", href: `/dashboard/${l.id}` }
-  if (!l.description) return { text: "Write your description", href: `/listing/${l.id}/edit` }
-  if (l.status !== "published") return { text: "Review and publish", href: `/listing/${l.id}/edit` }
+  if (!l.metrics) return { text: "Upload your Razorpay payments", href: `/dashboard/${l.id}?tab=payments` }
+  if (!l.description) return { text: "Write your description", href: `/dashboard/${l.id}?tab=listing` }
+  if (l.status !== "published") return { text: "Review and publish", href: `/dashboard/${l.id}?tab=publish` }
   return { text: "View public page", href: `/listing/${l.id}` }
 }
 

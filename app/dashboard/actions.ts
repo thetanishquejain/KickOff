@@ -63,7 +63,7 @@ export async function createListing(_: unknown, formData: FormData): Promise<{ e
     .select("id")
     .single()
   if (error || !data) return { error: error?.message ?? "Couldn't create the listing." }
-  redirect(`/dashboard/${data.id}`)
+  redirect(`/dashboard/${data.id}?tab=payments`)
 }
 
 export async function updateListing(listingId: string, formData: FormData): Promise<Result> {
