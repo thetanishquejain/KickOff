@@ -2,7 +2,7 @@ import "server-only"
 import { createClient } from "@/db/supabase/server"
 
 import type { Metrics, Range } from "./metrics"
-import { monthsInRange, revenueInRange } from "./metrics"
+import { rangeWindow, revenueInRange } from "./metrics"
 
 export type ListingRow = {
   id: string
@@ -114,10 +114,9 @@ async function hydrate(listings: ListingRow[], opts?: { withGa?: boolean }): Pro
 
 // ---- Derived numbers used by cards, leaderboard and AI ----
 
-export function trafficInMonths(traffic: TrafficDay[], months: string[]): number | null {
+export function trafficInWindow(traffic: TrafficDay[], from: string, to: string): number | null {
   if (!traffic.length) return null
-  const set = new Set(months)
-  const rows = traffic.filter((t) => set.has(t.date.slice(0, 7)))
+  const rows = traffic.filter((t) => t.date >= from && t.date <= to)
   if (!rows.length) return null
   return rows.reduce((s, t) => s + t.active_users, 0)
 }
@@ -125,8 +124,9 @@ export function trafficInMonths(traffic: TrafficDay[], months: string[]): number
 export function rangeStats(l: ListingFull, range: Range) {
   const m = l.metrics
   if (!m) return { revenue: 0, visitors: null as number | null, perVisitor: null as number | null }
-  const revenue = revenueInRange(m.monthly, range)
-  const visitors = trafficInMonths(l.traffic, monthsInRange(m.monthly, range))
+  const revenue = revenueInRange(m, range)
+  const w = rangeWindow(m, range)
+  const visitors = w ? trafficInWindow(l.traffic, w.from, w.to) : null
   return {
     revenue,
     visitors,

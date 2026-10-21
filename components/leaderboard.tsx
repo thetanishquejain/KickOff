@@ -19,7 +19,7 @@ export const SORTS: { value: SortKey; label: string; column: string }[] = [
 ]
 
 export const RANGES: { value: Range; label: string }[] = [
-  { value: "month", label: "Last month" },
+  { value: "30d", label: "Last 30 days" },
   { value: "6m", label: "Last 6 months" },
   { value: "all", label: "All time" },
 ]
@@ -28,6 +28,7 @@ export function parseSort(v?: string): SortKey {
   return (SORTS.find((s) => s.value === v)?.value ?? "mrr") as SortKey
 }
 export function parseRange(v?: string): Range {
+  if (v === "month") return "30d" // old links
   return (RANGES.find((r) => r.value === v)?.value ?? "all") as Range
 }
 

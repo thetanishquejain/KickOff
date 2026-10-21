@@ -46,6 +46,8 @@ export type Metrics = {
   first_month: string | null
   payment_count: number
   monthly: MonthRow[]
+  /** Net revenue per day [YYYY-MM-DD, ₹] for full months in the data. Used for "Last 30 days". */
+  daily?: [string, number][]
 }
 
 export type FlagType = "concentration" | "spike" | "refunds" | "unclear"
@@ -174,6 +176,18 @@ export function computeMetrics(payments: PaymentRow[]): Metrics {
   }
 
   const monthly = months.map((k) => byMonth.get(k)!)
+
+  const byDay = new Map<string, number>()
+  for (const p of captured) {
+    if (!byMonth.has(monthKey(p.paid_at))) continue
+    const day = p.paid_at.slice(0, 10)
+    const amt = Math.abs(p.amount_inr)
+    const sign = p.label === "refund" ? -1 : 1
+    let v = sign * amt
+    if (p.status === "refunded" && p.label !== "refund") v = 0 // captured then refunded: nets to zero
+    byDay.set(day, (byDay.get(day) ?? 0) + v)
+  }
+  const daily = [...byDay.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([d, v]) => [d, r2(v)] as [string, number])
   const last6 = monthly.slice(-6)
   const last6Keys = new Set(last6.map((m) => m.month))
   const latestRow = monthly[monthly.length - 1]
@@ -216,6 +230,7 @@ export function computeMetrics(payments: PaymentRow[]): Metrics {
     first_month: first,
     payment_count: payments.length,
     monthly,
+    daily,
   }
 }
 
@@ -268,15 +283,36 @@ export function computeFlags(m: Metrics): Flag[] {
 
 // ---- Leaderboard helpers ----
 
-export type Range = "month" | "6m" | "all"
+export type Range = "30d" | "6m" | "all"
 
-export function revenueInRange(monthly: MonthRow[], range: Range): number {
-  if (!monthly.length) return 0
-  const rows = range === "month" ? monthly.slice(-1) : range === "6m" ? monthly.slice(-6) : monthly
-  return r2(rows.reduce((s, m) => s + m.net, 0))
+function lastDayOf(month: string): string {
+  const [y, m] = month.split("-").map(Number)
+  return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10)
 }
 
-export function monthsInRange(monthly: MonthRow[], range: Range): string[] {
-  const rows = range === "month" ? monthly.slice(-1) : range === "6m" ? monthly.slice(-6) : monthly
-  return rows.map((m) => m.month)
+function minusDays(date: string, n: number): string {
+  const d = new Date(`${date}T00:00:00Z`)
+  d.setUTCDate(d.getUTCDate() - n)
+  return d.toISOString().slice(0, 10)
+}
+
+/** Date window [from, to] (inclusive, YYYY-MM-DD) for a range, ending at the latest full month in the data. */
+export function rangeWindow(m: Metrics, range: Range): { from: string; to: string } | null {
+  if (!m.latest_month || !m.monthly.length) return null
+  const to = lastDayOf(m.latest_month)
+  if (range === "30d") return { from: minusDays(to, 29), to }
+  const first = range === "6m" ? m.monthly.slice(-6)[0].month : m.monthly[0].month
+  return { from: `${first}-01`, to }
+}
+
+export function revenueInRange(m: Metrics, range: Range): number {
+  if (!m.monthly.length) return 0
+  if (range === "30d") {
+    const w = rangeWindow(m, range)
+    // Older saved metrics have no daily rows: fall back to the latest full month.
+    if (!m.daily || !w) return r2(m.monthly[m.monthly.length - 1].net)
+    return r2(m.daily.filter(([d]) => d >= w.from && d <= w.to).reduce((s, [, v]) => s + v, 0))
+  }
+  const rows = range === "6m" ? m.monthly.slice(-6) : m.monthly
+  return r2(rows.reduce((s, x) => s + x.net, 0))
 }

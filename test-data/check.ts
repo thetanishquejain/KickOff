@@ -5,7 +5,7 @@ import { join } from "node:path"
 
 import { parseRazorpayCsv } from "../lib/csv"
 import { ruleLabel } from "../lib/labels"
-import { computeFlags, computeMetrics, type PaymentRow } from "../lib/metrics"
+import { computeFlags, computeMetrics, revenueInRange, type PaymentRow } from "../lib/metrics"
 import { allowedNumbers, checkNumbers } from "../lib/numbercheck"
 
 const DIR = join(process.cwd(), "test-data")
@@ -57,6 +57,18 @@ for (const c of cases) {
   const ok = g.ok && !b.ok
   if (!ok) failed++
   console.log(`${ok ? "PASS" : "FAIL"} number check: good text ok=${g.ok} ${g.unknown}, invented text blocked=${!b.ok} (${b.unknown.join(", ")})`)
+}
+
+// "Last 30 days" must equal the latest month when the latest month has 30 days (Sept 2026)
+{
+  const parsed = parseRazorpayCsv(readFileSync(join(DIR, "c_inflated.csv"), "utf8"))
+  const rows = parsed.payments.map((p) => ({ ...p, ...ruleLabel(p.description, p.status) }))
+  const m = computeMetrics(rows)
+  const d30 = revenueInRange(m, "30d")
+  const last = m.monthly[m.monthly.length - 1].net
+  const ok = Math.abs(d30 - last) < 1 && revenueInRange(m, "all") === m.revenue_total
+  if (!ok) failed++
+  console.log(`${ok ? "PASS" : "FAIL"} 30-day range: ₹${d30} vs September ₹${last}`)
 }
 
 process.exit(failed ? 1 : 0)
