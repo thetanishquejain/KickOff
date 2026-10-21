@@ -1,3 +1,4 @@
+import { AlertTriangle } from "lucide-react"
 import Link from "next/link"
 
 import { askingMultiple, rangeStats, type ListingFull } from "@/lib/data"
@@ -91,7 +92,42 @@ export function LeaderboardTable({
     return <p className="rounded-lg border border-dashed border-line px-6 py-12 text-center text-ink-muted">No verified startups for this period yet.</p>
   }
   return (
-    <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+    <>
+      {/* Phones: ranked cards with the key numbers, not a squeezed table */}
+      <ol className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface sm:hidden">
+        {rows.map((r, i) => (
+          <li key={r.l.id}>
+            <Link href={`/listing/${r.l.id}`} className="flex items-center gap-3 px-3 py-3 hover:bg-surface-hover">
+              <RankBadge rank={i + 1} />
+              <InitialAvatar name={r.l.name} size={36} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium text-ink">{r.l.name}</span>
+                <span className="block truncate text-caption text-ink-muted">
+                  {r.l.founder_name ?? "Founder"} · {r.l.category}
+                </span>
+              </span>
+              <span className="shrink-0 text-right">
+                <span className="flex items-center justify-end gap-1">
+                  <span className={cn("num text-sm font-semibold", r.value === null ? "text-ink-muted" : "text-ink")}>
+                    {sort === "growth" ? <Growth value={r.l.metrics?.growth_pct} /> : r.display}
+                  </span>
+                  {r.l.flags.length > 0 && <AlertTriangle className="size-3.5 text-warning" aria-label={`Risk flag: ${r.l.flags.map((f) => f.title).join("; ")}`} />}
+                </span>
+                <span className="block text-caption text-ink-muted">
+                  {sort === "growth" ? "MoM growth" : column}
+                  {sort !== "growth" && (
+                    <>
+                      {" · "}
+                      <Growth value={r.l.metrics?.growth_pct} className="text-caption" />
+                    </>
+                  )}
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    <div className="hidden overflow-x-auto rounded-lg border border-line bg-surface sm:block">
       <table className="w-full text-sm">
         <thead className="whitespace-nowrap bg-surface text-left text-xs text-ink-muted">
           <tr className="border-b border-line">
@@ -159,5 +195,6 @@ export function LeaderboardTable({
         </tbody>
       </table>
     </div>
+    </>
   )
 }

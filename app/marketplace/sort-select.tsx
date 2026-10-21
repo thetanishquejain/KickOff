@@ -19,7 +19,7 @@ export function SortSelect({ value, options }: { value: string; options: { value
         router.replace(`${pathname}?${next.toString()}`, { scroll: false })
       }}
     >
-      <SelectTrigger className="md:w-52" aria-label="Sort startups">
+      <SelectTrigger className="h-9 w-48" aria-label="Sort startups">
         <SelectValue />
       </SelectTrigger>
       <SelectContent className="border-line bg-surface">
