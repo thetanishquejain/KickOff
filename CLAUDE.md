@@ -5,7 +5,7 @@ Kickoff is a verified-revenue marketplace for buying and selling Indian SaaS, AI
 ## Starting point: forked template
 This project is a fork of **nolly-studio/cult-directory-template** (free version, GPL-2.0).
 - **Keep the `LICENSE.md` file.** This repo stays GPL-2.0 and public.
-- **Do not upgrade Next.js** (template is on v13) or swap the package manager (pnpm). No time for migrations.
+- **Do not upgrade Next.js** (template is on v14.2) or swap the package manager (pnpm). No time for migrations.
 - **First, before writing code:** read the template's `app/`, `components/`, `lib/`, `db/supabase/` and `supabase/migrations/`, then write a short `TEMPLATE_MAP.md`: what each existing route, component and table does, and whether we **keep / adapt / delete** it for Kickoff.
 - **Reuse, don't rebuild:** Supabase auth + middleware, the submit-product form (→ "List your startup"), product cards and filters (→ marketplace), the theme in `app/globals.css` (→ replace with `DESIGN.md` tokens), shadcn/ui components, Vercel AI SDK (→ buyer chat).
 - **Delete or ignore:** the template's crawl/enrich/seed scripts, sample directory data, and any copy, logos or branding from the template.
@@ -13,9 +13,9 @@ This project is a fork of **nolly-studio/cult-directory-template** (free version
 - In Supabase: turn off email confirmation for the demo (template README notes the default SMTP limit is very low).
 
 ## Stack
-- Next.js 13 from the template (App Router, TypeScript), Tailwind CSS, shadcn/ui, pnpm
+- Next.js 14.2 from the template (App Router, TypeScript), Tailwind CSS, shadcn/ui, pnpm
 - Supabase: auth (email login) + Postgres + storage
-- Claude API (Anthropic SDK), model `claude-sonnet-4-5` or newer, always asked for structured JSON
+- Claude API, model `claude-sonnet-4-5` or newer, always asked for structured JSON. Template already has `ai` + `@ai-sdk/anthropic` (use for the buyer chat); `recharts` (charts) and `react-dropzone` (CSV upload) are also installed — use them.
 - Code on GitHub, deployed on Vercel
 - No n8n in v1
 
