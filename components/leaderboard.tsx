@@ -6,6 +6,7 @@ import type { Range } from "@/lib/metrics"
 import { cn } from "@/lib/utils"
 
 import { DemoTag, FlagIcon, Growth, InitialAvatar } from "./kit"
+import { ForSaleTag } from "./listing-row"
 
 export type SortKey = "mrr" | "revenue" | "growth" | "traffic" | "rpv"
 
@@ -104,7 +105,7 @@ export function LeaderboardTable({
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={r.l.id} className="h-[72px] border-b border-line transition-colors duration-150 last:border-0 hover:bg-surface-hover">
+            <tr key={r.l.id} className="h-[60px] border-b border-line transition-colors duration-150 last:border-0 hover:bg-surface-hover">
               <td className="px-2 text-center sm:px-4">
                 <RankBadge rank={i + 1} />
               </td>
@@ -114,6 +115,7 @@ export function LeaderboardTable({
                   <span className="min-w-0 max-w-[8rem] sm:max-w-[22rem]">
                     <span className="flex items-center gap-2">
                       <span className="truncate font-medium text-ink">{r.l.name}</span>
+                      {r.l.asking_price_inr ? <ForSaleTag /> : null}
                       {r.l.is_demo && (
                         <span className="hidden sm:inline-flex">
                           <DemoTag />
