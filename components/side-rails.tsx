@@ -52,10 +52,10 @@ function FeatureTile({ l }: { l: ListingFull }) {
   return (
     <Link
       href={`/listing/${l.id}`}
-      className="group flex flex-col items-center gap-1.5 rounded-lg px-3 py-4 text-center shadow-card transition-transform duration-150 hover:-translate-y-0.5"
+      className="group flex flex-col items-center gap-1.5 rounded-lg border border-line/60 px-3 py-4 text-center transition-transform duration-150 hover:-translate-y-0.5"
       style={{ background: tone.bg, color: tone.fg }}
     >
-      <span className="flex size-9 items-center justify-center rounded-md bg-white/70 text-sm font-bold" aria-hidden="true">
+      <span className="flex size-9 items-center justify-center rounded-md bg-surface/70 text-sm font-bold" aria-hidden="true">
         {initials(l.name)}
       </span>
       <span className="text-label font-semibold leading-tight">{l.name}</span>

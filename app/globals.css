@@ -8,52 +8,66 @@
   :root {
     color-scheme: light;
 
-    --background: 247 245 240; /* warm neutral page */
+    /* Neutrals: near-white with a faint green cast so they sit with the emerald brand. */
+    --background: 246 248 247; /* page */
     --surface: 255 255 255; /* cards, tables, inputs */
-    --surface-muted: 242 239 232; /* hover rows, subtle fills */
-    --border: 226 221 211;
-    --foreground: 22 28 25; /* main text */
-    --muted-foreground: 88 98 92; /* secondary text, AA on white and background */
+    --surface-muted: 239 243 241; /* hover rows, subtle fills */
+    --border: 223 229 226;
+    --foreground: 16 24 20; /* main text, 16:1 on surface */
+    --muted-foreground: 84 97 90; /* secondary text, 6.3:1 on surface */
 
-    --primary: 15 107 84; /* Kickoff green-teal: primary actions */
-    --primary-hover: 11 88 69;
+    /* One brand colour. Emerald 700: 5.5:1 on white, so it works for text links and buttons. */
+    --primary: 4 120 87;
+    --primary-hover: 6 95 70;
     --primary-foreground: 255 255 255;
-    --accent: 214 105 32; /* marigold: small brand highlights only */
+    --accent: 217 119 6; /* logo dot only */
 
-    --success: 21 128 61; /* verified, positive growth */
-    --warning: 166 95 0; /* risk flags */
-    --danger: 200 40 40; /* errors, destructive, negative growth */
-    --focus-ring: 15 107 84;
+    /* Status colours carry meaning only: never decoration. */
+    --success: 21 128 61; /* verified, growth up */
+    --warning: 180 83 9; /* risk flags (amber 700, 5:1) */
+    --danger: 190 18 60; /* errors, growth down (rose 700, 6:1) */
+    --focus-ring: 4 120 87;
 
-    --rank-gold: 214 168 46;
-    --rank-silver: 170 178 189;
-    --rank-bronze: 188 122 74;
+    --rank-gold: 212 160 23;
+    --rank-silver: 163 172 182;
+    --rank-bronze: 180 110 62;
+
+    /* Startup initials and featured tiles: one family (emerald, teal, slate, sage). */
+    --tone-1-bg: 220 242 233; --tone-1-fg: 6 95 70;
+    --tone-2-bg: 217 238 242; --tone-2-fg: 14 92 107;
+    --tone-3-bg: 228 233 239; --tone-3-fg: 51 65 85;
+    --tone-4-bg: 232 239 226; --tone-4-fg: 63 98 18;
 
     --radius-sm: 4px; /* badges */
     --radius-md: 8px; /* buttons, inputs */
     --radius-lg: 12px; /* cards, dialogs */
   }
 
-  /* Dark theme: deep green-black surfaces, brighter teal so actions keep 4.5:1 contrast. */
+  /* Dark theme: neutral near-black, raised surfaces a step lighter, brighter emerald for 7:1 actions. */
   .dark {
     color-scheme: dark;
 
-    --background: 13 17 15;
-    --surface: 21 26 23;
-    --surface-muted: 30 37 33;
-    --border: 45 54 49;
-    --foreground: 233 238 235;
-    --muted-foreground: 152 164 157;
+    --background: 10 12 11;
+    --surface: 19 22 21;
+    --surface-muted: 28 32 30;
+    --border: 40 46 43;
+    --foreground: 236 240 238;
+    --muted-foreground: 150 161 155;
 
-    --primary: 56 186 146;
-    --primary-hover: 74 202 162;
-    --primary-foreground: 6 22 17;
-    --accent: 236 138 70;
+    --primary: 52 211 153;
+    --primary-hover: 110 231 183;
+    --primary-foreground: 3 28 20;
+    --accent: 245 158 11;
 
-    --success: 82 204 128;
-    --warning: 233 168 64;
-    --danger: 244 110 110;
-    --focus-ring: 56 186 146;
+    --success: 74 222 128;
+    --warning: 251 191 36;
+    --danger: 251 113 133;
+    --focus-ring: 52 211 153;
+
+    --tone-1-bg: 17 48 38; --tone-1-fg: 110 231 183;
+    --tone-2-bg: 16 44 52; --tone-2-fg: 103 214 232;
+    --tone-3-bg: 34 40 50; --tone-3-fg: 190 202 218;
+    --tone-4-bg: 34 46 26; --tone-4-fg: 190 226 140;
   }
 
   * {
