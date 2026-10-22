@@ -1,34 +1,44 @@
 "use client"
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useTransition } from "react"
+import { useRouter } from "next/navigation"
 
+import { MARKET_RANGES, MARKET_SORTS, marketHref, sortUsesRange, withChange, type MarketRange, type MarketSort, type MarketState } from "@/lib/market-query"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-export function SortSelect({ value, options }: { value: string; options: { value: string; label: string }[] }) {
+/** Sort and reporting-range controls. Both write to the URL; range only shows for sorts that use it. */
+export function MarketSortControls({ state }: { state: MarketState }) {
   const router = useRouter()
-  const pathname = usePathname()
-  const params = useSearchParams()
+  const [, start] = useTransition()
+  const go = (patch: Partial<MarketState>) => start(() => router.push(marketHref(withChange(state, patch)), { scroll: false }))
   return (
-    <Select
-      value={value}
-      onValueChange={(v) => {
-        const next = new URLSearchParams(params?.toString())
-        if (v === "mrr") next.delete("sort")
-        else next.set("sort", v)
-        next.delete("show")
-        router.replace(`${pathname}?${next.toString()}`, { scroll: false })
-      }}
-    >
-      <SelectTrigger className="h-9 w-48" aria-label="Sort startups">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent className="border-line bg-surface">
-        {options.map((o) => (
-          <SelectItem key={o.value} value={o.value}>
-            {o.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="flex flex-wrap items-center gap-2">
+      <Select value={state.sort} onValueChange={(v) => go({ sort: v as MarketSort })}>
+        <SelectTrigger className="h-9 w-48" aria-label="Sort startups">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className="border-line bg-surface">
+          {MARKET_SORTS.map((o) => (
+            <SelectItem key={o.value} value={o.value}>
+              {o.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {sortUsesRange(state.sort) && (
+        <Select value={state.range} onValueChange={(v) => go({ range: v as MarketRange })}>
+          <SelectTrigger className="h-9 w-36" aria-label="Reporting period">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="border-line bg-surface">
+            {MARKET_RANGES.map((o) => (
+              <SelectItem key={o.value} value={o.value}>
+                {o.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+    </div>
   )
 }

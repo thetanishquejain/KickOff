@@ -3,6 +3,7 @@ import { ChevronRight } from "lucide-react"
 
 import { askingMultiple, type ListingFull } from "@/lib/data"
 import { inrShort, multiple } from "@/lib/format"
+import { isForSale } from "@/lib/market-query"
 
 import { FlagIcon, InitialAvatar } from "./kit"
 import { ForSaleTag } from "./listing-row"
@@ -54,7 +55,7 @@ function RailCard({ l }: { l: ListingFull }) {
             {l.is_demo ? " · demo" : ""}
           </div>
         </div>
-        {l.asking_price_inr ? <ForSaleTag /> : null}
+        {isForSale(l) ? <ForSaleTag /> : null}
       </div>
       <dl className="mt-3 grid grid-cols-3 gap-2 border-t border-line pt-2.5">
         {[

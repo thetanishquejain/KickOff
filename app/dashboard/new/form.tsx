@@ -13,7 +13,7 @@ export function ListingFields({
   values,
 }: {
   categories: string[]
-  values?: { name?: string; category?: string; pitch?: string; website?: string | null; asking_price_inr?: number | null }
+  values?: { name?: string; category?: string; pitch?: string; website?: string | null; asking_price_inr?: number | null; is_for_sale?: boolean }
 }) {
   return (
     <>
@@ -61,6 +61,14 @@ export function ListingFields({
           />
         </div>
       </div>
+      <label className="flex items-start gap-2 text-sm">
+        <input type="hidden" name="is_for_sale_present" value="1" />
+        <input type="checkbox" name="is_for_sale" defaultChecked={values?.is_for_sale ?? true} className="mt-0.5 size-4 accent-[rgb(var(--primary))]" />
+        <span>
+          Open to offers
+          <span className="block text-caption text-ink-muted">Shows a FOR SALE tag and includes the listing in &ldquo;For sale only&rdquo; results. Untick to show verified revenue without selling.</span>
+        </span>
+      </label>
     </>
   )
 }

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { isForSale } from "@/lib/market-query"
 import { notFound, redirect } from "next/navigation"
 
 import { getProfile } from "@/lib/auth"
@@ -61,6 +62,7 @@ export default async function EditListingPage({ params }: { params: { id: string
           status: listing.status,
           insights: listing.insights ?? null,
           founded_on: listing.founded_on ?? null,
+          is_for_sale: isForSale(listing),
         }}
         categories={CATEGORIES}
         hasMetrics={Boolean(m)}

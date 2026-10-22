@@ -4,6 +4,8 @@ import { createClient } from "@/db/supabase/server"
 import type { Metrics, Range } from "./metrics"
 import { rangeWindow, revenueInRange } from "./metrics"
 import type { Insights } from "./insights"
+import { MemoryQuery } from "./market-memory"
+import { buildMarketQuery, isForSale, type MarketState } from "./market-query"
 
 export type ListingRow = {
   id: string
@@ -20,6 +22,9 @@ export type ListingRow = {
   created_at: string
   founded_on?: string | null
   insights?: Insights | null
+  is_for_sale?: boolean
+  business_model?: "b2b" | "b2c" | "b2b2c" | null
+  published_at?: string | null
 }
 
 export type FlagRow = {
@@ -86,7 +91,7 @@ export async function getFounderListings(founderId: string): Promise<ListingFull
   return hydrate((data ?? []).map(normalizeListing))
 }
 
-async function hydrate(listings: ListingRow[], opts?: { withGa?: boolean }): Promise<ListingFull[]> {
+export async function hydrate(listings: ListingRow[], opts?: { withGa?: boolean }): Promise<ListingFull[]> {
   if (!listings.length) return []
   const db = createClient()
   const ids = listings.map((l) => l.id)
@@ -201,4 +206,76 @@ export async function getPosts(opts: { listingId?: string; limit?: number; viewe
       },
     ]
   })
+}
+
+// ---- Marketplace (filters, sort and pagination run in the database) ----
+
+
+export type MarketResult = { listings: ListingFull[]; total: number; error: string | null; source: "database" | "fallback" }
+
+export async function queryMarketplace(s: MarketState): Promise<MarketResult> {
+  const db = createClient()
+  const base = db.from("marketplace_listings").select("id", { count: "exact" })
+  const { data, count, error } = await (buildMarketQuery(base as any, s) as any)
+  if (error) {
+    // The view arrives with migration 20261022040000. Until it is applied, run the same
+    // query on the server against published listings so the page keeps working.
+    if (/marketplace_listings|does not exist|schema cache/i.test(error.message)) return fallbackMarketplace(s)
+    return { listings: [], total: 0, error: error.message, source: "database" }
+  }
+  const ids: string[] = (data ?? []).map((r: { id: string }) => r.id)
+  if (!ids.length) return { listings: [], total: count ?? 0, error: null, source: "database" }
+  const { data: rows, error: e2 } = await db.from("listings").select("*").in("id", ids)
+  if (e2) return { listings: [], total: 0, error: e2.message, source: "database" }
+  const full = await hydrate((rows ?? []).map(normalizeListing))
+  const byId = new Map(full.map((l) => [l.id, l]))
+  return { listings: ids.map((id) => byId.get(id)).filter(Boolean) as ListingFull[], total: count ?? ids.length, error: null, source: "database" }
+}
+
+/** Same columns as the marketplace view, built from a hydrated listing. */
+export function toMarketRow(l: ListingFull) {
+  const m = l.metrics
+  const s30 = rangeStats(l, "30d")
+  const s6 = rangeStats(l, "6m")
+  const sAll = rangeStats(l, "all")
+  return {
+    id: l.id,
+    name: l.name,
+    pitch: l.pitch,
+    category: l.category,
+    status: l.status,
+    is_for_sale: isForSale(l),
+    business_model: l.business_model ?? null,
+    asking_price_inr: l.asking_price_inr,
+    mrr: m ? m.mrr : null,
+    arr: m ? m.arr : null,
+    growth_pct: m ? m.growth_pct : null,
+    arr_multiple: m && m.arr > 0 && l.asking_price_inr !== null ? Math.round((l.asking_price_inr / m.arr) * 100) / 100 : null,
+    flag_count: l.flags.length,
+    revenue_30d: m ? s30.revenue : null,
+    revenue_6m: m ? m.revenue_6m : null,
+    revenue_all: m ? sAll.revenue : null,
+    rpv_30d: s30.perVisitor,
+    rpv_6m: s6.perVisitor,
+    rpv_all: sAll.perVisitor,
+    published_at: l.published_at ?? l.created_at,
+    computed_at: l.computed_at,
+    is_demo: l.is_demo,
+  }
+}
+
+async function fallbackMarketplace(s: MarketState): Promise<MarketResult> {
+  const all = await getPublishedListings()
+  const byId = new Map(all.map((l) => [l.id, l]))
+  const { data, count } = buildMarketQuery(new MemoryQuery(all.map(toMarketRow)), s).run()
+  return { listings: data.map((r) => byId.get(r.id as string)!), total: count, error: null, source: "fallback" }
+}
+
+/** Published listing count per category, for the filter panel. */
+export async function categoryCounts(): Promise<Record<string, number>> {
+  const db = createClient()
+  const { data } = await db.from("listings").select("category").eq("status", "published")
+  const out: Record<string, number> = {}
+  for (const r of data ?? []) out[r.category] = (out[r.category] ?? 0) + 1
+  return out
 }

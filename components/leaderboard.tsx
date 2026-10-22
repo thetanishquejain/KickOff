@@ -3,6 +3,7 @@ import Link from "next/link"
 
 import { askingMultiple, rangeStats, type ListingFull } from "@/lib/data"
 import { inr, inrShort, multiple } from "@/lib/format"
+import { isForSale } from "@/lib/market-query"
 import type { Range } from "@/lib/metrics"
 import { cn } from "@/lib/utils"
 
@@ -152,7 +153,7 @@ export function LeaderboardTable({
                   <span className="min-w-0 max-w-[8rem] sm:max-w-[22rem]">
                     <span className="flex items-center gap-2">
                       <span className="truncate font-medium text-ink">{r.l.name}</span>
-                      {r.l.asking_price_inr ? (
+                      {isForSale(r.l) ? (
                         <span className="hidden sm:inline-flex">
                           <ForSaleTag />
                         </span>

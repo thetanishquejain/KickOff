@@ -12,13 +12,14 @@ import { FaqList } from "@/components/faq-list"
 import { LeaderboardTable } from "@/components/leaderboard"
 import { ListingCard } from "@/components/listing-card"
 import { ListingRail } from "@/components/listing-rail"
+import { isForSale } from "@/lib/market-query"
 
 export const dynamic = "force-dynamic"
 
 export default async function Home() {
   const [listings, posts] = await Promise.all([getPublishedListings(), getPosts({ limit: 6 })])
   const verified = listings.filter((l) => l.metrics)
-  const forSale = verified.filter((l) => l.asking_price_inr)
+  const forSale = verified.filter((l) => isForSale(l) && l.asking_price_inr)
   const totalMrr = verified.reduce((s, l) => s + (l.metrics?.mrr ?? 0), 0)
   const rev30 = verified.reduce((s, l) => s + (l.metrics ? revenueInRange(l.metrics, "30d") : 0), 0)
   const totalAsk = forSale.reduce((s, l) => s + (l.asking_price_inr ?? 0), 0)

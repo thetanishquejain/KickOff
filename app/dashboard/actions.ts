@@ -54,16 +54,27 @@ const listingSchema = z.object({
     .refine((v) => v === null || (Number.isFinite(v) && v >= 0 && v < 1e11), "Asking price must be a number in rupees."),
 })
 
+/** Explicit sale availability from the form checkbox (only when the form includes it). */
+function saleField(formData: FormData): { is_for_sale?: boolean } {
+  return formData.has("is_for_sale_present") ? { is_for_sale: formData.get("is_for_sale") === "on" } : {}
+}
+
+const NEW_COLUMNS = /is_for_sale|business_model|insights|founded_on/
+
+/** Drop columns from a newer migration if the database hasn't got them yet, so saving still works. */
+function withoutNewColumns(row: Record<string, unknown>) {
+  const { is_for_sale, business_model, insights, founded_on, ...rest } = row
+  return rest
+}
+
 export async function createListing(_: unknown, formData: FormData): Promise<{ error?: string }> {
   const profile = await requireFounder()
   const parsed = listingSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check the form." }
   const db = createClient()
-  const { data, error } = await db
-    .from("listings")
-    .insert({ ...parsed.data, founder_id: profile.id })
-    .select("id")
-    .single()
+  const row: Record<string, unknown> = { ...parsed.data, ...saleField(formData), founder_id: profile.id }
+  let { data, error } = await db.from("listings").insert(row).select("id").single()
+  if (error && NEW_COLUMNS.test(error.message)) ({ data, error } = await db.from("listings").insert(withoutNewColumns(row)).select("id").single())
   if (error || !data) return { error: error?.message ?? "Couldn't create the listing." }
   redirect(`/dashboard/${data.id}?tab=payments`)
 }
@@ -74,14 +85,17 @@ export async function updateListing(listingId: string, formData: FormData): Prom
     const parsed = listingSchema.safeParse(Object.fromEntries(formData))
     if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Check the form." }
     const description = String(formData.get("description") ?? "").trim().slice(0, 2000) || null
-    const update: Record<string, unknown> = { ...parsed.data, description }
+    const update: Record<string, unknown> = { ...parsed.data, ...saleField(formData), description }
     // Insights fields are only on the edit form; don't wipe them from forms that don't send them.
     if (formData.has("insight_value_proposition")) {
       update.insights = readInsights(formData)
+      const bm = String(formData.get("insight_customer_type") ?? "")
+      update.business_model = bm === "B2B" ? "b2b" : bm === "B2C" ? "b2c" : bm === "B2B and B2C" ? "b2b2c" : null
       const month = String(formData.get("founded_on") ?? "")
       update.founded_on = /^\d{4}-\d{2}$/.test(month) && month <= new Date().toISOString().slice(0, 7) ? `${month}-01` : null
     }
-    const { error } = await db.from("listings").update(update).eq("id", listingId)
+    let { error } = await db.from("listings").update(update).eq("id", listingId)
+    if (error && NEW_COLUMNS.test(error.message)) ({ error } = await db.from("listings").update(withoutNewColumns(update)).eq("id", listingId))
     if (error) return { ok: false, error: error.message.includes("insights") || error.message.includes("founded_on") ? "Startup insights need a database update first. Save without them, or ask the admin to run the latest migration." : error.message }
     await clearSummary(listingId)
     revalidatePath(`/dashboard/${listingId}`)

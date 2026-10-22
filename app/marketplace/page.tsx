@@ -1,274 +1,163 @@
 import Link from "next/link"
-import { LayoutGrid, List, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, LayoutGrid, List, X } from "lucide-react"
 
-import { askingMultiple, CATEGORIES, getPublishedListings, type ListingFull } from "@/lib/data"
-import { inrShort } from "@/lib/format"
+import { categoryCounts, queryMarketplace } from "@/lib/data"
+import { inr } from "@/lib/format"
+import { BUSINESS_MODELS, countActiveFilters, DEFAULT_STATE, GROWTH_OPTIONS, marketHref, MARKET_RANGES, MARKET_SORTS, parseMarketParams, sortUsesRange, withChange, type MarketState } from "@/lib/market-query"
 import { cn } from "@/lib/utils"
 import { EmptyState } from "@/components/kit"
 import { ListingCard } from "@/components/listing-card"
 import { ListingRow } from "@/components/listing-row"
 import { PageHeader } from "@/components/page-header"
 
+import { FilterPanel } from "./filter-panel"
 import { FilterToggle } from "./filter-toggle"
-import { SortSelect } from "./sort-select"
+import { MarketSortControls } from "./sort-select"
 
 export const dynamic = "force-dynamic"
 export const metadata = { title: "Marketplace" }
 
-const PAGE_SIZE = 12
-
-const MARKET_SORTS = [
-  { value: "mrr", label: "Highest MRR" },
-  { value: "growth", label: "Fastest growth" },
-  { value: "revenue", label: "Most revenue (6 mo)" },
-  { value: "multiple", label: "Lowest multiple" },
-  { value: "price", label: "Lowest asking price" },
-  { value: "price_desc", label: "Highest asking price" },
-  { value: "new", label: "Recently listed" },
-] as const
-type Sort = (typeof MARKET_SORTS)[number]["value"]
-
-const MRR_BANDS = [
-  { value: "", label: "Any MRR" },
-  { value: "25000", label: "₹25K+" },
-  { value: "50000", label: "₹50K+" },
-  { value: "100000", label: "₹1L+" },
-  { value: "500000", label: "₹5L+" },
-]
-const PRICE_BANDS = [
-  { value: "", label: "Any price" },
-  { value: "1000000", label: "Up to ₹10L" },
-  { value: "2500000", label: "Up to ₹25L" },
-  { value: "5000000", label: "Up to ₹50L" },
-  { value: "10000000", label: "Up to ₹1Cr" },
-]
-
-const MULTIPLE_BANDS = [
-  { value: "", label: "Any multiple" },
-  { value: "2", label: "Up to 2x" },
-  { value: "3", label: "Up to 3x" },
-  { value: "5", label: "Up to 5x" },
-]
-const GROWTH_BANDS = [
-  { value: "", label: "Any growth" },
-  { value: "0", label: "Growing (0%+)" },
-  { value: "10", label: "10%+ a month" },
-  { value: "25", label: "25%+ a month" },
-]
-
-type SP = { category?: string; q?: string; sort?: string; show?: string; view?: string; mrr?: string; price?: string; mult?: string; growth?: string; noflags?: string; forsale?: string }
-
-function sortListings(ls: ListingFull[], sort: Sort) {
-  const INF = Number.POSITIVE_INFINITY
-  const by: Record<Sort, (a: ListingFull, b: ListingFull) => number> = {
-    mrr: (a, b) => (b.metrics?.mrr ?? -1) - (a.metrics?.mrr ?? -1),
-    growth: (a, b) => (b.metrics?.growth_pct ?? -INF) - (a.metrics?.growth_pct ?? -INF),
-    revenue: (a, b) => (b.metrics?.revenue_6m ?? -1) - (a.metrics?.revenue_6m ?? -1),
-    multiple: (a, b) => (askingMultiple(a) ?? INF) - (askingMultiple(b) ?? INF),
-    price: (a, b) => (a.asking_price_inr ?? INF) - (b.asking_price_inr ?? INF),
-    price_desc: (a, b) => (b.asking_price_inr ?? -1) - (a.asking_price_inr ?? -1),
-    new: (a, b) => b.created_at.localeCompare(a.created_at),
-  }
-  return [...ls].sort(by[sort])
-}
-
-function hrefWith(sp: SP, patch: Partial<SP>) {
-  const next = new URLSearchParams()
-  for (const [k, v] of Object.entries({ ...sp, ...patch })) if (v) next.set(k, v)
-  const s = next.toString()
-  return s ? `/marketplace?${s}` : "/marketplace"
-}
-
-export default async function MarketplacePage({ searchParams: sp }: { searchParams: SP }) {
-  const all = await getPublishedListings()
-  const q = (sp.q ?? "").trim()
-  const sort = (MARKET_SORTS.find((s) => s.value === sp.sort)?.value ?? "mrr") as Sort
-  const category = CATEGORIES.includes(sp.category ?? "") ? sp.category : undefined
-  const minMrr = Number(sp.mrr) || 0
-  const maxPrice = Number(sp.price) || 0
-  const maxMult = Number(sp.mult) || 0
-  const minGrowth = sp.growth !== undefined && sp.growth !== "" && Number.isFinite(Number(sp.growth)) ? Number(sp.growth) : null
-  const view = sp.view === "list" ? "list" : "grid"
-
-  const filtered = sortListings(
-    all.filter(
-      (l) =>
-        (!category || l.category === category) &&
-        (!q || `${l.name} ${l.pitch} ${l.category}`.toLowerCase().includes(q.toLowerCase())) &&
-        (!minMrr || (l.metrics?.mrr ?? 0) >= minMrr) &&
-        (!maxPrice || (l.asking_price_inr !== null && l.asking_price_inr <= maxPrice)) &&
-        // Listings without a multiple or growth figure are excluded when those filters are on, never treated as zero.
-        (!maxMult || ((askingMultiple(l) ?? Number.POSITIVE_INFINITY) <= maxMult)) &&
-        (minGrowth === null || (l.metrics?.growth_pct !== null && l.metrics?.growth_pct !== undefined && l.metrics.growth_pct >= minGrowth)) &&
-        (!sp.noflags || l.flags.length === 0) &&
-        (!sp.forsale || Boolean(l.asking_price_inr))
-    ),
-    sort
-  )
-  const shown = Math.max(PAGE_SIZE, Number(sp.show) || PAGE_SIZE)
-  const visible = filtered.slice(0, shown)
-
+function chipsFor(s: MarketState) {
   const chips: { label: string; href: string }[] = []
-  if (category) chips.push({ label: category, href: hrefWith(sp, { category: undefined, show: undefined }) })
-  if (q) chips.push({ label: `"${q}"`, href: hrefWith(sp, { q: undefined, show: undefined }) })
-  if (minMrr) chips.push({ label: `MRR ${MRR_BANDS.find((b) => b.value === sp.mrr)?.label ?? inrShort(minMrr) + "+"}`, href: hrefWith(sp, { mrr: undefined, show: undefined }) })
-  if (maxPrice) chips.push({ label: PRICE_BANDS.find((b) => b.value === sp.price)?.label ?? `Up to ${inrShort(maxPrice)}`, href: hrefWith(sp, { price: undefined, show: undefined }) })
-  if (maxMult) chips.push({ label: MULTIPLE_BANDS.find((b) => b.value === sp.mult)?.label ?? `Up to ${maxMult}x`, href: hrefWith(sp, { mult: undefined, show: undefined }) })
-  if (minGrowth !== null) chips.push({ label: GROWTH_BANDS.find((b) => b.value === sp.growth)?.label ?? `Growth ${minGrowth}%+`, href: hrefWith(sp, { growth: undefined, show: undefined }) })
-  if (sp.noflags) chips.push({ label: "No risk flags", href: hrefWith(sp, { noflags: undefined, show: undefined }) })
-  if (sp.forsale) chips.push({ label: "Priced only", href: hrefWith(sp, { forsale: undefined, show: undefined }) })
-  const clearHref = hrefWith({ sort: sp.sort, view: sp.view }, {})
+  const rm = (patch: Partial<MarketState>) => marketHref(withChange(s, patch))
+  if (s.q) chips.push({ label: `"${s.q}"`, href: rm({ q: "" }) })
+  if (s.category) chips.push({ label: s.category, href: rm({ category: null }) })
+  if (s.businessModel) chips.push({ label: BUSINESS_MODELS.find((b) => b.value === s.businessModel)!.label, href: rm({ businessModel: null }) })
+  if (s.minMrr !== null) chips.push({ label: `MRR ≥ ${inr(s.minMrr)}`, href: rm({ minMrr: null }) })
+  if (s.maxPrice !== null) chips.push({ label: `Price ≤ ${inr(s.maxPrice)}`, href: rm({ maxPrice: null }) })
+  if (s.maxMultiple !== null) chips.push({ label: `Multiple ≤ ${s.maxMultiple}x`, href: rm({ maxMultiple: null }) })
+  if (s.growth) chips.push({ label: `Growth: ${GROWTH_OPTIONS.find((g) => g.value === s.growth)!.label.toLowerCase()}`, href: rm({ growth: null }) })
+  if (s.forSale) chips.push({ label: "For sale only", href: rm({ forSale: false }) })
+  if (s.hideRisks) chips.push({ label: "Risk flags hidden", href: rm({ hideRisks: false }) })
+  return chips
+}
 
-  const counts = Object.fromEntries(CATEGORIES.map((c) => [c, all.filter((l) => l.category === c).length]))
+export default async function MarketplacePage({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
+  const { state, invalid } = parseMarketParams(searchParams)
+  const [result, counts] = await Promise.all([queryMarketplace(state), categoryCounts()])
+  const { listings, total, error } = result
+  const pages = Math.max(1, Math.ceil(total / state.limit))
+  const chips = chipsFor(state)
+  const resetHref = marketHref({ ...DEFAULT_STATE, sort: state.sort, range: state.range, view: state.view })
+  const from = total ? (state.page - 1) * state.limit + 1 : 0
+  const to = Math.min(total, state.page * state.limit)
+  const sortLabel = MARKET_SORTS.find((x) => x.value === state.sort)!.label
+  const rangeLabel = MARKET_RANGES.find((x) => x.value === state.range)!.label
 
   return (
     <div className="pb-8">
-      <PageHeader title="Marketplace">
-        Indian startups for sale, with MRR and revenue calculated from each founder&apos;s Razorpay payment data.
-      </PageHeader>
+      <PageHeader title="Marketplace">Indian startups with MRR and revenue calculated from each founder&apos;s Razorpay payment data.</PageHeader>
 
-      <div className="grid gap-6 lg:grid-cols-[232px_1fr]">
-        {/* Filters */}
-        <aside aria-label="Filters" className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto lg:pb-4">
-          <FilterToggle active={chips.length}>
-          <form action="/marketplace" role="search" className="flex flex-col gap-2">
-            {Object.entries({ category, sort: sp.sort, view: sp.view, mrr: sp.mrr, price: sp.price, mult: sp.mult, growth: sp.growth, noflags: sp.noflags, forsale: sp.forsale }).map(([k, v]) =>
-              v ? <input key={k} type="hidden" name={k} value={v} /> : null
-            )}
-            <label htmlFor="mq" className="text-caption font-medium uppercase tracking-wide text-ink-muted">
-              Search
-            </label>
-            <input
-              id="mq"
-              name="q"
-              defaultValue={q}
-              placeholder="Name, pitch, category"
-              className="h-9 rounded-md border border-line bg-surface px-3 text-sm placeholder:text-ink-muted focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-            />
-          </form>
-
-          <FilterGroup title="Category">
-            <FilterLink href={hrefWith(sp, { category: undefined, show: undefined })} active={!category} count={all.length}>
-              All categories
-            </FilterLink>
-            {CATEGORIES.filter((c) => counts[c] > 0).map((c) => (
-              <FilterLink key={c} href={hrefWith(sp, { category: c, show: undefined })} active={category === c} count={counts[c]}>
-                {c}
-              </FilterLink>
-            ))}
-          </FilterGroup>
-
-          <FilterGroup title="Verified MRR" pills>
-            {MRR_BANDS.map((b) => (
-              <PillLink key={b.label} href={hrefWith(sp, { mrr: b.value || undefined, show: undefined })} active={(sp.mrr ?? "") === b.value}>
-                {b.label}
-              </PillLink>
-            ))}
-          </FilterGroup>
-
-          <FilterGroup title="Asking price" pills>
-            {PRICE_BANDS.map((b) => (
-              <PillLink key={b.label} href={hrefWith(sp, { price: b.value || undefined, show: undefined })} active={(sp.price ?? "") === b.value}>
-                {b.label}
-              </PillLink>
-            ))}
-          </FilterGroup>
-
-          <FilterGroup title="Multiple (price ÷ yearly revenue)" pills>
-            {MULTIPLE_BANDS.map((b) => (
-              <PillLink key={b.label} href={hrefWith(sp, { mult: b.value || undefined, show: undefined })} active={(sp.mult ?? "") === b.value}>
-                {b.label}
-              </PillLink>
-            ))}
-          </FilterGroup>
-
-          <FilterGroup title="Month-on-month growth" pills>
-            {GROWTH_BANDS.map((b) => (
-              <PillLink key={b.label} href={hrefWith(sp, { growth: b.value === "" ? undefined : b.value, show: undefined })} active={(sp.growth ?? "") === b.value}>
-                {b.label}
-              </PillLink>
-            ))}
-          </FilterGroup>
-
-          <FilterGroup title="Other">
-            <ToggleLink href={hrefWith(sp, { noflags: sp.noflags ? undefined : "1", show: undefined })} on={Boolean(sp.noflags)}>
-              Hide listings with risk flags
-            </ToggleLink>
-            <ToggleLink href={hrefWith(sp, { forsale: sp.forsale ? undefined : "1", show: undefined })} on={Boolean(sp.forsale)}>
-              Only listings with a price
-            </ToggleLink>
-          </FilterGroup>
+      <div className="grid gap-6 lg:grid-cols-[248px_1fr]">
+        <aside aria-label="Filters" className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto lg:pb-4 lg:pr-1">
+          <FilterToggle active={countActiveFilters(state)}>
+            {/* Remount on every URL so local drafts always match the applied filters (incl. Back/Forward). */}
+            <FilterPanel key={marketHref(state)} state={state} counts={counts} />
           </FilterToggle>
         </aside>
 
-        {/* Results */}
         <section aria-label="Results" className="min-w-0">
           <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-ink-muted" aria-live="polite">
-              <span className="num font-semibold text-ink">{filtered.length}</span> {filtered.length === 1 ? "startup" : "startups"}
-              {filtered.length !== all.length && <span> of {all.length}</span>}
+              {error ? (
+                "Results couldn't load"
+              ) : (
+                <>
+                  <span className="num font-semibold text-ink">{total.toLocaleString("en-IN")}</span> {total === 1 ? "startup" : "startups"}
+                  {total > state.limit && (
+                    <span className="num">
+                      {" "}
+                      · showing {from}–{to}
+                    </span>
+                  )}
+                  <span>
+                    {" "}
+                    · {sortLabel.toLowerCase()}
+                    {sortUsesRange(state.sort) ? `, ${rangeLabel.toLowerCase()}` : ""}
+                  </span>
+                </>
+              )}
             </p>
             <div className="flex items-center gap-2">
-              <SortSelect value={sort} options={MARKET_SORTS.map((s) => ({ value: s.value, label: s.label }))} />
+              <MarketSortControls state={state} />
               <div className="flex rounded-md border border-line bg-surface p-0.5" role="group" aria-label="Layout">
-                <Link
-                  href={hrefWith(sp, { view: undefined })}
-                  aria-pressed={view === "grid"}
-                  aria-label="Grid view"
-                  className={cn("rounded p-1.5", view === "grid" ? "bg-surface-hover text-ink" : "text-ink-muted hover:text-ink")}
-                >
-                  <LayoutGrid className="size-4" />
-                </Link>
-                <Link
-                  href={hrefWith(sp, { view: "list" })}
-                  aria-pressed={view === "list"}
-                  aria-label="List view"
-                  className={cn("rounded p-1.5", view === "list" ? "bg-surface-hover text-ink" : "text-ink-muted hover:text-ink")}
-                >
-                  <List className="size-4" />
-                </Link>
+                {(["grid", "list"] as const).map((v) => (
+                  <Link
+                    key={v}
+                    href={marketHref({ ...state, view: v })}
+                    scroll={false}
+                    aria-pressed={state.view === v}
+                    aria-label={v === "grid" ? "Grid view" : "List view"}
+                    className={cn("rounded p-1.5", state.view === v ? "bg-surface-hover text-ink" : "text-ink-muted hover:text-ink")}
+                  >
+                    {v === "grid" ? <LayoutGrid className="size-4" /> : <List className="size-4" />}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
 
+          {invalid.length > 0 && (
+            <p className="mb-3 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-caption text-ink">
+              Some link settings weren&apos;t valid and were ignored ({invalid.join(", ")}).
+            </p>
+          )}
+
           {chips.length > 0 && (
-            <div className="mb-4 flex flex-wrap items-center gap-2">
+            <div className="mb-4 flex flex-wrap items-center gap-2" aria-label="Active filters">
               {chips.map((c) => (
                 <Link
                   key={c.label}
                   href={c.href}
-                  aria-label={`Remove filter ${c.label}`}
+                  scroll={false}
+                  aria-label={`Remove filter: ${c.label}`}
                   className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-caption text-ink hover:bg-surface-hover"
                 >
                   {c.label} <X className="size-3" aria-hidden="true" />
                 </Link>
               ))}
-              <Link href={clearHref} className="text-caption text-ink-muted underline-offset-2 hover:text-ink hover:underline">
+              <Link href={resetHref} scroll={false} className="text-caption text-ink-muted underline-offset-2 hover:text-ink hover:underline">
                 Clear all
               </Link>
             </div>
           )}
 
-          {visible.length ? (
-            view === "grid" ? (
+          {error ? (
+            <EmptyState title="We couldn't load startups right now.">
+              <p className="text-sm text-ink-muted">Your filters are kept in the link.</p>
+              <Link href={marketHref(state)} className="text-sm font-medium text-brand hover:underline">
+                Try again
+              </Link>
+            </EmptyState>
+          ) : listings.length ? (
+            state.view === "grid" ? (
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {visible.map((l) => (
+                {listings.map((l) => (
                   <ListingCard key={l.id} l={l} />
                 ))}
               </div>
             ) : (
               <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-surface">
-                {visible.map((l) => (
+                {listings.map((l) => (
                   <ListingRow key={l.id} l={l} />
                 ))}
               </ul>
             )
+          ) : total > 0 && state.page > pages ? (
+            <EmptyState title={`Page ${state.page} doesn't exist for these filters.`}>
+              <Link href={marketHref({ ...state, page: pages })} className="text-sm font-medium text-brand hover:underline">
+                Go to page {pages}
+              </Link>
+            </EmptyState>
           ) : (
-            <EmptyState title={chips.length ? "No startups match these filters." : "No verified startups listed yet."}>
+            <EmptyState title={chips.length ? "No startups match all of these filters." : "No verified startups listed yet."}>
               {chips.length ? (
-                <Link href={clearHref} className="text-sm text-brand hover:underline">
-                  Clear filters
-                </Link>
+                <>
+                  <p className="text-sm text-ink-muted">Remove one filter above, or start over.</p>
+                  <Link href={resetHref} className="text-sm font-medium text-brand hover:underline">
+                    Reset filters
+                  </Link>
+                </>
               ) : (
                 <Link href="/signup?role=founder" className="text-sm text-brand hover:underline">
                   List your startup
@@ -277,72 +166,41 @@ export default async function MarketplacePage({ searchParams: sp }: { searchPara
             </EmptyState>
           )}
 
-          {filtered.length > visible.length && (
-            <div className="mt-6 flex justify-center">
-              <Link
-                href={hrefWith(sp, { show: String(shown + PAGE_SIZE) })}
-                scroll={false}
-                className="rounded-md border border-line bg-surface px-4 py-2 text-sm font-medium hover:bg-surface-hover"
-              >
-                Load more · {filtered.length - visible.length} left
-              </Link>
-            </div>
-          )}
+          {pages > 1 && listings.length > 0 && <Pagination state={state} pages={pages} />}
         </section>
       </div>
     </div>
   )
 }
 
-function FilterGroup({ title, children, pills }: { title: string; children: React.ReactNode; pills?: boolean }) {
+function Pagination({ state, pages }: { state: MarketState; pages: number }) {
+  const p = state.page
+  const nums = [...new Set([1, p - 1, p, p + 1, pages])].filter((n) => n >= 1 && n <= pages).sort((a, b) => a - b)
+  const link = (n: number) => marketHref({ ...state, page: n })
   return (
-    <fieldset className="flex flex-col gap-0.5">
-      <legend className="mb-1.5 text-caption font-medium uppercase tracking-wide text-ink-muted">{title}</legend>
-      <div className={cn("flex flex-wrap gap-1.5", !pills && "lg:flex-col lg:gap-0.5")}>{children}</div>
-    </fieldset>
-  )
-}
-
-function PillLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "true" : undefined}
-      scroll={false}
-      className={cn(
-        "rounded-md border px-2 py-1 text-label transition-colors duration-150",
-        active ? "border-brand bg-brand/10 font-medium text-brand" : "border-line bg-surface text-ink hover:bg-surface-hover"
-      )}
-    >
-      {children}
-    </Link>
-  )
-}
-
-function FilterLink({ href, active, count, children }: { href: string; active: boolean; count?: number; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "true" : undefined}
-      scroll={false}
-      className={cn(
-        "flex items-center justify-between gap-2 rounded-md border px-2.5 py-1.5 text-sm transition-colors duration-150 lg:border-transparent",
-        active ? "border-brand bg-brand/10 font-medium text-brand" : "border-line bg-surface text-ink hover:bg-surface-hover lg:bg-transparent"
-      )}
-    >
-      <span>{children}</span>
-      {count !== undefined && <span className="num text-caption text-ink-muted">{count}</span>}
-    </Link>
-  )
-}
-
-function ToggleLink({ href, on, children }: { href: string; on: boolean; children: React.ReactNode }) {
-  return (
-    <Link href={href} scroll={false} role="switch" aria-checked={on} className="flex items-center gap-2 rounded-md px-1 py-1.5 text-sm text-ink hover:text-brand">
-      <span className={cn("relative h-4 w-7 rounded-full transition-colors duration-150", on ? "bg-brand" : "bg-line")} aria-hidden="true">
-        <span className={cn("absolute top-0.5 size-3 rounded-full bg-surface shadow transition-all duration-150", on ? "left-3.5" : "left-0.5")} />
-      </span>
-      {children}
-    </Link>
+    <nav aria-label="Pages" className="mt-6 flex items-center justify-center gap-1">
+      {p > 1 ? (
+        <Link href={link(p - 1)} className="inline-flex h-9 items-center gap-1 rounded-md border border-line bg-surface px-3 text-sm hover:bg-surface-hover">
+          <ChevronLeft className="size-4" aria-hidden="true" /> Previous
+        </Link>
+      ) : null}
+      {nums.map((n, i) => (
+        <span key={n} className="flex items-center gap-1">
+          {i > 0 && n - nums[i - 1] > 1 && <span className="px-1 text-ink-muted">…</span>}
+          <Link
+            href={link(n)}
+            aria-current={n === p ? "page" : undefined}
+            className={cn("num inline-flex size-9 items-center justify-center rounded-md border text-sm", n === p ? "border-brand bg-brand/10 font-semibold text-brand" : "border-line bg-surface hover:bg-surface-hover")}
+          >
+            {n}
+          </Link>
+        </span>
+      ))}
+      {p < pages ? (
+        <Link href={link(p + 1)} className="inline-flex h-9 items-center gap-1 rounded-md border border-line bg-surface px-3 text-sm hover:bg-surface-hover">
+          Next <ChevronRight className="size-4" aria-hidden="true" />
+        </Link>
+      ) : null}
+    </nav>
   )
 }

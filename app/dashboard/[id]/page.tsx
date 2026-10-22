@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { isForSale } from "@/lib/market-query"
 import { notFound, redirect } from "next/navigation"
 import { createClient } from "@/db/supabase/server"
 import { ArrowLeft, Check, ExternalLink } from "lucide-react"
@@ -63,6 +64,7 @@ export default async function ManageListingPage({ params, searchParams }: { para
       status: listing.status,
       insights: listing.insights ?? null,
       founded_on: listing.founded_on ?? null,
+      is_for_sale: isForSale(listing),
     },
     categories: CATEGORIES,
     hasMetrics: Boolean(m),
@@ -219,7 +221,7 @@ export default async function ManageListingPage({ params, searchParams }: { para
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="text-xl font-semibold">{listing.name}</h2>
-                    {listing.asking_price_inr ? <ForSaleTag /> : null}
+                    {isForSale(listing) ? <ForSaleTag /> : null}
                     {listing.is_demo && <DemoTag />}
                   </div>
                   <p className="text-sm text-ink-muted">{listing.pitch}</p>

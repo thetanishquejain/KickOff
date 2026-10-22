@@ -24,6 +24,7 @@ type L = {
   pitch: string
   website: string | null
   insights?: Insights | null
+  is_for_sale?: boolean
   founded_on?: string | null
   asking_price_inr: number | null
   description: string | null

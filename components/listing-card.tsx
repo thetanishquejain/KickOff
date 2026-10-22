@@ -3,6 +3,7 @@ import { AlertTriangle, BadgeCheck, ShieldCheck } from "lucide-react"
 
 import { askingMultiple, type ListingFull } from "@/lib/data"
 import { inrShort, multiple } from "@/lib/format"
+import { isForSale } from "@/lib/market-query"
 import { cn } from "@/lib/utils"
 
 import { Growth, InitialAvatar } from "./kit"
@@ -34,7 +35,7 @@ export function ListingCard({ l, className }: { l: ListingFull; className?: stri
                 <span title="Sample listing with generated payment data">Demo data</span>
               </>
             )}
-            {l.asking_price_inr ? (
+            {isForSale(l) ? (
               <span className="ml-auto pl-2">
                 <ForSaleTag />
               </span>

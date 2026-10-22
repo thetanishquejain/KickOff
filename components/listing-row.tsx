@@ -2,6 +2,7 @@ import Link from "next/link"
 
 import { askingMultiple, type ListingFull } from "@/lib/data"
 import { inrShort, multiple } from "@/lib/format"
+import { isForSale } from "@/lib/market-query"
 
 import { FlagIcon, Growth, InitialAvatar } from "./kit"
 
@@ -26,7 +27,7 @@ export function ListingRow({ l }: { l: ListingFull }) {
         <span className="min-w-0">
           <span className="block truncate text-sm font-medium text-ink">{l.name}</span>
           <span className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs text-ink-muted">
-            {l.asking_price_inr ? <ForSaleTag /> : null}
+            {isForSale(l) ? <ForSaleTag /> : null}
             <span className="truncate">{l.category}</span>
             {l.is_demo && <span className="hidden shrink-0 text-[10px] text-ink-muted xl:inline">· demo</span>}
           </span>

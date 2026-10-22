@@ -102,3 +102,13 @@ insert into public.posts (listing_id, author_id, body, created_at) values
  ('22222222-2222-4222-8222-000000000001','11111111-1111-4111-8111-000000000001','Open to offers. Looking for someone who can take LedgerLoop to CA firms and agencies at scale. Happy to stay on for a 3-month handover.', now() - interval '2 days'),
  ('22222222-2222-4222-8222-000000000002','11111111-1111-4111-8111-000000000002','The September spike on our revenue chart is the lifetime-deal campaign. Kickoff flagged it automatically, which is fair: it is one-time money, not recurring.', now() - interval '4 days'),
  ('22222222-2222-4222-8222-000000000011','11111111-1111-4111-8111-000000000011','Moved yearly-plan refunds to pro-rata credits instead of cash refunds. Should bring the refund rate down from next month.', now() - interval '5 days');
+
+-- If the marketplace-filters migration (20261022040000) has already run, mark the priced demo
+-- startups as open to offers (ShipCompare has no price, so it stays "not for sale").
+do $$
+begin
+  if exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'listings' and column_name = 'is_for_sale') then
+    execute $q$update public.listings set is_for_sale = (asking_price_inr is not null) where is_demo$q$;
+    execute $q$update public.listings set business_model = case insights->>'customer_type' when 'B2B' then 'b2b' when 'B2C' then 'b2c' when 'B2B and B2C' then 'b2b2c' end where is_demo and business_model is null and insights ? 'customer_type'$q$;
+  end if;
+end $$;

@@ -6,6 +6,7 @@ import { BadgeCheck, ExternalLink, Lock } from "lucide-react"
 import { getProfile } from "@/lib/auth"
 import { askingMultiple, getListing, getPosts, getPublishedListings, rangeStats } from "@/lib/data"
 import { hasInsights, INSIGHT_FIELDS } from "@/lib/insights"
+import { isForSale } from "@/lib/market-query"
 import { PostCard } from "@/components/post-card"
 import { PostComposer } from "@/components/post-composer"
 import { ensureFlagExplanations } from "@/lib/explain"
@@ -93,7 +94,7 @@ export default async function ListingPage({ params }: { params: { id: string } }
                   <BadgeCheck className="size-3.5" aria-hidden="true" /> Revenue checked
                 </span>
               )}
-              {l.asking_price_inr ? <ForSaleTag /> : null}
+              {isForSale(l) ? <ForSaleTag /> : null}
               {l.is_demo && <DemoTag />}
             </div>
             <p className="mt-1 max-w-2xl text-ink-muted">{l.pitch}</p>

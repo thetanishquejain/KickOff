@@ -9,7 +9,9 @@
     "check-types": "tsc --noEmit",
     "test:data": "node test-data/generate.mjs",
     "test:metrics": "tsc test-data/check.ts --outDir .tmp-test --module commonjs --target es2020 --esModuleInterop --skipLibCheck --rootDir . && node .tmp-test/test-data/check.js",
-    "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache"
+    "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
+    "test:market": "tsc test-data/market.ts --outDir .tmp-test --module commonjs --target es2020 --esModuleInterop --skipLibCheck --rootDir . && node .tmp-test/test-data/market.js",
+    "test": "pnpm test:metrics && pnpm test:market"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^0.0.18",
