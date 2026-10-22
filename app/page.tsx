@@ -43,10 +43,13 @@ export default async function Home() {
             <BadgeCheck className="size-3.5" aria-hidden="true" /> Revenue calculated from Razorpay payment data
           </p>
           <h1 className="max-w-3xl text-[30px] font-semibold leading-[1.12] tracking-tight md:text-[38px]">
-            The marketplace for Indian startups with revenue you can check.
+            The database of verified startup revenues
           </h1>
           <p className="mt-4 max-w-xl text-base text-ink-muted">
-            Browse SaaS, AI products and apps for sale. Compare MRR, growth, asking price and risk flags before you talk to a founder.
+            Browse SaaS, mobile apps, and digital businesses for acquisition on Kickoff.{" "}
+            <Link href="/marketplace" className="font-medium text-ink underline decoration-line underline-offset-4 transition-colors duration-150 hover:text-brand hover:decoration-brand">
+              Explore the marketplace
+            </Link>
           </p>
           <form action="/marketplace" role="search" className="mt-6 flex max-w-xl gap-2">
             <label htmlFor="hero-q" className="sr-only">
