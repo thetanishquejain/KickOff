@@ -72,7 +72,7 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
                   )}
                   <span>
                     {" "}
-                    · {sortLabel.toLowerCase()}
+                    · {sortLabel.replace(/^Highest |^Lowest |^Recently /, (w) => w.toLowerCase())}
                     {sortUsesRange(state.sort) ? `, ${rangeLabel.toLowerCase()}` : ""}
                   </span>
                 </>
