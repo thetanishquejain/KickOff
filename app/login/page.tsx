@@ -15,10 +15,11 @@ export default async function LoginPage({
   const profile = await getProfile()
   if (profile) redirect(searchParams.next || (profile.role === "founder" ? "/dashboard" : "/marketplace"))
 
+  if (searchParams.mode === "signup") redirect(`/signup${searchParams.role ? `?role=${searchParams.role}` : ""}`)
+
   return (
     <AuthShell message={searchParams.message}>
       <LoginForm
-        mode={searchParams.mode === "signup" ? "signup" : "login"}
         role={searchParams.role === "buyer" ? "buyer" : searchParams.role === "founder" ? "founder" : undefined}
         next={searchParams.next}
       />

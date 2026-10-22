@@ -73,6 +73,11 @@ export async function createListing(_: unknown, formData: FormData): Promise<{ e
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check the form." }
   const db = createClient()
   const row: Record<string, unknown> = { ...parsed.data, ...saleField(formData), founder_id: profile.id }
+  // Optional extras from the "List your startup" page
+  const bm = String(formData.get("business_model") ?? "")
+  if (bm === "b2b" || bm === "b2c" || bm === "b2b2c") row.business_model = bm
+  const month = String(formData.get("founded_on") ?? "")
+  if (/^\d{4}-\d{2}$/.test(month) && month <= new Date().toISOString().slice(0, 7)) row.founded_on = `${month}-01`
   let { data, error } = await db.from("listings").insert(row).select("id").single()
   if (error && NEW_COLUMNS.test(error.message)) ({ data, error } = await db.from("listings").insert(withoutNewColumns(row)).select("id").single())
   if (error || !data) return { error: error?.message ?? "Couldn't create the listing." }
