@@ -104,3 +104,8 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Homepage proof card: the revenue line draws in once on load */
+.proof-line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: proof-draw 1.4s cubic-bezier(.3,.8,.2,1) .25s forwards; }
+@keyframes proof-draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .proof-line { animation: none; stroke-dashoffset: 0; } }
