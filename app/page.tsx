@@ -12,6 +12,7 @@ import { FaqList } from "@/components/faq-list"
 import { LeaderboardTable } from "@/components/leaderboard"
 import { ListingCard } from "@/components/listing-card"
 import { ListingRail } from "@/components/listing-rail"
+import { SideRails } from "@/components/side-rails"
 import { isForSale } from "@/lib/market-query"
 
 export const dynamic = "force-dynamic"
@@ -34,6 +35,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col gap-14 pb-6">
+      <SideRails listings={listings} />
       {/* Compact hero: message, search, and live numbers above the fold */}
       <section className="grid gap-8 pt-10 lg:grid-cols-[1.35fr_1fr] lg:items-end lg:pt-14">
         <div>
