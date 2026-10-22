@@ -28,8 +28,8 @@ function Rail({ side, items }: { side: "left" | "right"; items: ListingFull[] })
   return (
     <aside
       aria-label={side === "left" ? "Featured startups" : "More featured startups"}
-      className="fixed top-20 z-10 hidden max-h-[calc(100vh-6rem)] w-[208px] flex-col gap-3 overflow-y-auto pb-6 [scrollbar-width:none] min-[1680px]:flex"
-      style={side === "left" ? { left: "max(16px, calc((100vw - 1200px) / 2 - 232px))" } : { right: "max(16px, calc((100vw - 1200px) / 2 - 232px))" }}
+      className="fixed top-20 z-10 hidden max-h-[calc(100vh-6rem)] w-[148px] flex-col gap-2.5 overflow-y-auto pb-6 [scrollbar-width:none] min-[1536px]:flex"
+      style={side === "left" ? { left: "max(16px, calc((100vw - 1200px) / 2 - 160px))" } : { right: "max(16px, calc((100vw - 1200px) / 2 - 160px))" }}
     >
       <span className="px-1 text-[10px] font-medium uppercase tracking-wider text-ink-muted">Featured on Kickoff</span>
       {items.map((l) => (
@@ -37,7 +37,7 @@ function Rail({ side, items }: { side: "left" | "right"; items: ListingFull[] })
       ))}
       <Link
         href="/advertise"
-        className="flex flex-col items-center gap-1.5 rounded-lg border border-dashed border-line px-4 py-6 text-center transition-colors duration-150 hover:border-ink-muted/40 hover:bg-surface"
+        className="flex flex-col items-center gap-1.5 rounded-lg border border-dashed border-line px-3 py-5 text-center transition-colors duration-150 hover:border-ink-muted/40 hover:bg-surface"
       >
         <Megaphone className="size-4 text-ink-muted" aria-hidden="true" />
         <span className="text-sm font-medium text-ink">Advertise here</span>
@@ -52,14 +52,14 @@ function FeatureTile({ l }: { l: ListingFull }) {
   return (
     <Link
       href={`/listing/${l.id}`}
-      className="group flex flex-col items-center gap-1.5 rounded-lg px-4 py-5 text-center shadow-card transition-transform duration-150 hover:-translate-y-0.5"
+      className="group flex flex-col items-center gap-1.5 rounded-lg px-3 py-4 text-center shadow-card transition-transform duration-150 hover:-translate-y-0.5"
       style={{ background: tone.bg, color: tone.fg }}
     >
       <span className="flex size-9 items-center justify-center rounded-md bg-white/70 text-sm font-bold" aria-hidden="true">
         {initials(l.name)}
       </span>
-      <span className="text-sm font-semibold">{l.name}</span>
-      <span className="line-clamp-2 text-caption opacity-80">{l.pitch}</span>
+      <span className="text-label font-semibold leading-tight">{l.name}</span>
+      <span className="line-clamp-2 text-[11px] leading-4 opacity-80">{l.pitch}</span>
       {l.metrics && (
         <span className="num mt-0.5 text-caption font-semibold">
           {inrShort(l.metrics.mrr)} MRR{l.is_demo ? " · demo" : ""}
