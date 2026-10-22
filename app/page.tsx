@@ -13,8 +13,6 @@ import { LeaderboardTable } from "@/components/leaderboard"
 import { ListingCard } from "@/components/listing-card"
 import { ListingRail } from "@/components/listing-rail"
 import { SideRails } from "@/components/side-rails"
-import { AnalyticsBento } from "@/components/ui/analytics-bento"
-import { buildBento } from "@/lib/bento"
 import { isForSale } from "@/lib/market-query"
 
 export const dynamic = "force-dynamic"
@@ -33,8 +31,6 @@ export default async function Home() {
     .sort((a, b) => (askingMultiple(a) ?? 99) - (askingMultiple(b) ?? 99))
     .slice(0, 10)
   const featured = [...verified].sort((a, b) => (b.metrics?.mrr ?? 0) - (a.metrics?.mrr ?? 0)).slice(0, 3)
-  const bento = buildBento(listings)
-  const { demoTraffic: _demo, ...bentoProps } = bento ?? ({} as NonNullable<typeof bento>)
   const categoryCounts = CATEGORIES.map((c) => ({ c, n: listings.filter((l) => l.category === c).length })).filter((x) => x.n > 0)
 
   return (
@@ -116,26 +112,6 @@ export default async function Home() {
               </Link>
             ))}
           </div>
-        </section>
-      )}
-
-      {/* Marketplace in numbers: animated bento, every figure computed from payments + traffic */}
-      {bento && (
-        <section aria-labelledby="numbers-heading">
-          <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-            <h2 id="numbers-heading" className="text-lg font-semibold tracking-tight">
-              Kickoff in numbers
-            </h2>
-            <p className="text-caption text-ink-muted">
-              Calculated from verified payment data{bento.demoTraffic ? " · traffic is demo data" : ""}
-            </p>
-          </div>
-          <AnalyticsBento
-            {...bentoProps}
-            credit={false}
-            fontFamily="var(--font-geist-sans), system-ui, sans-serif"
-            monoFamily="var(--font-geist-mono), ui-monospace, monospace"
-          />
         </section>
       )}
 

@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button"
 import { AiTag, DemoTag, Growth, InitialAvatar, KycBadge } from "@/components/kit"
 import { ForSaleTag } from "@/components/listing-row"
 import { RevenueExplorer } from "@/components/revenue-explorer"
+import { AnalyticsBento } from "@/components/ui/analytics-bento"
+import { buildListingBento } from "@/lib/bento"
 import { FlagList, VerifiedProfile } from "@/components/verified-profile"
 
 import { BackLink } from "./back-link"
@@ -44,6 +46,7 @@ export default async function ListingPage({ params }: { params: { id: string } }
   const traffic = m ? rangeStats(l, "6m") : null
   const demoTraffic = l.traffic.some((t) => t.is_demo)
   const mult = askingMultiple(l)
+  const bento = buildListingBento(l)
   const ranked = published.filter((p) => p.metrics).sort((a, b) => b.metrics!.mrr - a.metrics!.mrr)
   const rank = m && l.status === "published" ? ranked.findIndex((p) => p.id === l.id) + 1 : 0
   const founderCount = published.filter((p) => p.founder_id === l.founder_id).length
@@ -166,6 +169,23 @@ export default async function ListingPage({ params }: { params: { id: string } }
           <BadgeCheck className="size-3.5 text-verified" aria-hidden="true" />
           Revenue calculated from {l.data_source === "razorpay_api" ? "the Razorpay API (test mode)" : "a Razorpay payments export"}{l.is_demo ? " (demo data)" : ""}.{l.computed_at ? ` Last updated ${fmtDate(l.computed_at)}.` : ""}
         </p>
+      )}
+
+      {bento && (
+        <section aria-labelledby="analytics-h" className="mt-8">
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
+            <h2 id="analytics-h" className="text-lg font-semibold tracking-tight">
+              Revenue analytics
+            </h2>
+            <p className="text-caption text-ink-muted">Calculated by code from {l.name}&apos;s payment data{demoTraffic ? " · traffic is demo data" : ""}</p>
+          </div>
+          <AnalyticsBento
+            {...bento}
+            credit={false}
+            fontFamily="var(--font-geist-sans), system-ui, sans-serif"
+            monoFamily="var(--font-geist-mono), ui-monospace, monospace"
+          />
+        </section>
       )}
 
       <div className="mt-6">

@@ -430,7 +430,7 @@ function Treemap({ data, period, mono, tip }: { data: AnalyticsBentoProps["categ
   const [placed, setPlaced] = React.useState(false);
   React.useEffect(() => { if (W) { const r = requestAnimationFrame(() => requestAnimationFrame(() => setPlaced(true))); return () => cancelAnimationFrame(r); } }, [W]);
   const G = 6;
-  const items = data.items.map((i) => ({ name: i.name, group: i.group, v: i.values[period] ?? 0 })).sort((a, b) => b.v - a.v);
+  const items = data.items.map((i) => ({ name: i.name, group: i.group, v: i.values[period] ?? 0 })).filter((i) => i.v > 0).sort((a, b) => b.v - a.v);
   const total = items.reduce((a, b) => a + b.v, 0) || 1;
   const rects = W ? squarify(items, 0, 0, W + G, H + G) : [];
   return (
