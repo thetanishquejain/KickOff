@@ -5,14 +5,6 @@ import "server-only"
 // are identical either way.
 const API = "https://api.anthropic.com/v1/messages"
 const GEMINI_API = "https://generativelanguage.googleapis.com/v1beta/models"
-const OPENROUTER_API = "https://openrouter.ai/api/v1/chat/completions"
-// OpenRouter is used with Google models only, served only by Google's own infrastructure.
-const OPENROUTER_DEFAULT_MODEL = "google/gemini-4-argon"
-const openrouterModel = (v: string | undefined) => (v && v.startsWith("google/") ? v : OPENROUTER_DEFAULT_MODEL)
-const OPENROUTER_MODELS = {
-  smart: openrouterModel(process.env.OPENROUTER_MODEL),
-  fast: openrouterModel(process.env.OPENROUTER_FAST_MODEL || process.env.OPENROUTER_MODEL),
-}
 
 export const MODELS = {
   // Writing, summaries, chat
@@ -26,9 +18,8 @@ const GEMINI_MODELS = {
   fast: process.env.GEMINI_FAST_MODEL || "gemini-2.5-flash",
 }
 
-export function aiProvider(): "claude" | "openrouter" | "gemini" | null {
+export function aiProvider(): "claude" | "gemini" | null {
   if (process.env.ANTHROPIC_API_KEY) return "claude"
-  if (process.env.OPENROUTER_API_KEY) return "openrouter"
   if (process.env.GEMINI_API_KEY) return "gemini"
   return null
 }
@@ -49,7 +40,6 @@ export async function claude(opts: {
   json?: boolean
 }): Promise<string> {
   const provider = aiProvider()
-  if (provider === "openrouter") return openrouter(opts)
   if (provider === "gemini") return gemini(opts)
   const key = process.env.ANTHROPIC_API_KEY
   if (!key) throw new Error("No AI key set: add ANTHROPIC_API_KEY or GEMINI_API_KEY")
@@ -78,38 +68,6 @@ export async function claude(opts: {
     .filter((c) => c.type === "text")
     .map((c) => c.text ?? "")
     .join("")
-}
-
-async function openrouter(opts: { system: string; messages: ChatTurn[]; model?: string; maxTokens?: number; temperature?: number; json?: boolean }): Promise<string> {
-  const key = process.env.OPENROUTER_API_KEY!
-  const model = opts.model === MODELS.fast ? OPENROUTER_MODELS.fast : OPENROUTER_MODELS.smart
-  const body = JSON.stringify({
-    model,
-    messages: [{ role: "system", content: opts.system }, ...opts.messages],
-    temperature: opts.temperature ?? 0.2,
-    max_tokens: opts.maxTokens ?? 1500,
-    provider: { only: ["google-vertex", "google-ai-studio"], allow_fallbacks: false },
-  })
-  // Retry 429 and 5xx with backoff, up to 3 retries. 402 means out of credits: stop.
-  for (let attempt = 0; ; attempt++) {
-    const res = await fetch(OPENROUTER_API, {
-      method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${key}`, "x-title": "Kickoff" },
-      body,
-      cache: "no-store",
-    })
-    if (res.ok) {
-      const data = (await res.json()) as { choices?: { message?: { content?: string } }[] }
-      return data.choices?.[0]?.message?.content ?? ""
-    }
-    if (res.status === 402) throw new Error("OpenRouter: out of credits (402). Top up at openrouter.ai.")
-    if ((res.status === 429 || res.status >= 500) && attempt < 3) {
-      await new Promise((r) => setTimeout(r, 800 * 2 ** attempt))
-      continue
-    }
-    const text = await res.text()
-    throw new Error(`OpenRouter ${res.status}: ${text.slice(0, 300)}`)
-  }
 }
 
 async function gemini(opts: { system: string; messages: ChatTurn[]; model?: string; maxTokens?: number; temperature?: number; json?: boolean }): Promise<string> {

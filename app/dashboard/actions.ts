@@ -384,7 +384,7 @@ export async function computeListing(listingId: string, opts?: { explain?: boole
 export async function writeDescription(listingId: string): Promise<Result<{ description: string; checked: boolean; unknown: string[] }>> {
   try {
     const { db, listing } = await requireOwnListing(listingId)
-    if (!claudeConfigured()) return { ok: false, error: "Add an AI key (ANTHROPIC, OPENROUTER or GEMINI) to use the AI listing writer." }
+    if (!claudeConfigured()) return { ok: false, error: "Add ANTHROPIC_API_KEY or GEMINI_API_KEY to use the AI listing writer." }
     const [{ data: m }, { data: f }] = await Promise.all([
       db.from("metrics").select("data").eq("listing_id", listingId).maybeSingle(),
       db.from("flags").select("type, title, detail").eq("listing_id", listingId),

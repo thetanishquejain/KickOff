@@ -118,7 +118,7 @@ export function UploadPanel({ listingId, hasData, aiReady }: { listingId: string
 
       {!aiReady && (
         <p className="mt-4 rounded-md border border-warning/40 bg-warning/10 p-3 text-caption text-ink">
-          AI isn&apos;t connected on this server (no ANTHROPIC_API_KEY, OPENROUTER_API_KEY or GEMINI_API_KEY). Labels will use keyword rules and flag explanations will be skipped.
+          AI isn&apos;t connected on this server (no ANTHROPIC_API_KEY or GEMINI_API_KEY). Labels will use keyword rules and flag explanations will be skipped.
         </p>
       )}
 
