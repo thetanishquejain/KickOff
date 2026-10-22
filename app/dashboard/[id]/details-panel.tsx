@@ -156,7 +156,7 @@ export function DetailsPanel({
             {note ? <p className={note.tone === "ok" ? "text-ink-muted" : "text-warning"}>{note.text}</p> : <span />}
             <span className="num shrink-0 text-ink-muted">{description.length}/2000</span>
           </div>
-          {!aiReady && <p className="text-caption text-ink-muted">AI writer needs ANTHROPIC_API_KEY or GEMINI_API_KEY on the server.</p>}
+          {!aiReady && <p className="text-caption text-ink-muted">AI writer needs an AI key (ANTHROPIC, OPENROUTER or GEMINI) on the server.</p>}
         </div>
         <InsightFields insights={listing.insights} foundedOn={listing.founded_on} />
         <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
