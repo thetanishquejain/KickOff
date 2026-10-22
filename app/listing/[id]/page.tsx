@@ -4,7 +4,7 @@ import { notFound } from "next/navigation"
 import { BadgeCheck, ExternalLink, Lock } from "lucide-react"
 
 import { getProfile } from "@/lib/auth"
-import { askingMultiple, getListing, getPosts, getPublishedListings, rangeStats } from "@/lib/data"
+import { askingMultiple, getListing, getPosts, getPublishedListings, kycStatus, rangeStats } from "@/lib/data"
 import { hasInsights, INSIGHT_FIELDS } from "@/lib/insights"
 import { isForSale } from "@/lib/market-query"
 import { PostCard } from "@/components/post-card"
@@ -14,7 +14,7 @@ import { inr, inrShort, monthLabel, multiple, pct } from "@/lib/format"
 import { revenueInRange } from "@/lib/metrics"
 import { getOrCreateSummary } from "@/lib/summary"
 import { Button } from "@/components/ui/button"
-import { AiTag, DemoTag, Growth, InitialAvatar } from "@/components/kit"
+import { AiTag, DemoTag, Growth, InitialAvatar, KycBadge } from "@/components/kit"
 import { ForSaleTag } from "@/components/listing-row"
 import { RevenueExplorer } from "@/components/revenue-explorer"
 import { FlagList, VerifiedProfile } from "@/components/verified-profile"
@@ -34,7 +34,9 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
 export default async function ListingPage({ params }: { params: { id: string } }) {
   const [found, profile, published] = await Promise.all([getListing(params.id), getProfile(), getPublishedListings()])
-  const posts = found ? await getPosts({ listingId: found.id, limit: 20, viewerId: profile?.id }) : []
+  const [posts, founderKyc, viewerKyc] = found
+    ? await Promise.all([getPosts({ listingId: found.id, limit: 20, viewerId: profile?.id }), kycStatus(found.founder_id), profile ? kycStatus(profile.id) : Promise.resolve(null)])
+    : [[], null, null]
   if (!found) notFound()
   const l = await ensureFlagExplanations(found)
   const m = l.metrics
@@ -110,6 +112,7 @@ export default async function ListingPage({ params }: { params: { id: string } }
                   <InitialAvatar name={l.founder_name} size={20} className="rounded-full" /> {l.founder_name ?? "Founder"}
                 </span>
               )}
+              <KycBadge status={founderKyc} />
               {l.website && (
                 <>
                   <span aria-hidden="true">·</span>
@@ -152,7 +155,7 @@ export default async function ListingPage({ params }: { params: { id: string } }
               <span className="truncate">{l.founder_name ?? "Not shared"}</span>
             </span>
           }
-          sub={`${founderCount || 1} ${founderCount === 1 || !founderCount ? "startup" : "startups"} on Kickoff`}
+          sub={`${founderCount || 1} ${founderCount === 1 || !founderCount ? "startup" : "startups"} on Kickoff${founderKyc === "verified_test" ? " · KYC (test)" : ""}`}
         />
         <StatCard
           label={l.founded_on ? "Founded" : "Payment history"}
@@ -161,7 +164,7 @@ export default async function ListingPage({ params }: { params: { id: string } }
       {m && (
         <p className="mt-3 flex flex-wrap items-center gap-1.5 text-caption text-ink-muted">
           <BadgeCheck className="size-3.5 text-verified" aria-hidden="true" />
-          Revenue calculated from a Razorpay payments export{l.is_demo ? " (demo data)" : ""}.{l.computed_at ? ` Last updated ${fmtDate(l.computed_at)}.` : ""}
+          Revenue calculated from {l.data_source === "razorpay_api" ? "the Razorpay API (test mode)" : "a Razorpay payments export"}{l.is_demo ? " (demo data)" : ""}.{l.computed_at ? ` Last updated ${fmtDate(l.computed_at)}.` : ""}
         </p>
       )}
 
@@ -189,7 +192,7 @@ export default async function ListingPage({ params }: { params: { id: string } }
             <dl className="mt-5 grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
               <Fact k="Category" v={l.category} />
               <Fact k="Founder" v={l.founder_name ?? "Not shared"} />
-              <Fact k="Data source" v={m ? "Razorpay payments export" : "No payment data yet"} />
+              <Fact k="Data source" v={m ? (l.data_source === "razorpay_api" ? "Razorpay API (test mode)" : "Razorpay payments export") : "No payment data yet"} />
               <Fact k="Data covers" v={m?.first_month && m.latest_month ? `${monthLabel(m.first_month)} to ${monthLabel(m.latest_month)}` : "–"} />
               <Fact k="Paying customers (6 mo)" v={m ? m.customers_6m.toLocaleString("en-IN") : "–"} />
               <Fact
@@ -316,6 +319,11 @@ export default async function ListingPage({ params }: { params: { id: string } }
               <Suspense fallback={<SummarySkeleton />}>
                 <BuyerSummaryCard listingId={l.id} />
               </Suspense>
+              {!isOwner && viewerKyc !== "verified_test" && (
+                <p className="rounded-lg border border-line bg-surface p-3 text-caption text-ink-muted">
+                  Complete <Link href="/account/kyc" className="font-medium text-brand hover:underline">KYC verification</Link> (test mode) so founders know a verified buyer is asking.
+                </p>
+              )}
               {m ? (
                 <AskChat listingId={l.id} name={l.name} />
               ) : (

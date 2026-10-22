@@ -136,7 +136,7 @@ function hashCustomer(listingId: string, key: string | null) {
   return "c_" + createHash("sha256").update(`${listingId}:${key.toLowerCase()}`).digest("hex").slice(0, 12)
 }
 
-export async function uploadPayments(listingId: string, csvText: string): Promise<Result<{ count: number; skipped: number; warnings: string[]; stats: ParseStats }>> {
+export async function uploadPayments(listingId: string, csvText: string, source: "razorpay_csv" | "razorpay_api" = "razorpay_csv"): Promise<Result<{ count: number; skipped: number; warnings: string[]; stats: ParseStats }>> {
   try {
     const { db } = await requireOwnListing(listingId)
     if (csvText.length > 5_000_000) return { ok: false, error: "File is too large (max 5 MB)." }
@@ -158,7 +158,7 @@ export async function uploadPayments(listingId: string, csvText: string): Promis
       const { error } = await db.from("payments").insert(rows.slice(i, i + 500))
       if (error) return { ok: false, error: error.message }
     }
-    await db.from("listings").update({ data_source: "razorpay_csv" }).eq("id", listingId)
+    await db.from("listings").update({ data_source: source }).eq("id", listingId)
     return { ok: true, count: rows.length, skipped: parsed.skipped, warnings: parsed.errors, stats: parsed.stats }
   } catch (e) {
     return { ok: false, error: (e as Error).message }

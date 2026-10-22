@@ -17,6 +17,7 @@ export function MobileNav({ role }: Props) {
   const links = [
     ...NAV_LINKS,
     ...(role === "founder" ? [{ href: "/dashboard", label: "Dashboard" }, { href: "/dashboard/new", label: "New listing" }] : []),
+    ...(role ? [{ href: "/account/kyc", label: "KYC verification" }] : []),
     ...(role ? [] : [
       { href: "/login", label: "Log in" },
       { href: "/signup?role=founder", label: "List your startup" },

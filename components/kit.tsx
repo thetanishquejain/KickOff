@@ -122,3 +122,16 @@ export function EmptyState({ title, children }: { title: string; children?: Reac
     </div>
   )
 }
+
+/** Shown only when KYC passed. Test mode until live PAN/GST checks are added. */
+export function KycBadge({ status, className }: { status: string | null | undefined; className?: string }) {
+  if (status !== "verified_test") return null
+  return (
+    <span
+      title="PAN format checked in test mode. Not yet verified with the Income Tax department."
+      className={cn("inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-verified/30 px-2 py-0.5 text-caption font-medium text-verified", className)}
+    >
+      <BadgeCheck className="size-3.5" aria-hidden="true" /> KYC (test)
+    </span>
+  )
+}

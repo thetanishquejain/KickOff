@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation"
 
-import { getPublishedListings } from "@/lib/data"
+import { getPublishedListings, kycStatus } from "@/lib/data"
 import { inrShort } from "@/lib/format"
-import { InitialAvatar } from "@/components/kit"
+import { InitialAvatar, KycBadge } from "@/components/kit"
 import { ListingCard } from "@/components/listing-card"
 
 export const dynamic = "force-dynamic"
@@ -20,13 +20,16 @@ export default async function FounderPage({ params }: { params: { id: string } }
   const verified = listings.filter((l) => l.metrics)
   const totalMrr = verified.reduce((s, l) => s + (l.metrics?.mrr ?? 0), 0)
   const demo = listings.some((l) => l.is_demo)
+  const kyc = await kycStatus(params.id)
 
   return (
     <div className="pb-8 pt-8">
       <header className="flex flex-wrap items-center gap-4 border-b border-line pb-6">
         <InitialAvatar name={name} size={56} className="rounded-full" />
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-semibold">{name}</h1>
+          <h1 className="flex flex-wrap items-center gap-2 text-2xl font-semibold">
+            {name} <KycBadge status={kyc} />
+          </h1>
           <p className="mt-0.5 text-sm text-ink-muted">
             Founder · {listings.length} published {listings.length === 1 ? "startup" : "startups"}
             {demo && " · demo profile"}

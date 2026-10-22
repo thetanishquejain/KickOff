@@ -71,6 +71,9 @@ export async function Nav() {
                       <Link href="/marketplace">Browse startups</Link>
                     </DropdownMenuItem>
                   )}
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/kyc">KYC verification</Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-line" />
                   <form action={signOut}>
                     <button type="submit" className="w-full rounded-sm px-2 py-1.5 text-left text-sm text-ink-muted hover:bg-surface-hover hover:text-ink">

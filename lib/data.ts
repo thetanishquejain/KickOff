@@ -23,6 +23,7 @@ export type ListingRow = {
   founded_on?: string | null
   insights?: Insights | null
   is_for_sale?: boolean
+  data_source?: string | null
   business_model?: "b2b" | "b2c" | "b2b2c" | null
   published_at?: string | null
 }
@@ -278,4 +279,11 @@ export async function categoryCounts(): Promise<Record<string, number>> {
   const out: Record<string, number> = {}
   for (const r of data ?? []) out[r.category] = (out[r.category] ?? 0) + 1
   return out
+}
+
+/** "verified_test" | "rejected" | null. Only the status is exposed, never KYC details. */
+export async function kycStatus(userId: string): Promise<string | null> {
+  const db = createClient()
+  const { data, error } = await db.rpc("kyc_status", { uid: userId })
+  return error ? null : ((data as string | null) ?? null)
 }

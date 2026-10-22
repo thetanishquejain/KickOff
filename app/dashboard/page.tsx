@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { AlertTriangle, Check } from "lucide-react"
 
 import { getProfile } from "@/lib/auth"
-import { getFounderListings, type ListingFull } from "@/lib/data"
+import { getFounderListings, kycStatus, type ListingFull } from "@/lib/data"
 import { inrShort } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
   const profile = await getProfile()
   if (!profile) redirect("/login?next=/dashboard")
   if (profile.role !== "founder") redirect("/marketplace")
-  const listings = await getFounderListings(profile.id)
+  const [listings, kyc] = await Promise.all([getFounderListings(profile.id), kycStatus(profile.id)])
   const published = listings.filter((l) => l.status === "published").length
 
   return (
@@ -54,6 +54,17 @@ export default async function DashboardPage() {
           ? `${listings.length} listing${listings.length > 1 ? "s" : ""} · ${published} published · ${listings.length - published} draft`
           : "Check your revenue from payment data and publish your startup to buyers."}
       </PageHeader>
+
+      {kyc !== "verified_test" && (
+        <div className="mb-4 flex flex-col gap-2 rounded-lg border border-line bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-ink">
+            <b>Verify your identity.</b> <span className="text-ink-muted">Listings from KYC-checked founders show a badge buyers can trust. Takes a minute (test mode).</span>
+          </p>
+          <Button asChild size="sm" variant="outline">
+            <Link href="/account/kyc">Start KYC</Link>
+          </Button>
+        </div>
+      )}
 
       {listings.length > 0 && (
         <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
