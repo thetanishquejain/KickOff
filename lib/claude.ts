@@ -1,8 +1,8 @@
 import "server-only"
 
-// Minimal LLM client (no SDK needed). Claude is the default provider; if only GEMINI_API_KEY is
-// set, the same prompts go to Google's Gemini API. Prompts, JSON parsing and the number check
-// are identical either way.
+// Minimal LLM client (no SDK needed). Claude is the main provider. Gemini is the backup: if a
+// Claude call fails (or only GEMINI_API_KEY is set), the same prompt goes to Google's Gemini API.
+// Prompts, JSON parsing and the number check are identical either way.
 const API = "https://api.anthropic.com/v1/messages"
 const GEMINI_API = "https://generativelanguage.googleapis.com/v1beta/models"
 
@@ -41,8 +41,18 @@ export async function claude(opts: {
 }): Promise<string> {
   const provider = aiProvider()
   if (provider === "gemini") return gemini(opts)
-  const key = process.env.ANTHROPIC_API_KEY
-  if (!key) throw new Error("No AI key set: add ANTHROPIC_API_KEY or GEMINI_API_KEY")
+  if (!provider) throw new Error("No AI key set: add ANTHROPIC_API_KEY or GEMINI_API_KEY")
+  try {
+    return await callClaude(opts)
+  } catch (e) {
+    // Claude is the main model; Gemini takes over the same request if Claude fails.
+    if (process.env.GEMINI_API_KEY) return gemini(opts)
+    throw e
+  }
+}
+
+async function callClaude(opts: { system: string; messages: ChatTurn[]; model?: string; maxTokens?: number; temperature?: number; json?: boolean }): Promise<string> {
+  const key = process.env.ANTHROPIC_API_KEY!
   const res = await fetch(API, {
     method: "POST",
     headers: {
